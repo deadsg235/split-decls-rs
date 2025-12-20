@@ -109,9 +109,11 @@ pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConf
         "quote",
         "syn",
         "introspector_decl2_macros",
-        "introspector_decl_core", // Added as potentially needed for build scripts
-        "introspector_macro_helpers", // Added as potentially needed for build scripts
-        "introspector_decl_common", // Added as potentially needed for build scripts
+        "introspector_decl_core",
+        "introspector_macro_helpers",
+        "introspector_decl_common",
+        "serde", // Added for build script
+        "toml",    // Added for build script
     ];
 
     let mut cargo_toml_content = fs::read_to_string(&paths.old_cargo_toml_path)
@@ -150,17 +152,24 @@ pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConf
         cargo_toml.other.remove(&key);
     }
 
-    // Helper to ensure a dependency uses workspace = true
-    let ensure_workspace_dependency = |table: &mut toml::Table, dep_name: &str| {
+    // Helper to ensure a dependency uses workspace = true and specified features
+    let ensure_workspace_dependency = |table: &mut toml::Table, dep_name: &str, features: Option<Vec<&str>>| {
         let mut dep_table_value = toml::Table::new();
         dep_table_value.insert("workspace".to_string(), toml::Value::Boolean(true));
+        if let Some(feats) = features {
+            let features_array = toml::Value::Array(feats.into_iter().map(|f| toml::Value::String(f.to_string())).collect());
+            dep_table_value.insert("features".to_string(), features_array);
+        }
         table.insert(dep_name.to_string(), toml::Value::Table(dep_table_value));
     };
 
     // Process [dependencies] to ensure RUNTIME_WORKSPACE_DEPS are present
     let deps_table = &mut cargo_toml.dependencies;
     for dep_name in RUNTIME_WORKSPACE_DEPS {
-        ensure_workspace_dependency(deps_table, dep_name);
+        match *dep_name {
+            "syn" => ensure_workspace_dependency(deps_table, dep_name, Some(vec!["full"])),
+            _ => ensure_workspace_dependency(deps_table, dep_name, None),
+        }
     }
 
     // Process [dev-dependencies] (existing logic remains)
@@ -174,7 +183,11 @@ pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConf
     // Process [build-dependencies] to ensure BUILD_WORKSPACE_DEPS are present
     let build_deps_table = &mut cargo_toml.build_dependencies;
     for dep_name in BUILD_WORKSPACE_DEPS {
-        ensure_workspace_dependency(build_deps_table, dep_name);
+        match *dep_name {
+            "syn" => ensure_workspace_dependency(build_deps_table, dep_name, Some(vec!["full", "visit"])),
+            "serde" => ensure_workspace_dependency(build_deps_table, dep_name, Some(vec!["derive"])),
+            _ => ensure_workspace_dependency(build_deps_table, dep_name, None),
+        }
     }
 
     // Apply [patch.crates-io] entries

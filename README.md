@@ -51,6 +51,19 @@ The generated `build.rs` performs these detailed steps:
         *   The `TokenStream` of the extracted declaration itself.
 5.  **Generate `decl_module!` Invocation:** After processing all declarations, it collects the module names of all generated declaration files and uses them to construct a `introspector_decl2_macros::decl_module!` invocation. This invocation is written to `src/decls/_decl_module_invocation.rs`, which is then included by the new `src/lib.rs` to re-export all processed declarations.
 
+### Key Enhancements & New Features
+
+The `split-decls-rs` tool has undergone several key enhancements to improve its functionality and address dependency management at the workspace level:
+
+*   **Workspace Defaults for `[workspace.package]`**: The tool now automatically populates missing fields in the root `Cargo.toml`'s `[workspace.package]` section with a predefined set of default values (e.g., `edition`, `version`, `authors`, `license`, `description`, `repository`, `homepage`, `keywords`, `rust-version`, `include`, `publish`). This ensures consistency and reduces boilerplate for workspace configurations.
+*   **Explicit `[workspace.lints]` Handling**: The tool ensures that a `[workspace.lints]` table is always present in the root `Cargo.toml`. If it's missing, an empty table is automatically inserted.
+*   **Automated `[patch.crates-io]` Generation**: For every dependency defined in `[workspace.dependencies]` that specifies a `path` to a local submodule, the tool now automatically generates a corresponding `[patch.crates-io.<crate-name>]` entry in the root `Cargo.toml`. This mechanism simplifies the process of integrating patched versions of upstream crates, ensuring that all usages within the workspace correctly resolve to the local submodule.
+*   **Robust `build.rs` Dependency Management**: The tool now intelligently configures the `[build-dependencies]` for generated `build.rs` scripts in target crates. This includes:
+    *   Ensuring `syn` is configured with the `"full"` and `"visit"` features.
+    *   Adding `serde` with the `"derive"` feature and `toml` as build dependencies.
+    This resolves common build failures related to missing features or dependencies in the generated build scripts, making the overlay system more reliable.
+*   **Verbose Output Flag (`--verbose`)**: A new `--verbose` command-line flag has been introduced. When enabled, this flag triggers detailed debug output, providing deeper insights into the tool's internal processing and generated configurations.
+
 ### Exclusions
 For each detected crate (excluding itself and certain blacklisted directories like `submodules/rust/compiler` or `submodules/rust-analyzer`), the transformation workflow is applied.
 
@@ -61,13 +74,16 @@ The behavior of the overlay is controlled via **`split-decls-rs.toml`**, which s
 *   **`string_replacements`:** Allows for raw text modifications to source code *before* it is parsed into an AST. This is useful for fixing syntax that might otherwise break the `syn` parser or for simple, non-semantic text substitutions.
 *   **`custom_prelude_overlay`:** Defines code to be injected as a header into every generated declaration file across the package set. This ensures consistent `use` statements or common helper macros are available in all split declaration units.
 
-## Future Advanced Mechanics: The "Tower of Reflection"
-Beyond simple replacements, the system is designed to evolve into a **"Tower of Reflection"** to enable intelligent and robust patching. This includes:
+## Future Plan: Per-Package Patch Overrides
 
-*   **Total Reflection (Level 3):** Each version of the target codebase is processed through a "Total Reflection" mechanism (e.g., conceptually, `pure_reflect!` or `dir_reflect!`), lifting the entire codebase into a Lean4-style `Expr` meta-model. This provides a deep, computable representation of the code's structure and intent.
-*   **Semantic Indexing:** The reflected code is organized within a Functional Virtual File System (VFS), generating stable identifiers (`semantic_hash.txt`) and tracking dependency relationships (`call_graph_in.json`).
-*   **Semantic Diffing:** Using "Grep2Code Morphism" to identify structural changes between package versions and yield a "semantic diff vector." By converting ASTs into RDF Turtle representations, it identifies mismatches in semantic hashes and changes in the `Expr` graph.
-*   **LLM Integration:** Utilizing high-level macros (`llm!`, `dwim!`) to analyze diffs and propose context-aware patches based on the intent of the code.
+To provide even greater flexibility and control, a future enhancement will introduce the ability to define patch overrides on a per-package basis. This will allow for fine-grained customization of how individual overlaid crates are configured and built, deviating from global defaults where necessary. The plan involves:
+
+1.  **Defining a Patch Override File Format**: Introduce a structured format (e.g., TOML) for `package_name.patch.toml` files, which will reside alongside the target crate's `Cargo.toml`. This file will specify overrides for various build and dependency settings.
+2.  **Extending Configuration Structures**: Enhance `SplitDeclsConfig` or introduce new companion structures to parse and represent these per-package overrides. This will include fields for custom `[build-dependencies]` (with features), specific `[patch.crates-io]` entries for the package, and potentially other `Cargo.toml` sections.
+3.  **Integrating Override Loading in `process_crate`**: Modify the `process_crate` function to detect and load these per-package override files. The loaded configurations will then be merged with or take precedence over the global `split-decls-rs.toml` settings for that specific package.
+4.  **Adapting `generate_new_cargotoml`**: Update `generate_new_cargotoml` to dynamically apply these per-package overrides when generating the target crate's `Cargo.toml`. This will allow for highly customized dependency resolution and feature enablement on a case-by-case basis.
+
+This enhancement will empower users to tailor the overlay system's behavior precisely to the unique requirements of each external Rust module.
 
 ## Conceptual Usage Example
 
