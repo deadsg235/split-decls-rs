@@ -1,5 +1,4 @@
 use std::{
-    collections::HashMap, // Required for HashMap in SplitDeclsConfig
     fs,
     path::{Path, PathBuf},
     process::Command, // For running git commands
@@ -11,8 +10,13 @@ use walkdir::WalkDir;
 use toml; // Added for toml serialization
 
 mod config;
-use config::{SplitDeclsConfig, PatchSpec}; // Import PatchSpec as well
-mod buildrs_generator; // Import the new module
+use config::SplitDeclsConfig; // Import PatchSpec as well
+mod buildrs_config;
+mod buildrs_ast_utils;
+mod generate_build_rs_token_stream;
+mod generate_build_rs_macros;
+mod generate_build_rs_config_types_for_generated_buildrs;
+mod generate_build_rs_ast_helpers_for_generated_buildrs;
 
 /// Encapsulates all relevant file paths for a target crate.
 struct CratePaths {
@@ -101,7 +105,7 @@ fn generate_new_lib_rs(paths: &CratePaths) -> Result<()> {
 /// Generates the new build.rs for the crate.
 fn generate_new_build_rs(paths: &CratePaths) -> Result<()> {
     // Generate the TokenStream for the build.rs content using the generator module
-    let build_rs_token_stream = buildrs_generator::generate_build_rs_token_stream(
+    let build_rs_token_stream = generate_build_rs_token_stream::generate_build_rs_token_stream(
         &paths.old_lib_rs_path,
         &paths.old_build_rs_path,
         &paths.decls_output_dir,
