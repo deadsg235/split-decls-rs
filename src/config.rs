@@ -32,6 +32,16 @@ pub struct SplitDeclsConfig {
     pub patches: HashMap<String, Vec<PatchSpec>>,
     /// A list of raw string replacements to apply to oldlib.rs content before AST parsing.
     pub string_replacements: Option<Vec<StringReplacement>>,
+    /// A map of crate names to local paths for [patch.crates-io] entries.
+    pub crates_io_patches: HashMap<String, PathBuf>,
+    /// Optional GitHub organization to use for forking upstream repositories.
+    pub github_org: Option<String>,
+    /// Default branches to apply patches to for Git repositories.
+    #[serde(default)]
+    pub default_branches_to_patch: Vec<String>,
+    /// Explicit mapping from upstream repository URLs to their fork URLs.
+    #[serde(default)]
+    pub repo_fork_mapping: HashMap<String, String>,
 }
 
 impl SplitDeclsConfig {
