@@ -6,6 +6,21 @@ use split_decls_rs::patch_config::{PatchConfig, PatchTarget};
 use split_decls_rs::config::SplitDeclsConfig;
 use split_decls_rs::workspace_manager;
 use walkdir::WalkDir; // Added for parsing crates in path in dry-run
+use toml; // Import toml crate for parsing
+use std::collections::HashMap; // Added
+use std::fs; // Added
+
+// Helper struct for parsing relevant parts of the root Cargo.toml
+#[derive(Debug, serde::Deserialize)]
+struct RootCargoToml {
+    workspace: Option<RootWorkspace>,
+}
+
+#[derive(Debug, serde::Deserialize)]
+struct RootWorkspace {
+    #[serde(default)]
+    dependencies: HashMap<String, toml::Value>,
+}
 
 fn main() -> Result<()> {
     println!("Starting split-decls-rs tool...");
@@ -41,65 +56,78 @@ fn main() -> Result<()> {
 
     let workspace_root = PathBuf::from("../../"); // Relative to current crate (split-decls-rs)
     let global_config_path = workspace_root.join("split-decls-rs.toml");
-    let global_config = SplitDeclsConfig::load_from_file(&global_config_path)
+    let root_cargo_toml_path = workspace_root.join("Cargo.toml"); // Uncommented this line
+    let mut global_config = SplitDeclsConfig::load_from_file(&global_config_path)
         .context("Failed to load global split-decls-rs config")?;
     println!("Global config loaded: {:?}", global_config);
 
+    // --- Load root Cargo.toml and extract workspace dependencies ---
+    let root_cargo_toml_content = fs::read_to_string(&root_cargo_toml_path)
+        .context(format!("Failed to read root Cargo.toml from {}", root_cargo_toml_path.display()))?;
+    
+    let root_cargo_toml: RootCargoToml = toml::from_str(&root_cargo_toml_content)
+        .context(format!("Failed to parse root Cargo.toml from {}", root_cargo_toml_path.display()))?;
+
+    if let Some(root_workspace) = root_cargo_toml.workspace {
+        global_config.workspace_dependencies = root_workspace.dependencies;
+    }
+    // --- END new logic ---
+
     // --- Manage workspace dependencies in the root Cargo.toml ---
     let root_cargo_toml_path = workspace_root.join("Cargo.toml");
-    let workspace_managed_deps: Vec<(String, toml::Value)> = vec![
-        ("anyhow".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("path".to_string(), toml::Value::String("submodules/anyhow".to_string())),
-        ]))),
-        ("proc-macro2".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("path".to_string(), toml::Value::String("submodules/proc-macro2".to_string())),
-        ]))),
-        ("quote".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("path".to_string(), toml::Value::String("submodules/quote".to_string())),
-        ]))),
-        ("syn".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("path".to_string(), toml::Value::String("submodules/syn".to_string())),
-        ]))),
-        ("url".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("version".to_string(), toml::Value::String("2.0".to_string())),
-        ]))),
-        ("walkdir".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("version".to_string(), toml::Value::String("2.5".to_string())),
-        ]))),
-        ("toml".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("version".to_string(), toml::Value::String("0.8".to_string())),
-        ]))),
-        ("serde".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("version".to_string(), toml::Value::String("1.0".to_string())),
-            ("features".to_string(), toml::Value::Array(vec![
-                toml::Value::String("derive".to_string()),
-            ])),
-        ]))),
-        ("serde_json".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("version".to_string(), toml::Value::String("1.0".to_string())),
-        ]))),
-        ("once_cell".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("version".to_string(), toml::Value::String("1.19".to_string())),
-        ]))),
-        ("introspector_decl2_macros".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("path".to_string(), toml::Value::String("submodules/patch-build-rs/introspector_decl2_macros".to_string())),
-        ]))),
-        ("introspector_decl_core".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("path".to_string(), toml::Value::String("submodules/patch-build-rs/introspector_decl_core".to_string())),
-        ]))),
-        ("introspector_macro_helpers".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("path".to_string(), toml::Value::String("submodules/patch-build-rs/introspector_macro_helpers".to_string())),
-        ]))),
-        ("introspector_decl_common".to_string(), toml::Value::Table(toml::Table::from_iter([
-            ("path".to_string(), toml::Value::String("submodules/patch-build-rs/introspector_decl_common".to_string())),
-        ]))),
-    ];
-    workspace_manager::manage_workspace_dependencies(&root_cargo_toml_path, &workspace_managed_deps, dry_run)
-        .context("Failed to manage workspace dependencies in root Cargo.toml")?;
+    // let workspace_managed_deps: Vec<(String, toml::Value)> = vec![
+    //     ("anyhow".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("path".to_string(), toml::Value::String("submodules/anyhow".to_string())),
+    //     ]))),
+    //     ("proc-macro2".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("path".to_string(), toml::Value::String("submodules/proc-macro2".to_string())),
+    //     ]))),
+    //     ("quote".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("path".to_string(), toml::Value::String("submodules/quote".to_string())),
+    //     ]))),
+    //     ("syn".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("path".to_string(), toml::Value::String("submodules/syn".to_string())),
+    //     ]))),
+    //     ("url".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("version".to_string(), toml::Value::String("2.0".to_string())),
+    //     ]))),
+    //     ("walkdir".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("version".to_string(), toml::Value::String("2.5".to_string())),
+    //     ]))),
+    //     ("toml".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("version".to_string(), toml::Value::String("0.8".to_string())),
+    //     ]))),
+    //     ("serde".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("version".to_string(), toml::Value::String("1.0".to_string())),
+    //         ("features".to_string(), toml::Value::Array(vec![
+    //             toml::Value::String("derive".to_string()),
+    //         ])),
+    //     ]))),
+    //     ("serde_json".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("version".to_string(), toml::Value::String("1.0".to_string())),
+    //     ]))),
+    //     ("once_cell".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("version".to_string(), toml::Value::String("1.19".to_string())),
+    //     ]))),
+    //     ("introspector_decl2_macros".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("path".to_string(), toml::Value::String("submodules/patch-build-rs/introspector_decl2_macros".to_string())),
+    //     ]))),
+    //     ("introspector_decl_core".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("path".to_string(), toml::Value::String("submodules/patch-build-rs/introspector_decl_core".to_string())),
+    //     ]))),
+    //     ("introspector_macro_helpers".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("path".to_string(), toml::Value::String("submodules/patch-build-rs/introspector_macro_helpers".to_string())),
+    //     ]))),
+    //     ("introspector_decl_common".to_string(), toml::Value::Table(toml::Table::from_iter([
+    //         ("path".to_string(), toml::Value::String("submodules/patch-build-rs/introspector_decl_common".to_string())),
+    //     ]))),
+    // ];
+    // workspace_manager::manage_workspace_dependencies(&root_cargo_toml_path, &workspace_managed_deps, dry_run)
+    //     .context("Failed to manage workspace dependencies in root Cargo.toml")?;
 
     // --- Apply workspace package defaults to the root Cargo.toml ---
-    workspace_manager::apply_workspace_package_defaults_to_root(&root_cargo_toml_path, dry_run, verbose)
-        .context("Failed to apply workspace package defaults to root Cargo.toml")?;
+    // workspace_manager::apply_workspace_package_defaults_to_root(&root_cargo_toml_path, dry_run, verbose)
+    //     .context("Failed to apply workspace package defaults to root Cargo.toml")?;
 
     // --- END NEW ---
 

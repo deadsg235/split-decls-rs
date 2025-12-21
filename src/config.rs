@@ -42,6 +42,10 @@ pub struct SplitDeclsConfig {
     /// Explicit mapping from upstream repository URLs to their fork URLs.
     #[serde(default)]
     pub repo_fork_mapping: HashMap<String, String>,
+    /// A map of all workspace dependencies (from [workspace.dependencies])
+    /// to their TOML Value representation.
+    #[serde(default)]
+    pub workspace_dependencies: HashMap<String, toml::Value>,
 }
 
 impl SplitDeclsConfig {

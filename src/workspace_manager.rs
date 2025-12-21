@@ -4,6 +4,7 @@ use std::path::{Path, PathBuf};
 use std::fs;
 use toml::Value;
 use tempfile::tempdir;
+use crate::resolve_crate_path_in_submodule;
 
 /// Manages workspace dependencies in the root Cargo.toml.
 pub fn manage_workspace_dependencies(root_cargo_toml_path: &Path, deps_to_add: &[(String, Value)], dry_run: bool) -> Result<()> {
@@ -62,8 +63,8 @@ pub fn manage_workspace_dependencies(root_cargo_toml_path: &Path, deps_to_add: &
             if let Some(path_value) = dep_table.get("path") {
                 if let Some(path_str) = path_value.as_str() {
                     let mut patch_entry = toml::Table::new();
-                    patch_entry.insert("path".to_string(), toml::Value::String(path_str.to_string()));
-
+                                                let resolved_path = crate::resolve_crate_path_in_submodule(&PathBuf::from(path_str), dep_name)?;
+                                                patch_entry.insert("path".to_string(), toml::Value::String(resolved_path.to_str().context("Resolved path is not valid UTF-8")?.to_string()));
                     // If the workspace dependency has a 'package' key, also include it in the patch
                     if let Some(package_name) = dep_table.get("package") {
                         patch_entry.insert("package".to_string(), package_name.clone());

@@ -94,6 +94,48 @@ pub fn setup_crate_paths(crate_path: &Path) -> Result<CratePaths> {
 }
 
 
+// Helper to convert local path dependencies to workspace dependencies if they exist in global_config.workspace_dependencies
+fn process_dependency_table(
+    table: &mut toml::Table,
+    global_config: &SplitDeclsConfig,
+) -> Result<()> {
+    let mut deps_to_update = Vec::new();
+
+    for (dep_name, dep_value) in table.iter_mut() {
+        if let Some(dep_table) = dep_value.as_table_mut() {
+            // Check if it's a path dependency
+            if let Some(path_value) = dep_table.get("path") {
+                if let Some(path_str) = path_value.as_str() {
+                    let dep_path = PathBuf::from(path_str);
+                    // Check if this path dependency corresponds to a workspace dependency
+                    // A simple check is if a workspace dependency with the same name exists
+                    // and its path matches (or resolves to) the current dep_path.
+                    if global_config.workspace_dependencies.contains_key(dep_name) {
+                        // We found a workspace dependency. Replace the path with workspace = true.
+                        deps_to_update.push(dep_name.clone());
+                    }
+                }
+            }
+        }
+    }
+
+    // Now update the dependencies that need to be changed to workspace = true
+    for dep_name in deps_to_update {
+        let mut new_dep_table = toml::Table::new();
+        new_dep_table.insert("workspace".to_string(), toml::Value::Boolean(true));
+        // Preserve features if they exist in the original dependency
+        if let Some(original_dep) = table.get(&dep_name) {
+            if let Some(original_dep_table) = original_dep.as_table() {
+                if let Some(features) = original_dep_table.get("features") {
+                    new_dep_table.insert("features".to_string(), features.clone());
+                }
+            }
+        }
+        table.insert(dep_name, toml::Value::Table(new_dep_table));
+    }
+    Ok(())
+}
+
 /// Generates the new Cargo.toml for the crate, adding necessary build-dependencies.
 pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConfig, dry_run: bool) -> Result<()> {
     // List of dependencies that should use `workspace = true`
@@ -163,8 +205,9 @@ pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConf
         table.insert(dep_name.to_string(), toml::Value::Table(dep_table_value));
     };
 
-    // Process [dependencies] to ensure RUNTIME_WORKSPACE_DEPS are present
+    // Process [dependencies] to ensure RUNTIME_WORKSPACE_DEPS are present and convert path-deps to workspace = true
     let deps_table = &mut cargo_toml.dependencies;
+    process_dependency_table(deps_table, global_config)?; // Apply general dependency processing
     for dep_name in RUNTIME_WORKSPACE_DEPS {
         match *dep_name {
             "syn" => ensure_workspace_dependency(deps_table, dep_name, Some(vec!["full"])),
@@ -174,14 +217,16 @@ pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConf
 
     // Process [dev-dependencies] (existing logic remains)
     let dev_deps_table = &mut cargo_toml.dev_dependencies;
+    process_dependency_table(dev_deps_table, global_config)?; // Apply general dependency processing
     for dep_name in RUNTIME_WORKSPACE_DEPS { // Also update if runtime deps exist in dev-deps
         if dev_deps_table.contains_key(*dep_name) {
-            ensure_workspace_dependency(dev_deps_table, dep_name);
+            ensure_workspace_dependency(dev_deps_table, dep_name, None); // Added None for features
         }
     }
 
     // Process [build-dependencies] to ensure BUILD_WORKSPACE_DEPS are present
     let build_deps_table = &mut cargo_toml.build_dependencies;
+    process_dependency_table(build_deps_table, global_config)?; // Apply general dependency processing
     for dep_name in BUILD_WORKSPACE_DEPS {
         match *dep_name {
             "syn" => ensure_workspace_dependency(build_deps_table, dep_name, Some(vec!["full", "visit"])),
@@ -329,6 +374,50 @@ pub fn generate_new_build_rs(paths: &CratePaths, dry_run: bool) -> Result<()> {
 }
 
 
+
+
+/// Attempts to resolve the actual crate path within a submodule directory.
+/// This handles cases where the [workspace.dependencies.<name>].path points to a submodule root,
+/// but the actual crate (with its Cargo.toml) resides in a subdirectory.
+/// It prioritizes subdirectories named after the crate, then performs a shallow search.
+pub fn resolve_crate_path_in_submodule(submodule_path: &Path, crate_name: &str) -> Result<PathBuf> {
+    // 1. Check if Cargo.toml exists directly at the submodule_path
+    if submodule_path.join("Cargo.toml").exists() {
+        return Ok(submodule_path.to_path_buf());
+    }
+
+    // 2. Check for a subdirectory with the same name as the crate
+    let named_subdir_path = submodule_path.join(crate_name.replace('-', "_")); // Handle kebab-case
+    if named_subdir_path.join("Cargo.toml").exists() {
+        return Ok(named_subdir_path);
+    }
+    let named_subdir_path_kebab = submodule_path.join(crate_name); // Check original kebab-case too
+    if named_subdir_path_kebab.join("Cargo.toml").exists() {
+        return Ok(named_subdir_path_kebab);
+    }
+
+    // 3. Perform a shallow search for Cargo.toml in direct subdirectories
+    for entry in WalkDir::new(submodule_path)
+        .max_depth(2) // Search current directory and one level deep
+        .into_iter()
+        .filter_map(|e| e.ok()) {
+        if entry.file_name() == "Cargo.toml" {
+            let cargo_toml_path = entry.path();
+            let parent_dir = cargo_toml_path.parent().context("Cargo.toml has no parent")?;
+            // A heuristic: if the package name in that Cargo.toml matches the dep_name, use it.
+            // This would require parsing the inner Cargo.toml, which is more complex.
+            // For now, let's just return the first one found in a subdirectory.
+            if parent_dir != submodule_path { // Ensure it's not the root itself (already checked)
+                return Ok(parent_dir.to_path_buf());
+            }
+        }
+    }
+
+    // If no specific crate path is found, fall back to the provided submodule_path
+    // This might still lead to an error later if cargo can't find the package,
+    // but it's the best we can do without more specific config.
+    Ok(submodule_path.to_path_buf())
+}
 
 pub fn process_crate(crate_path: &Path, global_config: &SplitDeclsConfig, dry_run: bool) -> Result<()> {
     let paths = setup_crate_paths(crate_path)?;
