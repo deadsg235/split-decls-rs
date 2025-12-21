@@ -1,5 +1,178 @@
-[[targets]]
+# patch.toml
+# This file defines how the Cargo.toml for generated crates (like 'unimacro_derive')
+# should be constructed, drawing information from the main project's RootCargo.toml
+# and local paths.
+
+# Defines the primary crate that this patch.toml is concerned with.
+# This corresponds to the 'wrapped-unimacro_derive' directory and its Cargo.toml.
+[[generated_workspace_member]]
 name = "unimacro_derive"
-path = "unimacro_derive" # Path relative to workspace_root
-# repo_url = "https://github.com/some-org/unimacro_derive" # Uncomment if it were a Git repo
-# git_reference = "main" # Uncomment if it were a Git repo
+path = "wrapped-unimacro_derive"
+
+# These entries define dependencies that will be listed in the [workspace.dependencies]
+# section of the generated output/Cargo.toml.
+# The 'project_root_path' specifies the location relative to the top-level project directory.
+# The generation script will calculate the correct relative path from output/Cargo.toml.
+[[generated_workspace_dependency]]
+name = "proc-macro2"
+project_root_path = "submodules/proc-macro2"
+version = "1.0"
+
+[[generated_workspace_dependency]]
+name = "quote"
+project_root_path = "submodules/quote"
+version = "1.0"
+
+[[generated_workspace_dependency]]
+name = "syn"
+project_root_path = "submodules/syn"
+version = "1.0"
+features = ["full", "visit", "visit-mut"]
+
+[[generated_workspace_dependency]]
+name = "anyhow"
+project_root_path = "submodules/anyhow"
+version = "1.0"
+
+[[generated_workspace_dependency]]
+name = "serde"
+project_root_path = "submodules/serde"
+version = "1.0"
+
+[[generated_workspace_dependency]]
+name = "serde_derive"
+project_root_path = "submodules/serde/serde_derive"
+version = "1.0"
+
+[[generated_workspace_dependency]]
+name = "toml"
+project_root_path = "submodules/toml/crates/toml"
+version = "0.5"
+
+# Note: walkdir in RootCargo.toml is version = "2.5", output/Cargo.toml has "2.3"
+# Sticking to output/Cargo.toml's version for now.
+# RootCargo.toml doesn't have a path for walkdir, assuming it's a crates.io dependency
+[[generated_workspace_dependency]]
+name = "walkdir"
+version = "2.3"
+
+[[generated_workspace_dependency]]
+name = "tempfile"
+project_root_path = "submodules/tempfile"
+version = "3.2"
+
+# Note: url in RootCargo.toml is version = "2.0", output/Cargo.toml has "2.2"
+# Sticking to output/Cargo.toml's version for now.
+# RootCargo.toml doesn't have a path for url, assuming it's a crates.io dependency
+[[generated_workspace_dependency]]
+name = "url"
+version = "2.2"
+
+[[generated_workspace_dependency]]
+name = "split-decls-types"
+project_root_path = "split-decls-types" # Relative to project root: split-decls-rs/split-decls-types
+
+# These are from the original [patch.crates-io] section of output/Cargo.toml,
+# now defined as workspace dependencies with their project_root_path.
+[[generated_workspace_dependency]]
+name = "introspector_decl2_macros"
+project_root_path = "submodules/patch-build-rs/introspector_decl2_macros"
+
+[[generated_workspace_dependency]]
+name = "introspector_decl_common"
+project_root_path = "submodules/patch-build-rs/introspector_decl_common"
+
+[[generated_workspace_dependency]]
+name = "introspector_decl_core"
+project_root_path = "submodules/patch-build-rs/introspector_decl_core"
+
+[[generated_workspace_dependency]]
+name = "introspector_macro_helpers"
+project_root_path = "submodules/patch-build-rs/introspector_macro_helpers"
+
+
+# These entries define the dependencies for the inner crate's Cargo.toml
+# (e.g., output/wrapped-unimacro_derive/Cargo.toml).
+# 'workspace = true' indicates that the dependency should be resolved from the
+# generated workspace's [workspace.dependencies] section.
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "dependencies"
+name = "proc-macro2"
+workspace = true
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "dependencies"
+name = "quote"
+workspace = true
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "dependencies"
+name = "syn"
+workspace = true
+features = ["full"]
+
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "build-dependencies"
+name = "anyhow"
+workspace = true
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "build-dependencies"
+name = "introspector_decl2_macros"
+workspace = true
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "build-dependencies"
+name = "introspector_decl_common"
+workspace = true
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "build-dependencies"
+name = "introspector_decl_core"
+workspace = true
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "build-dependencies"
+name = "introspector_macro_helpers"
+workspace = true
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "build-dependencies"
+name = "proc-macro2"
+workspace = true
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "build-dependencies"
+name = "quote"
+workspace = true
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "build-dependencies"
+name = "serde"
+workspace = true
+features = ["derive"]
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "build-dependencies"
+name = "syn"
+workspace = true
+features = ["full", "visit"]
+
+[[generated_crate_dependency]]
+crate_name = "unimacro_derive"
+section = "build-dependencies"
+name = "toml"
+workspace = true

@@ -50,71 +50,50 @@ members = [
 
     // Always add [workspace.dependencies] section
     workspace_cargo_toml_content.push_str("\n[workspace.dependencies]\n");
-    for (dep_name, dep_value) in &global_config.workspace_dependencies {
-        workspace_cargo_toml_content.push_str(&format!("{} = {}\n", dep_name, dep_value.to_string()));
-    }
-
-    // Hardcoded fundamental dependencies that are often part of a workspace
-    // or expected by proc-macros, to ensure the generated workspace builds.
+    // Explicitly define all common dependencies with their versions or paths.
     // These values are based on typical versions found in the cargo2nix project submodules.
     // This is a fallback to ensure buildability when parent Cargo.toml is not a standard workspace.
-    if !global_config.workspace_dependencies.contains_key("quote") {
-        workspace_cargo_toml_content.push_str("quote = { version = \"1.0\" }\n");
-    }
-    if !global_config.workspace_dependencies.contains_key("syn") {
-        workspace_cargo_toml_content.push_str("syn = { version = \"1.0\", features = [\"full\", \"visit\", \"visit-mut\"] }\n");
-    }
-    if !global_config.workspace_dependencies.contains_key("anyhow") {
-        workspace_cargo_toml_content.push_str("anyhow = { version = \"1.0\" }\n");
-    }
-    if !global_config.workspace_dependencies.contains_key("serde") {
-        workspace_cargo_toml_content.push_str("serde = { version = \"1.0\" }\n");
-    }
-    if !global_config.workspace_dependencies.contains_key("serde_derive") {
-        workspace_cargo_toml_content.push_str("serde_derive = { version = \"1.0\" }\n");
-    }
-    if !global_config.workspace_dependencies.contains_key("toml") {
-        workspace_cargo_toml_content.push_str("toml = { version = \"0.5\" }\n");
-    }
-    if !global_config.workspace_dependencies.contains_key("walkdir") {
-        workspace_cargo_toml_content.push_str("walkdir = { version = \"2.3\" }\n");
-    }
-    if !global_config.workspace_dependencies.contains_key("tempfile") {
-        workspace_cargo_toml_content.push_str("tempfile = { version = \"3.2\" }\n");
-    }
-    if !global_config.workspace_dependencies.contains_key("url") {
-        workspace_cargo_toml_content.push_str("url = { version = \"2.2\" }\n");
-    }
-    if !global_config.workspace_dependencies.contains_key("split-decls-types") {
-        workspace_cargo_toml_content.push_str("split-decls-types = { path = \"../split-decls-types\" }\n");
+    workspace_cargo_toml_content.push_str("proc-macro2 = { version = \"1.0\" }\n");
+    workspace_cargo_toml_content.push_str("quote = { version = \"1.0\" }\n");
+    workspace_cargo_toml_content.push_str("syn = { version = \"1.0\", features = [\"full\", \"visit\", \"visit-mut\"] }\n");
+    workspace_cargo_toml_content.push_str("anyhow = { version = \"1.0\" }\n");
+    workspace_cargo_toml_content.push_str("serde = { version = \"1.0\" }\n");
+    workspace_cargo_toml_content.push_str("serde_derive = { version = \"1.0\" }\n");
+    workspace_cargo_toml_content.push_str("toml = { version = \"0.5\" }\n");
+    workspace_cargo_toml_content.push_str("walkdir = { version = \"2.3\" }\n");
+    workspace_cargo_toml_content.push_str("tempfile = { version = \"3.2\" }\n");
+    workspace_cargo_toml_content.push_str("url = { version = \"2.2\" }\n");
+    workspace_cargo_toml_content.push_str("split-decls-types = { path = \"../split-decls-types\" }\n");
+
+
+    // Generate [patch.crates-io] section based on patched_dependencies from PatchConfig
+    if !patch_config.patched_dependencies.is_empty() {
+        workspace_cargo_toml_content.push_str("\n[patch.crates-io]\n");
+        for dep in &patch_config.patched_dependencies {
+            // Only add introspector_decl* to patch, as others are now in workspace.dependencies
+            if dep.name.starts_with("introspector_decl") || dep.name == "proc-macro2" {
+                let mut dep_string = format!("{} = {{", dep.name);
+                if let Some(version) = &dep.version {
+                    dep_string.push_str(&format!(" version = \"{}\"", version));
+                }
+                if let Some(path) = &dep.path {
+                    // The path in patch.toml is relative to the tool's root.
+                    // The generated output/Cargo.toml is in `output/Cargo.toml`.
+                    // So, the path needs to be adjusted to be relative to `output/Cargo.toml`.
+                    let adjusted_path = format!("../{}", path.display()); // Fix relative path
+                    dep_string.push_str(&format!(" path = \"{}\"", adjusted_path));
+                }
+                if let Some(features) = &dep.features {
+                    dep_string.push_str(&format!(", features = [\"{}\"]", features.join("\", \"")));
+                }
+                dep_string.push_str(" }\n");
+                workspace_cargo_toml_content.push_str(&dep_string);
+            }
+        }
     }
 
-    // Explicitly add proc-macro2 and introspector_decl* as patches to workaround workspace dependency resolution issues
-    // Paths are relative to the generated output directory.
-    workspace_cargo_toml_content.push_str("\n[patch.crates-io]\n");
-    if !global_config.workspace_dependencies.contains_key("proc-macro2") {
-        workspace_cargo_toml_content.push_str("proc-macro2 = { path = \"../../submodules/proc-macro2\" }\n");
-    }
-    if !global_config.workspace_dependencies.contains_key("introspector_decl2_macros") {
-        workspace_cargo_toml_content.push_str(&format!(
-            "introspector_decl2_macros = {{ path = \"../../submodules/patch-build-rs/introspector_decl2_macros\" }}\n"
-        ));
-    }
-    if !global_config.workspace_dependencies.contains_key("introspector_decl_common") {
-        workspace_cargo_toml_content.push_str(&format!(
-            "introspector_decl_common = {{ path = \"../../submodules/patch-build-rs/introspector_decl_common\" }}\n"
-        ));
-    }
-    if !global_config.workspace_dependencies.contains_key("introspector_decl_core") {
-        workspace_cargo_toml_content.push_str(&format!(
-            "introspector_decl_core = {{ path = \"../../submodules/patch-build-rs/introspector_decl_core\" }}\n"
-        ));
-    }
-    if !global_config.workspace_dependencies.contains_key("introspector_macro_helpers") {
-        workspace_cargo_toml_content.push_str(&format!(
-            "introspector_macro_helpers = {{ path = \"../../submodules/patch-build-rs/introspector_macro_helpers\" }}\n"
-        ));
-    }
+
+
 
     let workspace_cargo_toml_path = output_dir.join("Cargo.toml");
     if !dry_run {

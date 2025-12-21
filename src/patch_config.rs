@@ -10,8 +10,18 @@ pub struct PatchTarget {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+pub struct PatchedDependency {
+    pub name: String,
+    pub version: Option<String>,
+    pub path: Option<PathBuf>,
+    pub features: Option<Vec<String>>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct PatchConfig {
     pub targets: Vec<PatchTarget>,
+    #[serde(default)]
+    pub patched_dependencies: Vec<PatchedDependency>,
 }
 
 impl PatchConfig {
