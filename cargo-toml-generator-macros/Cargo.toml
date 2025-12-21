@@ -9,7 +9,7 @@ proc-macro = true
 [dependencies]
 syn = { version = "2.0", features = ["full"] }
 quote = "1.0"
-proc-macro2 = "1.0"
+proc-macro2 = { workspace = true }
 cargo-toml-generator-types = { path = "../cargo-toml-generator-types" }
 darling = "0.20" # A helper for parsing macro inputs
 serde_json = "1.0"

@@ -102,16 +102,17 @@ pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConf
         if !crates_io_patches_map.is_empty() {
             let mut crates_io_table = toml::Table::new();
             for (crate_name, path) in crates_io_patches_map {
-            crates_io_table.insert(
-                crate_name.clone(),
-                toml::Table::from_iter([(
-                    "path".to_string(),
-                    toml::Value::String(path.to_str().context("Path not valid UTF-8")?.to_string()),
-                )])
-                .into(),
-            );
+                crates_io_table.insert(
+                    crate_name.clone(),
+                    toml::Table::from_iter([(
+                        "path".to_string(),
+                        toml::Value::String(path.to_str().context("Path not valid UTF-8")?.to_string()),
+                    )])
+                    .into(),
+                );
+            }
+            cargo_toml.patch.insert("crates-io".to_string(), toml::Value::Table(crates_io_table));
         }
-        cargo_toml.patch.insert("crates-io".to_string(), crates_io_table.into());
     }
 
     let new_cargo_toml_content = toml::to_string(&cargo_toml)

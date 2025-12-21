@@ -5,6 +5,27 @@ edition = "2024"
 authors = []
 build = "build.rs"
 
+# [workspace]
+# members = [
+#     ".", # This crate itself
+#     "cargo-toml-generator-macros",
+#     "cargo-toml-generator-types",
+#     "split-decls-types",
+#     "src/bin/rustmacrodoc", # The new binary target
+# ]
+
+# [workspace.dependencies]
+# anyhow = "1.0"
+# toml = "0.8"
+# serde = { version = "1.0", features = ["derive"] }
+# serde_json = "1.0"
+# url = "2.0"
+# quote = "1.0"
+# syn = { version = "2.0", features = ["full", "visit", "visit-mut", "extra-traits"] }
+# walkdir = "2.3"
+# proc-macro2 = "1.0"
+# tempfile = "3.0"
+
 [dependencies]
 anyhow = { workspace = true }
 toml = { workspace = true }
@@ -15,10 +36,11 @@ url = { workspace = true }
 quote = { workspace = true }
 syn = { workspace = true, features= ["full","visit", "visit-mut", "extra-traits"] } # Added extra-traits
 walkdir = { workspace = true }
-split-decls-types = { workspace = true }
+split-decls-types = { workspace = true } # Use workspace dependency
 proc-macro2 = { workspace = true }
 tempfile = { workspace = true }
-cargo-toml-generator-types = { workspace = true } # Use workspace = true
+cargo-toml-generator-types = { workspace = true } # Use workspace dependency
+sha2 = "0.10"
 
 
 [build-dependencies]
@@ -31,3 +53,6 @@ toml = { workspace = true }
 [[bin]]
 name = "rustmacrodoc"
 path = "src/bin/rustmacrodoc.rs"
+
+[patch.'crates-io']
+proc-macro2 = { path = "../proc-macro2" }

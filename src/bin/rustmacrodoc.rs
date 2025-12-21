@@ -4,9 +4,11 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use syn::visit::Visit;
-use syn::{Attribute, Ident, Item, ItemFn, Lit, Macro, Meta, PathSegment};
+use syn::{Attribute, Ident, Item, ItemFn, Lit, Macro, Meta, PathSegment, ItemMacro};
+use syn::spanned::Spanned;
 use walkdir::WalkDir;
 use quote; // Added quote for quote::quote!
+use sha2::{Sha256, Digest};
 
 /// Represents information about a single macro.
 #[derive(Debug, Serialize, Deserialize)]
@@ -14,18 +16,37 @@ struct MacroInfo {
     name: String,
     kind: String, // e.g., "macro_rules", "proc_macro", "proc_macro_attribute", "proc_macro_derive"
     file: String,
-    line: usize,
-    column: usize,
+    // Note: `proc_macro2::Span::start().line/column` is unstable.
+    // Storing debug string of the span as a workaround.
+    span_debug_string: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     signature: Option<String>, // For proc macros, or `macro_rules! name { ... }`
     #[serde(skip_serializing_if = "Option::is_none")]
     doc_comment: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+enum FileStatus {
+    Ok,
+    ParsingError,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct FileMetadata {
+    file_path: String,
+    content_hash: String,
+    status: FileStatus,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    macros: Option<Vec<MacroInfo>>, // Only present if status is Ok
+    #[serde(skip_serializing_if = "Option::is_none")]
+    error: Option<String>, // Only present if status is ParsingError
+    // Future fields for parse tree summary, compiler data etc.
+}
+
 /// The report structure containing all discovered macros.
 #[derive(Debug, Serialize, Deserialize)]
 struct MacroReport {
-    macros: Vec<MacroInfo>,
+    files: Vec<FileMetadata>,
 }
 
 struct MacroVisitor {
@@ -40,8 +61,7 @@ impl<'ast> Visit<'ast> for MacroVisitor {
             name: i.mac.path.segments.last().map_or("".to_string(), |s| s.ident.to_string()),
             kind: "macro_rules".to_string(),
             file: self.file_path.display().to_string(),
-            line: i.mac.span().start().line,
-            column: i.mac.span().start().column,
+            span_debug_string: format!("{:?}", i.mac.span()),
             signature: Some(quote::quote! { #i }.to_string()), // Capture the whole macro invocation for signature
             doc_comment: get_doc_comment(&i.attrs),
         });
@@ -74,8 +94,7 @@ impl<'ast> Visit<'ast> for MacroVisitor {
                 name: i.sig.ident.to_string(),
                 kind: macro_kind,
                 file: self.file_path.display().to_string(),
-                line: i.span().start().line,
-                column: i.span().start().column,
+                span_debug_string: format!("{:?}", i.span()),
                 signature: Some(quote::quote! { #i.sig }.to_string()), // Capture the function signature
                 doc_comment: get_doc_comment(&i.attrs),
             });
@@ -90,10 +109,11 @@ fn get_doc_comment(attrs: &[Attribute]) -> Option<String> {
     for attr in attrs {
         if attr.path().is_ident("doc") {
             if let syn::Meta::NameValue(nv) = &attr.meta {
-                if let Lit::Str(lit_str) = &nv.value {
-                    doc_comments.push(lit_str.value().trim().to_string());
-                }
-            }
+                                if let syn::Expr::Lit(expr_lit) = &nv.value {
+                                    if let Lit::Str(lit_str) = &expr_lit.lit {
+                                        doc_comments.push(lit_str.value().trim().to_string());
+                                    }
+                                }            }
         }
     }
     if doc_comments.is_empty() {
@@ -114,7 +134,7 @@ fn main() -> Result<()> {
         anyhow::bail!("Root path does not exist: {}", root_path.display());
     }
 
-    let mut all_macros_info = Vec::new();
+    let mut all_files_metadata: Vec<FileMetadata> = Vec::new();
 
     for entry in WalkDir::new(&root_path)
         .into_iter()
@@ -122,29 +142,49 @@ fn main() -> Result<()> {
     {
         let path = entry.path();
         if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
-            let file_content = fs::read_to_string(path)
+            let file_content_bytes = fs::read(path)
                 .with_context(|| format!("Failed to read file: {}", path.display()))?;
 
-            let syntax_tree = syn::parse_file(&file_content)
-                .with_context(|| format!("Failed to parse file: {}", path.display()))?;
+            let content_hash = format!("{:x}", Sha256::digest(&file_content_bytes));
+            let file_content = String::from_utf8(file_content_bytes)
+                .context("File content is not valid UTF-8")?;
+
+            let mut file_metadata = FileMetadata {
+                file_path: path.display().to_string(),
+                content_hash: content_hash.clone(),
+                status: FileStatus::Ok,
+                macros: None,
+                error: None,
+            };
+
+            let syntax_tree = match syn::parse_file(&file_content) {
+                Ok(tree) => tree,
+                Err(err) => {
+                    file_metadata.status = FileStatus::ParsingError;
+                    file_metadata.error = Some(err.to_string());
+                    all_files_metadata.push(file_metadata);
+                    continue; // Skip to the next file
+                }
+            };
 
             let mut visitor = MacroVisitor {
                 macros: Vec::new(),
                 file_path: path.to_path_buf(),
             };
             visitor.visit_file(&syntax_tree);
-            all_macros_info.extend(visitor.macros);
+            file_metadata.macros = Some(visitor.macros);
+            all_files_metadata.push(file_metadata);
         }
     }
 
     let report = MacroReport {
-        macros: all_macros_info,
+        files: all_files_metadata,
     };
 
-    let toml_report = toml::to_string_pretty(&report)
-        .context("Failed to serialize macro report to TOML")?;
+    let json_report = serde_json::to_string_pretty(&report)
+        .context("Failed to serialize macro report to JSON")?;
 
-    println!("{}", toml_report);
+    println!("{}", json_report);
 
     Ok(())
 }
