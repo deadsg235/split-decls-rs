@@ -1,9 +1,9 @@
 use proc_macro2::TokenStream;
 use syn::{
-    visit::{self, Visit},
+    //visit::{self, Visit},
     ItemUse,
 };
-
+use syn::visit::{self, Visit};
 /// Represents a single extracted declaration.
 pub struct ExtractedDecl {
     pub name: String,
@@ -20,6 +20,6 @@ pub struct UseStatementCollector {
 impl<'ast> Visit<'ast> for UseStatementCollector {
     fn visit_item_use(&mut self, i: &'ast ItemUse) {
         self.uses.push(i.clone());
-        visit::visit_item_use(self, i);
+        self.visit_item_use(i);
     }
 }

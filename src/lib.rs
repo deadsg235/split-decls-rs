@@ -7,11 +7,9 @@ use std::{
 use anyhow::{Context, Result};
 use quote::quote;
 use walkdir::WalkDir;
-use toml; // Added for toml serialization
 
-pub mod config;
-use config::SplitDeclsConfig; // Import PatchSpec as well
-pub mod buildrs_config;
+use split_decls_types::{SplitDeclsConfig, PatchSpec, StringReplacement};
+
 pub mod buildrs_ast_utils;
 pub mod buildrs_generator;
 pub mod git_manager; // New module
@@ -469,6 +467,23 @@ pub fn process_crates_in_path(
             let crate_path = cargotoml_path
                 .parent()
                 .context("Cargo.toml has no parent directory")?;
+
+            // Read Cargo.toml to check if it's a virtual manifest
+            let cargo_toml_content = fs::read_to_string(&cargotoml_path)
+                .context(format!("Failed to read Cargo.toml from {}", cargotoml_path.display()))?;
+            
+            #[derive(Debug, serde::Deserialize)]
+            struct MinimalCargoToml {
+                package: Option<toml::Table>,
+            }
+            let minimal_cargo_toml: MinimalCargoToml = toml::from_str(&cargo_toml_content)
+                .context(format!("Failed to parse Cargo.toml from {}", cargotoml_path.display()))?;
+
+            // Skip virtual manifests (Cargo.toml without a [package] section)
+            if minimal_cargo_toml.package.is_none() {
+                println!("Skipping virtual manifest: {}", cargotoml_path.display());
+                continue;
+            }
 
             let crate_name = crate_path
                 .file_name()

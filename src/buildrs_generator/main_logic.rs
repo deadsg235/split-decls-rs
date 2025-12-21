@@ -1,6 +1,6 @@
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use syn::{LitStr, Item};
+//use syn::{LitStr, Item};
 use std::path::{Path, PathBuf};
 use anyhow::Result;
 use std::fs;
@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize}; // Required for SplitDeclsConfig in the gen
 // For the final build.rs file, these will be embedded directly.
 // The actual definitions for these (e.g. SplitDeclsConfig, get_item_name) will be provided by static_parts.rs
 // when the token streams are combined.
+use syn::LitStr;
 
 pub fn generate_main_logic_token_stream(
     old_lib_rs_path_lit: &LitStr,
@@ -65,26 +66,35 @@ pub fn generate_main_logic_token_stream(
                 }
             }
 
-            // Apply patches to the syntax_tree
-            for p_item in patch_items {
-                let mut replaced = false;
-                for i in 0..syntax_tree.items.len() {
-                    let s_item = &mut syntax_tree.items[i];
-                    // Simple name-based replacement. This needs to be more robust for real-world use.
-                    if let (Some(s_name), Some(p_name), Some(s_kind), Some(p_kind)) = (get_item_name(s_item), get_item_name(&p_item), get_item_kind(s_item), get_item_kind(&p_item)) {
-                        if s_name == p_name && s_kind == p_kind {
-                            *s_item = p_item.clone(); // Replace
-                            replaced = true;
-                            println!("Applied patch: Replaced item {:?}", p_name);
-                            break;
+            // Apply patches to the syntax_tree using a SynMutVisitor
+            // This is a placeholder for more robust AST-based patching.
+            struct PatchVisitor {
+                patch_items: HashMap<String, Item>,
+            }
+
+            impl syn::visit_mut::VisitMut for PatchVisitor {
+                fn visit_item_mut(&mut self, i: &mut Item) {
+                    if let Some(s_name) = get_item_name(i) {
+                        if let Some(p_item) = self.patch_items.get(&s_name) {
+                            if get_item_kind(i) == get_item_kind(p_item) {
+                                *i = p_item.clone();
+                                println!("Applied patch: Replaced item {:?}", s_name);
+                            }
                         }
                     }
-                }
-                if !replaced {
-                    syntax_tree.items.push(p_item); // Add new item
-                    println!("Applied patch: Added new item {:?}", get_item_name(&p_item));
+                    syn::visit_mut::visit_item_mut(self, i);
                 }
             }
+
+            let mut patch_map: HashMap<String, Item> = HashMap::new();
+            for p_item in patch_items {
+                if let Some(name) = get_item_name(&p_item) {
+                    patch_map.insert(name, p_item);
+                }
+            }
+
+            let mut visitor = PatchVisitor { patch_items: patch_map };
+            syn::visit_mut::visit_file_mut(&mut visitor, &mut syntax_tree);
         }
     }
 }

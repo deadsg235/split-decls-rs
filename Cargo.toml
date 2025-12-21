@@ -2,29 +2,19 @@
 name = "split-decls-rs"
 version = "0.1.0"
 edition = "2024"
-
-[lib]
-path = "src/lib.rs"
+authors = []
 
 [dependencies]
-introspector_decl_core = { workspace = true }
-syn = { workspace = true, features = ["full", "extra-traits", "visit"] }
-quote = { workspace = true }
-proc-macro2 = { workspace = true }
-walkdir = { workspace = true }
 anyhow = { workspace = true }
 toml = { workspace = true }
 serde = { workspace = true }
-serde_json = { workspace = true }
-once_cell = { workspace = true }
+serde_derive = { workspace = true }
 url = { workspace = true }
-introspector_decl2_macros = { workspace = true }
-introspector_macro_helpers = { workspace = true }
-introspector_decl_common = { workspace = true }
-unimacro_derive = { path = "../../unimacro_derive", optional = true }
-tempfile = "3.8"
-
-
-#[workspace]
-#members = ["."]
+quote = { workspace = true }
+syn = { workspace = true, features= ["full","visit"] }
+walkdir = { workspace = true }
+#visit = { workspace = true }
+split-decls-types = { workspace = true }
+proc-macro2 = { workspace = true }
+tempfile = { workspace = true }
 

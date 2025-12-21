@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use split_decls_rs::git_manager;
 use split_decls_rs::patch_config::{PatchConfig, PatchTarget};
-use split_decls_rs::config::SplitDeclsConfig;
+use split_decls_types::SplitDeclsConfig;
 use split_decls_rs::workspace_manager;
 use walkdir::WalkDir; // Added for parsing crates in path in dry-run
 use toml; // Import toml crate for parsing

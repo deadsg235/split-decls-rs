@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::fs;
 use toml::Value;
 use tempfile::tempdir;
-use crate::resolve_crate_path_in_submodule;
+use crate::resolve_crate_path_in_submodule; // This will need to be resolved or removed if not needed within workspace-merge
 
 /// Manages workspace dependencies in the root Cargo.toml.
 pub fn manage_workspace_dependencies(root_cargo_toml_path: &Path, deps_to_add: &[(String, Value)], dry_run: bool) -> Result<()> {
@@ -183,7 +183,7 @@ mod tests {
         let dir = tempdir()?;
         let root_cargo_toml_path = dir.path().join("Cargo.toml");
 
-        let initial_content = r#"
+        let initial_content = r#" 
 [workspace.package]
 edition = "2021"
 version = "0.1.0"
@@ -224,7 +224,7 @@ rand = "0.8"
         let dir = tempdir()?;
         let root_cargo_toml_path = dir.path().join("Cargo.toml");
 
-        let initial_content = r#"
+        let initial_content = r#" 
 [workspace.package]
 edition = "2024"
 version = "1.0.0"
@@ -263,3 +263,4 @@ members = ["crate_a"]
         Ok(())
     }
 
+}

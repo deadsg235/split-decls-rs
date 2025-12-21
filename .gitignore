@@ -1,1 +1,24 @@
-target/
+# Generated files
+/target/
+
+# Editor backup files
+*~
+#*#
+.#*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Cargo
+Cargo.lock
+
+# Rust-specific build artifacts
+**/*.rs.bk
+
+# Dependencies
+/vendor/
+/build/
+/build.log
+/full_build_log.txt
+/log2.log
