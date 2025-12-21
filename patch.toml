@@ -1,0 +1,5 @@
+[[targets]]
+name = "unimacro_derive"
+path = "unimacro_derive" # Path relative to workspace_root
+# repo_url = "https://github.com/some-org/unimacro_derive" # Uncomment if it were a Git repo
+# git_reference = "main" # Uncomment if it were a Git repo
