@@ -1,0 +1,472 @@
+{
+  "files": [
+    {
+      "file_path": "./tests/integration_test.rs",
+      "content_hash": "5dcfcbee9aa9dcefaad653caff584795d0c8da099869ae4a4bd88ca10d843b9d",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./target/debug/build/serde_core-570a6c82eda4c77e/out/private.rs",
+      "content_hash": "27ad1b5fb4eebeb1da6419cbfad3ac1922ed1d817fcbab0a1dae1bdfd38d8307",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./target/debug/build/serde-e44ab819494541de/out/private.rs",
+      "content_hash": "f8e9470772811a1bdcd201fb21e14cbf37a57d192b38cd98f66bd4a83442c26b",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./workspace-merge/src/workspace_manager.rs",
+      "content_hash": "d4fdeb5d874cffd7a79eef4966f17c4d9fac1675b689fb667a72d44b3f4d334d",
+      "status": "ParsingError",
+      "error": "cannot parse string into token stream"
+    },
+    {
+      "file_path": "./workspace-merge/src/main.rs",
+      "content_hash": "df99711d368e8de57b1e0e61a1708ae66cd77ecb18cfca9c72c9deeefd6af8f9",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./rustmacrodoc/src/main.rs",
+      "content_hash": "885f6f596f618d16b127b996f184a33b07ba1636101887aefa0d8442f9989bcb",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./cargo-toml-generator-macros/src/lib.rs",
+      "content_hash": "a43a50a54eadc30f4c5977ed84e19ade54205f6b07db528889dcb2730a812ea8",
+      "status": "Ok",
+      "macros": [
+        {
+          "name": "dep_version",
+          "kind": "proc_macro",
+          "file": "./cargo-toml-generator-macros/src/lib.rs",
+          "span_debug_string": "Span",
+          "signature": "# [proc_macro] pub fn dep_version (input : TokenStream) -> TokenStream { let parsed : Punctuated < LitStr , Token ! [,] > = parse_macro_input ! (input with Punctuated :: parse_terminated) ; let name_lit = parsed . first () . expect (\"Expected dependency name LitStr\") . clone () ; let version_lit = parsed . last () . expect (\"Expected dependency version LitStr\") . clone () ; let name_ident = Ident :: new (& name_lit . value () , name_lit . span ()) ; quote ! { # name_ident = # version_lit } . into () } . sig"
+        },
+        {
+          "name": "dep_path",
+          "kind": "proc_macro",
+          "file": "./cargo-toml-generator-macros/src/lib.rs",
+          "span_debug_string": "Span",
+          "signature": "# [proc_macro] pub fn dep_path (input : TokenStream) -> TokenStream { let parsed : Punctuated < LitStr , Token ! [,] > = parse_macro_input ! (input with Punctuated :: parse_terminated) ; let name_lit = parsed . first () . expect (\"Expected dependency name LitStr\") . clone () ; let path_lit = parsed . last () . expect (\"Expected dependency path LitStr\") . clone () ; let name_ident = Ident :: new (& name_lit . value () , name_lit . span ()) ; quote ! { # name_ident = { path = # path_lit } } . into () } . sig"
+        },
+        {
+          "name": "dep_table",
+          "kind": "proc_macro",
+          "file": "./cargo-toml-generator-macros/src/lib.rs",
+          "span_debug_string": "Span",
+          "signature": "# [proc_macro] pub fn dep_table (input : TokenStream) -> TokenStream { let DepTableInput { name , table_content , .. } = parse_macro_input ! (input as DepTableInput) ; let name_ident = Ident :: new (& name . value () , name . span ()) ; quote ! { # name_ident = { # table_content } } . into () } . sig"
+        },
+        {
+          "name": "workspace_members_list",
+          "kind": "proc_macro",
+          "file": "./cargo-toml-generator-macros/src/lib.rs",
+          "span_debug_string": "Span",
+          "signature": "# [proc_macro] pub fn workspace_members_list (input : TokenStream) -> TokenStream { let parsed : Punctuated < LitStr , Token ! [,] > = parse_macro_input ! (input with Punctuated :: parse_terminated) ; let expanded = quote ! { [# parsed] } ; expanded . into () } . sig"
+        },
+        {
+          "name": "define_root_cargo_toml",
+          "kind": "proc_macro",
+          "file": "./cargo-toml-generator-macros/src/lib.rs",
+          "span_debug_string": "Span",
+          "signature": "# [proc_macro] pub fn define_root_cargo_toml (input : TokenStream) -> TokenStream { let input = parse_macro_input ! (input as parse_helpers :: RootInput) ; let mut cargo_toml = CargoToml :: default () ; for item in input . items { match item { parse_helpers :: RootItem :: Section (key , block_tokens) => { let key_str = key . to_string () ; match key_str . as_str () { \"package\" => { let section_items : parse_helpers :: TomlSection = syn :: parse2 (block_tokens) . expect (& format ! (\"Failed to parse package section: {}\" , key)) ; let mut package = Package :: default () ; for pkg_item in section_items . items { if let parse_helpers :: KeyValue :: Simple (pkg_key , pkg_val) = pkg_item { let pkg_key_str = pkg_key . to_string () ; match pkg_key_str . as_str () { \"name\" => package . name = Some (pkg_val . value ()) , \"version\" => package . version = Some (pkg_val . value ()) , \"edition\" => package . edition = Some (pkg_val . value ()) , \"description\" => package . description = Some (pkg_val . value ()) , \"homepage\" => package . homepage = Some (pkg_val . value ()) , \"license\" => package . license = Some (pkg_val . value ()) , \"publish\" => package . publish = Some (pkg_val . value () . parse :: < bool > () . unwrap_or (false)) , \"repository\" => package . repository = Some (pkg_val . value ()) , \"rust-version\" => package . rust_version = Some (pkg_val . value ()) , \"resolver\" => package . resolver = Some (pkg_val . value ()) , _ => { } } } else if let parse_helpers :: KeyValue :: List (pkg_key , list_tokens) = pkg_item { let pkg_key_str = pkg_key . to_string () ; match pkg_key_str . as_str () { \"authors\" => package . authors = Some (parse_helpers :: parse_string_list (list_tokens) . unwrap_or_default ()) , \"include\" => package . include = parse_helpers :: parse_string_list (list_tokens) . unwrap_or_default () , \"keywords\" => package . keywords = parse_helpers :: parse_string_list (list_tokens) . unwrap_or_default () , _ => { } } } } cargo_toml . package = Some (package) ; } , \"workspace\" => { let section_items : parse_helpers :: TomlSection = syn :: parse2 (block_tokens) . expect (& format ! (\"Failed to parse workspace section: {}\" , key)) ; let mut workspace = Workspace :: default () ; for ws_item in section_items . items { match ws_item { parse_helpers :: KeyValue :: List (ws_key , list_tokens) => { let ws_key_str = ws_key . to_string () ; match ws_key_str . as_str () { \"members\" => workspace . members = parse_helpers :: parse_string_list (list_tokens) . unwrap_or_default () , _ => { } } } , parse_helpers :: KeyValue :: Simple (ws_key , ws_val) => { let ws_key_str = ws_key . to_string () ; match ws_key_str . as_str () { \"resolver\" => workspace . resolver = Some (ws_val . value ()) , _ => { } } } , parse_helpers :: KeyValue :: Block (ws_key , ws_block_tokens) => { let ws_key_str = ws_key . to_string () ; match ws_key_str . as_str () { \"dependencies\" => { workspace . workspace_dependencies = parse_helpers :: parse_dependencies_map (ws_block_tokens) . unwrap_or_default () ; } , \"package\" => { let ws_pkg_section_items : parse_helpers :: TomlSection = syn :: parse2 (ws_block_tokens) . expect (& format ! (\"Failed to parse workspace.package section: {}\" , ws_key)) ; let mut ws_package = Package :: default () ; for ws_pkg_item in ws_pkg_section_items . items { if let parse_helpers :: KeyValue :: Simple (ws_pkg_key , ws_pkg_val) = ws_pkg_item { let pkg_key_str = ws_pkg_key . to_string () ; match pkg_key_str . as_str () { \"authors\" => ws_package . authors = Some (parse_helpers :: parse_string_list (quote ! { [# ws_pkg_val] } . into ()) . unwrap_or_default ()) , \"edition\" => ws_package . edition = Some (ws_pkg_val . value ()) , \"description\" => ws_package . description = Some (ws_pkg_val . value ()) , \"homepage\" => ws_package . homepage = Some (ws_pkg_val . value ()) , \"license\" => ws_package . license = Some (ws_pkg_val . value ()) , \"publish\" => ws_package . publish = Some (ws_pkg_val . value () . parse :: < bool > () . unwrap_or (false)) , \"repository\" => ws_package . repository = Some (ws_pkg_val . value ()) , \"rust-version\" => ws_package . rust_version = Some (ws_pkg_val . value ()) , \"version\" => ws_package . version = Some (ws_pkg_val . value ()) , _ => { } } } else if let parse_helpers :: KeyValue :: List (pkg_key , list_tokens) = ws_pkg_item { let pkg_key_str = pkg_key . to_string () ; match pkg_key_str . as_str () { \"authors\" => ws_package . authors = Some (parse_helpers :: parse_string_list (list_tokens) . unwrap_or_default ()) , \"include\" => ws_package . include = parse_helpers :: parse_string_list (list_tokens) . unwrap_or_default () , \"keywords\" => ws_package . keywords = parse_helpers :: parse_string_list (list_tokens) . unwrap_or_default () , _ => { } } } } workspace . package_config = Some (ws_package) ; } , _ => { } } } , _ => { } } } cargo_toml . workspace = Some (workspace) ; } , \"patch\" => { let section_items : parse_helpers :: TomlSection = syn :: parse2 (block_tokens) . expect (& format ! (\"Failed to parse patch section: {}\" , key)) ; let mut patch_section = PatchSection :: default () ; for patch_item in section_items . items { if let parse_helpers :: KeyValue :: Block (patch_key , patch_block_tokens) = patch_item { let patch_key_str = patch_key . to_string () ; match patch_key_str . as_str () { \"crates-io\" => { patch_section . crates_io = parse_helpers :: parse_dependencies_map (patch_block_tokens) . unwrap_or_default () ; } , _ => { } } } } cargo_toml . patch = Some (patch_section) ; } , _ => { } } } , parse_helpers :: RootItem :: KeyValue (kv_item) => { match kv_item { parse_helpers :: KeyValue :: Block (key , block_tokens) => { let key_str = key . to_string () ; match key_str . as_str () { \"dependencies\" => { cargo_toml . dependencies = parse_helpers :: parse_dependencies_map (block_tokens) . unwrap_or_default () ; } , \"dev-dependencies\" => { cargo_toml . dev_dependencies = parse_helpers :: parse_dependencies_map (block_tokens) . unwrap_or_default () ; } , \"build-dependencies\" => { cargo_toml . build_dependencies = parse_helpers :: parse_dependencies_map (block_tokens) . unwrap_or_default () ; } , _ => { } } } , parse_helpers :: KeyValue :: Simple (ref key , ref val) => { } , parse_helpers :: KeyValue :: InlineTable (ref key , ref table_tokens) => { } , parse_helpers :: KeyValue :: List (ref key , ref list_tokens) => { } } } , } } let output = WrappedCargoToml (cargo_toml) ; output . to_token_stream () . into () } . sig"
+        }
+      ]
+    },
+    {
+      "file_path": "./cargo-toml-generator-types/src/lib.rs",
+      "content_hash": "6587d29abe88cba262efbf301d3d86585da9f9aa2c80d0fb63e335fc0706a92b",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./build_src/os.rs",
+      "content_hash": "f47e4d373a3dc6750ff0b49789635de8349bc2a3347513b2f4fc1e75b962384f",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./build_src/os/windows.rs",
+      "content_hash": "c53112d8d36b5fbb09ed67ca5cfc7c1e43a425f4129d3aa472431f141a4819ce",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./build_src/os/linux.rs",
+      "content_hash": "c6a736bfd7318802a9aa6bd97e7a96a3c97d879e68c417e4afc9a4d553aca275",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./build_src/example_module.rs",
+      "content_hash": "56a2132212d1b44ff54c514d62db1ad06441bda88ce6159e8904ae089c268902",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/backup_original_cargo.rs",
+      "content_hash": "874c52f38dd6fef42a06488db4beda260a294f91f85d5709a1faa1b78960ffdc",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/lib.rs",
+      "content_hash": "c3715a8b8d5e6e6c77226d674cbba3e9c30f29348bb52555bb70a781addf0a54",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/wrap_module_generator.rs",
+      "content_hash": "27c79dd08de431f76bfa1dbbefa472bd75c166c9880d021a73bedd026299f74a",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/workspace_manager.rs",
+      "content_hash": "c82452d468b064cd077335e73543d77ec8b99addaecac9190d1034fbf3d119d3",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/copy_dir_recursive.rs",
+      "content_hash": "ca287e7f8e6a452a04513b3ce8afb5a56e1cbf2f641eec2c3dd77a732af04979",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/generate_new_lib_rs.rs",
+      "content_hash": "5ddbb0fa260bed95168d27e68546a6e82003c584f2968c92649aa26a284dee96",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/backup_original_files.rs",
+      "content_hash": "10e69785b0271f42a2a8872ab4a0b4055aee06fc4a896b4e54a63d2bdfeb0e52",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/bin/rustmacrodoc.rs",
+      "content_hash": "2aa910d782143f56e4bfeb594b2e81d88844f3f97e71d0de0d5861f360c23b6e",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/main.rs",
+      "content_hash": "e544430fec84b0dbe1cafc3cef0f46970e82a53a95f7b8cd0f36571b3cbaaf72",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/process_crate.rs",
+      "content_hash": "89a7add072a1184130b7d0fe85b3881c764eaa8cc787ea67692d19acdea1bdb4",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/generate_new_cargotoml.rs",
+      "content_hash": "af9bf437df78dda1852baecf6bf069f0e0c2ab995ac2ec593256c46ee70e07af",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/generate_wrapped_workspace.rs",
+      "content_hash": "5f05fca1ca513b796330336a56d2f4d018622c2ced28013acce9f3efd0c1536e",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/eager_splitter.rs",
+      "content_hash": "cb1425ad8039af09218f07e38a43ba79a01f88cb7355a7ca876f57f44dd34dce",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/monster.rs",
+      "content_hash": "68b3631140d4fc68fb4735d0b212c6dfb7625eb57edfc56e89720ba500400336",
+      "status": "ParsingError",
+      "error": "expected square brackets"
+    },
+    {
+      "file_path": "./src/patch_config.rs",
+      "content_hash": "8e1f6468e08f6c59478f557f845a958fdf92e82cf0f52771dc0bbeda4d02b38d",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/generate_new_build_rs.rs",
+      "content_hash": "5a6b54d8344f0c1244a5bf53b5e31acf75c77f226c6e5c82bde8234dcc7aee9b",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/buildrs_ast_utils.rs",
+      "content_hash": "900b079caa30eb9b40c42611b402e1dc9e800e732d6f536193985c08a956d146",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/git_manager.rs",
+      "content_hash": "46b593d378478f493f75af2d3667be34672758917a8e11359b0413245f3a47d5",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/resolve_crate_path_in_submodule.rs",
+      "content_hash": "5b452efd0df03100a3fa59884bd85dcbf79ced3c27d87a07cf203485dd77372c",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/generate_build_rs_ast_helpers_for_generated_buildrs.rs",
+      "content_hash": "b4ea6b79530270801124ff9a835f5f5c4e965192c549140b8ff470f2223c5237",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/declaration_processor.rs",
+      "content_hash": "e2e8f099eae0e05a1323f1708b0b39a7983a8fc44de3f3b8457e05f4c44a694d",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/buildrs_generator/main_logic.rs",
+      "content_hash": "903245eb0b081f1bfd846f3445abdd42908cc0ca97b3501aaa2dfcdf93d3315f",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/buildrs_generator/static_parts.rs",
+      "content_hash": "b694c90d0bba6753989f50cd7d828a91173152064773b5bab4ab4aecfbdb2ce7",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/buildrs_generator/mod.rs",
+      "content_hash": "9aa30efc0240406cd558b30c5dbaf8026b42eaeb9bbd25157e4e19196ada9816",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/buildrs_generator/build_script_composer.rs",
+      "content_hash": "b515d6f986e798f23fc060a7dbac565375b0b851403812f23a39facb8ce77a80",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/apply_patches_to_syntax_tree.rs",
+      "content_hash": "584bc80e384240254eb53238913ef71100eb61fcb8344da31e4b10d32c9d2cc4",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/generate_new_cargo.rs",
+      "content_hash": "b35662c9c1833419b40b4175f322d2cb93e8a232f3ed7dac0050ceed20e06074",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/get_item_name.rs",
+      "content_hash": "1d6044422589fc55ee786ed0e030473b4bc64db7e71a5381a8ced08e467829c1",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/get_item_kind.rs",
+      "content_hash": "7452e0df4671963d56c6c5c9e4a541942d7219ca531a07479a7d8f475c643afd",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/self_splitter.rs",
+      "content_hash": "ac4a437f7c92043a0794a0b699a807afa172a85622b3e38dbd652f1fdaa815de",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/generate_wrapped_crate.rs",
+      "content_hash": "952fd74f0d4a9bb119fac7967733ee065f0f95e422c42763c30e9d29fef4018b",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/cli_args.rs",
+      "content_hash": "21395bedd8e09b856d4517548188eaf40e0aa66ca8e81d9de9325fa0a8f37454",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/use_statement_collector.rs",
+      "content_hash": "320fb111bd0b56380659aa00e6970caf080eee3388f202fc8f0f732118e1c0e1",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/eager_splitter/use_collector.rs",
+      "content_hash": "ea216c9c653be0a356f5c4ee2b476646673beb2b43d51d16dc4a7cc673b4ecb6",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/eager_splitter/invocation_generator.rs",
+      "content_hash": "86be71d0dec3c56706d652fdd3c75c3b3fcf754893c9bf6b781ab14b901a1d24",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/eager_splitter/declaration_extractor.rs",
+      "content_hash": "4c15d6d2ceb47cedf5805938f876979e644a6b3ed57b81b6684630b53f7b34a7",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/eager_splitter/declaration_writer.rs",
+      "content_hash": "133547191e8ea01c0e1e755797a0a93da39b14712e09baa0f038c56996d03caf",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/process_crates_in_path.rs",
+      "content_hash": "2954eac50af60c09091dc142a6c07c62d0721ceda48d7bde2d6461209a3c2c41",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./src/extracted_decl.rs",
+      "content_hash": "80ebca4e20e14590cf9269c55b9cdc1ab5ff19a51249cf0a136e6981d0bf6615",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./build_helpers/mod.rs",
+      "content_hash": "25635cae86edad1ea575b1f3b79b790bf3c5b20534f391e537eeed03b427b8b0",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./build_helpers/cargo_toml_parts/generated/part5.rs",
+      "content_hash": "7180577f77ff5d7bedd9775d57f99c36bd4a8cb71b1813246a4b45f21b9b47de",
+      "status": "ParsingError",
+      "error": "cannot parse string into token stream"
+    },
+    {
+      "file_path": "./build_helpers/cargo_toml_parts/mod.rs",
+      "content_hash": "a7fc23852313542a8c882b95537852a0c46f7fab7f5c7a12bd28a5e8ba6f890a",
+      "status": "Ok",
+      "macros": [
+        {
+          "name": "macro_rules",
+          "kind": "macro_rules",
+          "file": "./build_helpers/cargo_toml_parts/mod.rs",
+          "span_debug_string": "Span",
+          "signature": "macro_rules ! define_package_config { () => { package { name = \"split-decls-rs\" , version = \"0.1.0\" , edition = \"2024\" , authors = [] , description = \"\" , homepage = \"\" , include = [] , keywords = [] , license = \"AGPL 3.0\" , publish = false , repository = \"\" , rust_version = \"1.85.0\" , } } ; }"
+        },
+        {
+          "name": "macro_rules",
+          "kind": "macro_rules",
+          "file": "./build_helpers/cargo_toml_parts/mod.rs",
+          "span_debug_string": "Span",
+          "signature": "macro_rules ! define_workspace_members_part1 { () => { \"submodules/hyper\" , \"crates/addr2line-bin\" , \"crates/monster_math_traits\" , \"crates/factory_abi\" , \"crates/ast_parser_impl\" , \"tools/cargo-repo-sync\" , \"tools/dep2submodule\" , \"tools/generate_workspace_deps\" , \"tools/cargo-workspace-from-tree\" , \"tools/secret-manager-rs\" , \"tools/cargo-submodule-tool-lib\" , \"tools/syn-adapter-lib\" , \"tools/feature-permutation-builder\" , \"tools/cargo-feature-adapter\" , \"tools/cargo-llm-bootstrap\" , \"tools/rust-src-scanner\" , \"tools/graph-petal-generator\" , \"tools/monster-grouper\" , \"tools/trait-fixer\" , \"submodules/rust/compiler/lib-kleene-op\" , \"submodules/rust/compiler/lib-macro-rule\" , \"submodules/rust/compiler/lib-matcher-loc\" , \"submodules/rust/compiler/macro_wrapper_lib\" , \"submodules/rust/compiler/lib-metavar-expr\" , \"submodules/rust/compiler/lib-token-tree\" , \"submodules/rust/compiler/rustc_ast\" , \"submodules/rust/compiler/rustc_data_structures\" , \"submodules/rust/compiler/rustc_driver\" , \"submodules/rust/compiler/rustc_hir\" , \"submodules/rust/compiler/rustc_index\" , \"submodules/rust/compiler/rustc_interface\" , \"submodules/rust/compiler/rustc_lint\" , \"submodules/rust/compiler/rustc_middle\" , \"submodules/rust/compiler/rustc_session\" , \"submodules/rust/compiler/rustc_span\" , \"submodules/rust/src/tools/clippy/rustc_tools_util\" , \"submodules/rust/compiler/rustc_fluent_macro\" , \"submodules/static-assertions-rs/proc\" , \"submodules/rowan\" , \"submodules/expect-test\" , \"submodules/dot-parser\" , \"submodules/dot-parser/macros\" , \"submodules/rocksdb\" , \"submodules/rocksdb/librocksdb-sys\" , \"crates/trait-fixer-attribute-reader-trait\" , \"crates/trait-fixer-attribute-reader-real\" , \"crates/trait-fixer-attribute-reader-mock\" , \"crates/trait-fixer-compiler-host-trait\" , \"crates/trait-fixer-compiler-host-real\" , \"crates/trait-fixer-compiler-host-mock\" , \"crates/trait-fixer-core-trait\" , \"crates/trait-fixer-core-real\" , \"crates/trait-fixer-core-mock\" , \"crates/trait-fixer-hir-info-trait\" , \"crates/trait-fixer-hir-info-real\" , \"crates/trait-fixer-hir-info-mock\" } ; }"
+        },
+        {
+          "name": "macro_rules",
+          "kind": "macro_rules",
+          "file": "./build_helpers/cargo_toml_parts/mod.rs",
+          "span_debug_string": "Span",
+          "signature": "macro_rules ! define_workspace_members_part2 { () => { \"crates/trait-fixer-lang-items-trait\" , \"crates/trait-fixer-lang-items-real\" , \"crates/trait-fixer-lang-items-mock\" , \"crates/trait-fixer-query-context-trait\" , \"crates/trait-fixer-query-context-real\" , \"crates/trait-fixer-query-context-mock\" , \"crates/trait-fixer-rules-trait\" , \"crates/trait-fixer-rules-real\" , \"crates/trait-fixer-rules-mock\" , \"crates/trait-fixer-rustc-mock\" , \"crates/trait-fixer-trait-checker-trait\" , \"crates/trait-fixer-trait-checker-real\" , \"crates/trait-fixer-trait-checker-mock\" , \"tests/trait_fixer_mocks\" , \"tests/real_rules_test\" , \"submodules/rust/crates/cvs-macro-lib\" , \"submodules/rust/crates/cvs-macro-test-crate\" , \"crates/rust-nix-bootstrap\" , \"submodules/rust/compiler/expand_utils_test\" , \"submodules/rust/compiler/rustc_expand\" , \"submodules/rust/compiler/rustc_expand_base_lib\" , \"submodules/rust/compiler/rustc_serialize\" , \"submodules/rust/compiler/introspector/core\" , \"repl_server\" , \"submodules/rust/compiler/rustc_expand_patches\" , \"tools/type-reporter\" , \"submodules/rust/compiler/rustc_expand_base_lib_errors\" , \"submodules/rust/compiler/rustc_expand_base_lib_macros\" , \"submodules/rust/compiler/rustc_expand_base_lib_test_driver\" , \"ticket_data_generator\" , \"submodules/split-decls-rs\" , \"submodules/split-decls-rs/workspace-merge\" , \"submodules/split-decls-rs/split-decls-types\" , \"cargo-toml-generator-types\" , \"cargo-toml-generator-macros\" } ; }"
+        },
+        {
+          "name": "macro_rules",
+          "kind": "macro_rules",
+          "file": "./build_helpers/cargo_toml_parts/mod.rs",
+          "span_debug_string": "Span",
+          "signature": "macro_rules ! define_workspace_dependencies_part1 { () => { dep_path ! (\"split-decls-types\" , \"submodules/split-decls-rs/split-decls-types\") , dep_path ! (\"split_decls_types\" , \"submodules/split-decls-rs/split-decls-types\") , dep_version ! (\"databake\" , \"*\") , dep_version ! (\"harfbuzz-traits\" , \"*\") , dep_version ! (\"icu_collections\" , \"*\") , dep_version ! (\"icu_provider\" , \"*\") , dep_version ! (\"utf16_iter\" , \"*\") , dep_version ! (\"utf8_iter\" , \"*\") , dep_version ! (\"write16\" , \"*\") , dep_version ! (\"zerovec\" , \"*\") , dep_version ! (\"arraystring\" , \"*\") , dep_path ! (\"atoi\" , \"*\") , dep_path ! (\"icu_normalizer_data\" , \"*\") , dep_path ! (\"detone\" , \"*\") , dep_version ! (\"icu_locale_core\" , \"*\") , dep_version ! (\"displaydoc\" , \"*\") , dep_path ! (\"synstructure\" , \"submodules/synstructure\") , dep_version ! (\"unicode-bidi\" , \"*\") , dep_version ! (\"zerotrie\" , \"*\") , dep_version ! (\"dot\" , \"*\") , dep_version ! (\"yoke\" , \"*\") , dep_version ! (\"postcard\" , \"*\") , dep_version ! (\"rkyv\" , \"*\") , dep_version ! (\"writeable\" , \"*\") , dep_version ! (\"pulldown-cmark-to-cmark\" , \"*\") , dep_path ! (\"aho_corasick\" , \"submodules/aho-corasick\") , dep_version ! (\"shell-escape\" , \"0.1.5\") , dep_version ! (\"winnow\" , \"0.7.13\") , dep_version ! (\"schemars\" , \"1.0.5\") , dep_version ! (\"unic-langid\" , \"0.9\") , dep_version ! (\"notify\" , \"6.1.1\") , dep_version ! (\"proptest\" , \"1.9.0\") , dep_version ! (\"miow\" , \"0.6.1\") , dep_version ! (\"percent-encoding\" , \"2.3.2\") , dep_version ! (\"iai\" , \"0.1\") , dep_version ! (\"intl_pluralrules\" , \"7.0\") , dep_version ! (\"similar\" , \"2.7.0\") , dep_version ! (\"perf-event-open-sys\" , \"3.0.0\") , dep_version ! (\"security-framework\" , \"3.5.1\") , dep_version ! (\"filetime\" , \"0.2.26\") , dep_version ! (\"jobserver\" , \"0.1.34\") , dep_version ! (\"async-trait\" , \"0.1.79\") , dep_version ! (\"serde-untagged\" , \"0.1.9\") , dep_version ! (\"fluent-langneg\" , \"0.13\") , dep_version ! (\"log\" , \"0.4\") , dep_version ! (\"rustyline\" , \"14.0.0\") , dep_version ! (\"openssl\" , \"0.10.74\") , dep_version ! (\"memfd\" , \"0.6.5\") , dep_version ! (\"ignore\" , \"0.4.25\") , dep_path ! (\"strsim\" , \"submodules/strsim-rs\") , dep_path ! (\"ide-db\" , \"submodules/rust-analyzer/crates/ide-db\") , dep_path ! (\"getrandom\" , \"submodules/getrandom\") , dep_path ! (\"opener\" , \"submodules/opener/opener\") , dep_path ! (\"async-std\" , \"submodules/async-std\") , dep_table ! (\"ra-ap-rustc_type_ir\" , package = \"rustc_type_ir\" , path = \"./submodules/rust/compiler/rustc_type_ir\") , dep_path ! (\"ppv-lite86\" , \"submodules/cryptocorrosion/utils-simd/ppv-lite86\") , dep_path ! (\"sharded-slab\" , \"submodules/sharded-slab\") , dep_path ! (\"trybuild\" , \"submodules/trybuild\") , dep_path ! (\"iana-time-zone\" , \"submodules/iana-time-zone\") , dep_path ! (\"libgit2-sys\" , \"submodules/git2-rs/libgit2-sys\") , dep_path ! (\"syn\" , \"submodules/syn\") , dep_path ! (\"group\" , \"submodules/group\") , dep_path ! (\"arrayvec\" , \"submodules/arrayvec\") } ; }"
+        },
+        {
+          "name": "macro_rules",
+          "kind": "macro_rules",
+          "file": "./build_helpers/cargo_toml_parts/mod.rs",
+          "span_debug_string": "Span",
+          "signature": "macro_rules ! define_workspace_dependencies_part2 { () => { dep_path ! (\"gix-revwalk\" , \"submodules/gitoxide/gix-revwalk\") , dep_path ! (\"cfg-if\" , \"submodules/cfg-if\") , dep_path ! (\"md5\" , \"submodules/md5\") , dep_path ! (\"fuzz\" , \"submodules/quinn/fuzz\") , dep_path ! (\"constant_time_eq\" , \"submodules/constant_time_eq\") , dep_path ! (\"gix-validate\" , \"submodules/gitoxide/gix-validate\") , dep_path ! (\"introspector_decl2_macros\" , \"submodules/patch-build-rs/introspector_decl2_macros\") , dep_path ! (\"is_executable\" , \"submodules/is_executable\") , dep_path ! (\"gix-ignore\" , \"submodules/gitoxide/gix-ignore\") , dep_path ! (\"toml_parser\" , \"submodules/toml/crates/toml_parser\") , dep_path ! (\"windows_i686_gnullvm\" , \"submodules/windows-rs/crates/targets/i686_gnullvm\") , dep_path ! (\"cpufeatures\" , \"submodules/utils/cpufeatures\") , dep_path ! (\"lock_api\" , \"submodules/parking_lot/lock_api\") , dep_table ! (\"serde\" , version = \"1.0\" , features = [\"derive\"]) , dep_path ! (\"rustfix\" , \"submodules/cargo/crates/rustfix\") , dep_path ! (\"serde-value\" , \"submodules/serde-value\") , dep_path ! (\"gix-fetchhead\" , \"submodules/gitoxide/gix-fetchhead\") , dep_path ! (\"expand_utils_lib\" , \"submodules/rust/compiler/expand_utils_lib\") , dep_path ! (\"gix-pathspec\" , \"submodules/gitoxide/gix-pathspec\") , dep_path ! (\"serde_core\" , \"submodules/serde/serde_core\") , dep_path ! (\"paths\" , \"submodules/rust-analyzer/crates/paths\") , dep_path ! (\"yoke-derive\" , \"submodules/icu4x/utils/yoke/derive\") , dep_path ! (\"async-graphql-derive\" , \"submodules/async-graphql/derive\") , dep_path ! (\"imara-diff\" , \"submodules/imara-diff\") , dep_path ! (\"sval\" , \"submodules/sval\") , dep_path ! (\"gix-features\" , \"submodules/gitoxide/gix-features\") , dep_path ! (\"sized-chunks\" , \"submodules/sized-chunks\") , dep_path ! (\"crossbeam\" , \"submodules/crossbeam/\") , dep_path ! (\"crosstermion\" , \"submodules/crosstermion/\") , dep_path ! (\"is-terminal\" , \"submodules/is-terminal/\") , dep_path ! (\"glob\" , \"submodules/glob\") , dep_path ! (\"document-features\" , \"submodules/document-features\") , dep_path ! (\"hmac\" , \"submodules/MACs/hmac\") , dep_path ! (\"memoffset\" , \"submodules/memoffset\") , dep_path ! (\"hash32\" , \"submodules/hash32\") , dep_path ! (\"simd-adler32\" , \"submodules/simd-adler32\") , dep_path ! (\"unicode-segmentation\" , \"submodules/unicode-segmentation\") , dep_path ! (\"futures-lite\" , \"submodules/futures-lite\") , dep_path ! (\"p384\" , \"submodules/elliptic-curves/p384\") , dep_path ! (\"potential_utf\" , \"submodules/icu4x/utils/potential_utf\") , dep_path ! (\"gix-packetline\" , \"submodules/gitoxide/gix-packetline\") , dep_path ! (\"linux-raw-sys\" , \"submodules/linux-raw-sys\") , dep_path ! (\"anstyle-parse\" , \"submodules/anstyle/crates/anstyle-parse\") , dep_path ! (\"assert-impl\" , \"submodules/assert-impl\") , dep_path ! (\"const-oid\" , \"submodules/formats/const-oid\") , dep_path ! (\"env_logger\" , \"submodules/env_logger\") , dep_path ! (\"nix\" , \"submodules/nix\") , dep_path ! (\"lib-metavar-expr\" , \"submodules/rust/compiler/lib-metavar-expr\") , dep_path ! (\"tracing-tower\" , \"submodules/tracing/tracing-tower\") , dep_path ! (\"fallible-iterator\" , \"submodules/rust-fallible-iterator\") , dep_path ! (\"gix-status\" , \"submodules/gitoxide/gix-status\") , dep_path ! (\"gix-dir\" , \"submodules/gitoxide/gix-dir\") , dep_path ! (\"gix-merge\" , \"submodules/gitoxide/gix-merge\") , dep_path ! (\"crates-io\" , \"submodules/cargo/crates/crates-io\") , dep_path ! (\"addr2line\" , \"submodules/addr2line\") , dep_path ! (\"faster-hex\" , \"submodules/faster-hex\") , dep_path ! (\"bytes\" , \"submodules/bytes\") , dep_path ! (\"ruzstd\" , \"submodules/zstd-rs/ruzstd\") , dep_path ! (\"clap_builder\" , \"submodules/clap/clap_builder\") , dep_path ! (\"unicode-ident\" , \"submodules/unicode-ident\") , dep_path ! (\"fixedbitset\" , \"submodules/fixedbitset\") } ; }"
+        },
+        {
+          "name": "macro_rules",
+          "kind": "macro_rules",
+          "file": "./build_helpers/cargo_toml_parts/mod.rs",
+          "span_debug_string": "Span",
+          "signature": "macro_rules ! define_workspace_dependencies_part3 { () => { dep_path ! (\"scoped-tls\" , \"submodules/scoped-tls\") , dep_path ! (\"lazy_static\" , \"submodules/lazy-static\") , dep_table ! (\"ra-ap-rustc_pattern_analysis\" , package = \"rustc_pattern_analysis\" , path = \"./submodules/rust/compiler/rustc_pattern_analysis\") , dep_path ! (\"anstyle\" , \"submodules/anstyle/crates/anstyle\") , dep_path ! (\"rand\" , \"submodules/rand\") , dep_path ! (\"rustc_session\" , \"submodules/rust/compiler/rustc_session\") , dep_path ! (\"lzma-rust2\" , \"submodules/lzma-rust2\") , dep_path ! (\"env_filter\" , \"submodules/env_logger/crates/env_filter\") , dep_path ! (\"gix-prompt\" , \"submodules/gitoxide/gix-prompt\") , dep_path ! (\"memchr\" , \"submodules/memchr\") , dep_table ! (\"query-group\" , package = \"query-group-macro\" , path = \"./submodules/rust-analyzer/crates/query-group-macro\") , dep_path ! (\"introspector_decl_common\" , \"submodules/patch-build-rs/introspector_decl_common\") , dep_path ! (\"prodash\" , \"submodules/prodash\") , dep_path ! (\"test-utils\" , \"submodules/rust-analyzer/crates/test-utils\") , dep_path ! (\"gix-filter\" , \"submodules/gitoxide/gix-filter\") , dep_path ! (\"gix-utils\" , \"submodules/gitoxide/gix-utils\") , dep_path ! (\"syntax\" , \"./submodules/rust-analyzer/crates/syntax\") , dep_path ! (\"crossbeam-deque\" , \"submodules/crossbeam/crossbeam-deque\") , dep_path ! (\"rustc_ast\" , \"submodules/rust/compiler/rustc_ast\") , dep_path ! (\"typesize-derive\" , \"submodules/typesize/typesize-derive\") , dep_path ! (\"hir-def\" , \"submodules/rust-analyzer/crates/hir-def\") , dep_path ! (\"libloading\" , \"submodules/rust_libloading\") , dep_path ! (\"rustc_feature\" , \"submodules/rust/compiler/rustc_feature\") , dep_path ! (\"is_terminal_polyfill\" , \"submodules/is_terminal_polyfill\") , dep_path ! (\"unicode-bom\" , \"submodules/unicode-bom\") , dep_path ! (\"itoa\" , \"submodules/itoa\") , dep_path ! (\"dot-parser-macros\" , \"submodules/dot-parser/macros\") , dep_path ! (\"supports-unicode\" , \"submodules/supports-unicode\") , dep_path ! (\"colorchoice\" , \"submodules/anstyle/crates/colorchoice\") , dep_table ! (\"gix-tempfile\" , features = [] , path = \"submodules/gitoxide/gix-tempfile\") , dep_path ! (\"cargo-credential\" , \"submodules/cargo/credential/cargo-credential\") , dep_path ! (\"rustc_serialize\" , \"submodules/rust/compiler/rustc_serialize\") , dep_path ! (\"xattr\" , \"submodules/xattr\") , dep_table ! (\"pasetors\" , features = [\"v3\" , \"serde\"] , path = \"submodules/pasetors\") , dep_path ! (\"syntax-bridge\" , \"./submodules/rust-analyzer/crates/syntax-bridge\") , dep_path ! (\"gix-actor\" , \"submodules/gitoxide/gix-actor\") , dep_path ! (\"minimal-lexical\" , \"submodules/minimal-lexical\") , dep_path ! (\"tera\" , \"submodules/tera\") , dep_path ! (\"thread_local\" , \"submodules/thread_local-rs\") , dep_path ! (\"ide-completion\" , \"submodules/rust-analyzer/crates/ide-completion\") , dep_path ! (\"http-auth\" , \"submodules/http-auth\") , dep_path ! (\"aho-corasick\" , \"submodules/aho-corasick\") , dep_path ! (\"primeorder\" , \"submodules/elliptic-curves/primeorder\") , dep_path ! (\"regex-syntax\" , \"submodules/regex/regex-syntax\") , dep_table ! (\"clap\" , features = [\"derive\"] , path = \"submodules/clap\") , dep_path ! (\"gix-lfs\" , \"submodules/gitoxide/gix-lfs\") , dep_path ! (\"load-cargo\" , \"submodules/rust-analyzer/crates/load-cargo\") , dep_table ! (\"ra-ap-rustc_next_trait_solver\" , package = \"rustc_next_trait_solver\" , path = \"./submodules/rust/compiler/rustc_next_trait_solver\") , dep_path ! (\"mio\" , \"submodules/mio\") , dep_path ! (\"tokio-test\" , \"submodules/tokio/tokio-test\") , dep_path ! (\"tracing-tree\" , \"submodules/tracing-tree\") , dep_path ! (\"windows-implement\" , \"submodules/windows-rs/crates/libs/implement\") , dep_path ! (\"windows-numerics\" , \"submodules/windows-rs/crates/libs/numerics\") , dep_path ! (\"rustc_apfloat\" , \"submodules/rustc_apfloat\") , dep_path ! (\"pest_derive\" , \"submodules/pest/derive\") , dep_path ! (\"powerfmt-macros\" , \"submodules/powerfmt/powerfmt-macros\") , dep_table ! (\"dashmap\" , features = [\"raw-api\" , \"inline\"] , path = \"submodules/dashmap\" , version = \"7.0.0-hack\") , dep_path ! (\"futures-util\" , \"submodules/futures-rs/futures-util\") , dep_table ! (\"triomphe\" , features = [\"std\"] , version = \"0.1.14\") , dep_path ! (\"anyhow\" , \"submodules/anyhow\") , dep_path ! (\"futures-macro\" , \"submodules/futures-rs/futures-macro\") , dep_path ! (\"windows_x86_64_gnullvm\" , \"submodules/windows-rs/crates/targets/x86_64_gnullvm\") } ; }"
+        },
+        {
+          "name": "macro_rules",
+          "kind": "macro_rules",
+          "file": "./build_helpers/cargo_toml_parts/mod.rs",
+          "span_debug_string": "Span",
+          "signature": "macro_rules ! define_workspace_dependencies_part4 { () => { dep_path ! (\"rustc_middle\" , \"submodules/rust/compiler/rustc_middle\") , dep_table ! (\"flate2\" , features = [\"zlib-rs\"] , version = \"1.1.5\") , dep_path ! (\"crossbeam-utils\" , \"submodules/crossbeam/crossbeam-utils\") , dep_path ! (\"indexmap\" , \"submodules/indexmap\") , dep_path ! (\"camino\" , \"submodules/camino\") , dep_path ! (\"static_assertions\" , \"submodules/static-assertions-rs\") , dep_path ! (\"gix-odb\" , \"submodules/gitoxide/gix-odb\") , dep_path ! (\"clap_complete\" , \"submodules/clap/clap_complete\") , dep_path ! (\"colorify\" , \"submodules/colorify\") , dep_path ! (\"crypto-bigint\" , \"submodules/crypto-bigint\") , dep_path ! (\"autocfg\" , \"submodules/autocfg\") , dep_path ! (\"proc-macro-srv\" , \"submodules/rust-analyzer/crates/proc-macro-srv\") , dep_path ! (\"tool-traits-lib\" , \"./tools/tool-traits-lib\") , dep_path ! (\"heapless\" , \"submodules/heapless\") , dep_table ! (\"parking_lot_core\" , path = \"submodules/parking_lot/core\" , version = \"0.9.13\") , dep_path ! (\"quickcheck\" , \"submodules/quickcheck\") , dep_path ! (\"windows_x86_64_msvc\" , \"submodules/windows-rs/crates/targets/x86_64_msvc\") , dep_path ! (\"rustc_parse\" , \"submodules/rust/compiler/rustc_parse\") , dep_path ! (\"windows_x86_64_gnu\" , \"submodules/windows-rs/crates/targets/x86_64_gnu\") , dep_table ! (\"thin-vec\" , path = \"submodules/thin-vec\" , version = \"0.2.14\") , dep_path ! (\"salsa-macros\" , \"submodules/salsa/components/salsa-macros\") , dep_path ! (\"tt\" , \"./submodules/rust-analyzer/crates/tt\") , dep_path ! (\"windows-bindings\" , \"submodules/jni-rs/windows-bindings\") , dep_path ! (\"block-buffer\" , \"submodules/utils/block-buffer\") , dep_path ! (\"base-db\" , \"submodules/rust-analyzer/crates/base-db\") , dep_path ! (\"parser\" , \"submodules/rust-analyzer/crates/parser\") , dep_path ! (\"windows-bindgen\" , \"submodules/windows-rs/crates/libs/bindgen\") , dep_path ! (\"toml_datetime\" , \"submodules/toml/crates/toml_datetime\") , dep_path ! (\"atomic-maybe-uninit\" , \"submodules/atomic-maybe-uninit\") , dep_path ! (\"split-decls-rs\" , \"submodules/split-decls-rs\") , dep_path ! (\"md-5\" , \"submodules/hashes/md5\") , dep_path ! (\"rand_xorshift\" , \"submodules/rngs/rand_xorshift\") , dep_table ! (\"tokio\" , features = [\"full\"] , path = \"submodules/tokio/tokio\") , dep_path ! (\"span\" , \"./submodules/rust-analyzer/crates/span\") , dep_path ! (\"digest\" , \"submodules/traits/digest\") , dep_path ! (\"rustc_driver_impl\" , \"submodules/rust/compiler/rustc_driver_impl\") , dep_path ! (\"fnv\" , \"submodules/rust-fnv\") , dep_path ! (\"curl-sys\" , \"submodules/curl-rust/curl-sys\") , dep_path ! (\"gix-index\" , \"submodules/gitoxide/gix-index\") , dep_path ! (\"clru\" , \"submodules/clru-rs\") , dep_path ! (\"rustc_span\" , \"submodules/rust/compiler/rustc_span\") , dep_path ! (\"cpp_demangle\" , \"submodules/cpp_demangle\") , dep_path ! (\"serial_test\" , \"submodules/serial_test/serial_test\") , dep_path ! (\"gix-tui\" , \"submodules/gitoxide/gix-tui\") , dep_path ! (\"line-index\" , \"submodules/rust-analyzer/lib/line-index\") , dep_path ! (\"os_info\" , \"submodules/os_info/os_info\") , dep_path ! (\"windows-services\" , \"submodules/windows-rs/crates/libs/services\") , dep_path ! (\"cargo-repo-sync-lib\" , \"tools/cargo-repo-sync-lib\") , dep_path ! (\"git2-curl\" , \"submodules/git2-rs/git2-curl\") , dep_path ! (\"gix-path\" , \"submodules/gitoxide/gix-path\") , dep_path ! (\"itertools\" , \"submodules/itertools\") , dep_path ! (\"arc-swap\" , \"submodules/arc-swap\") , dep_path ! (\"bstr\" , \"submodules/bstr\") , dep_path ! (\"rustc_ast_pretty\" , \"./submodules/rust-analyzer/crates/rustc_ast_pretty\") , dep_path ! (\"async-stream\" , \"submodules/async-stream-vendored\") , dep_path ! (\"gix-attributes\" , \"submodules/gitoxide/gix-attributes\") , dep_path ! (\"gix-quote\" , \"submodules/gitoxide/gix-quote\") , dep_path ! (\"icu_properties_data\" , \"submodules/icu4x/provider/data/properties\") , dep_path ! (\"async-graphql\" , \"submodules/async-graphql\") } ; }"
+        },
+        {
+          "name": "macro_rules",
+          "kind": "macro_rules",
+          "file": "./build_helpers/cargo_toml_parts/mod.rs",
+          "span_debug_string": "Span",
+          "signature": "macro_rules ! define_workspace_dependencies_part5 { () => { include ! (\"generated/part5.rs\") } ; }"
+        },
+        {
+          "name": "macro_rules",
+          "kind": "macro_rules",
+          "file": "./build_helpers/cargo_toml_parts/mod.rs",
+          "span_debug_string": "Span",
+          "signature": "macro_rules ! mkbuildrs { () => { define_package_config ! () } ; }"
+        }
+      ]
+    },
+    {
+      "file_path": "./build_helpers/windows_deps.rs",
+      "content_hash": "baa4d464312fbcedb2b2feebdb80768c67bb17cb693c2d32c29bfd30128afd3e",
+      "status": "Ok",
+      "macros": [
+        {
+          "name": "macro_rules",
+          "kind": "macro_rules",
+          "file": "./build_helpers/windows_deps.rs",
+          "span_debug_string": "Span",
+          "signature": "# [macro_export] macro_rules ! windows_dependencies_macro { () => { dep_path ! (\"windows_i686_gnullvm\" , \"submodules/windows-rs/crates/targets/i686_gnullvm\") , dep_path ! (\"windows_x86_64_gnullvm\" , \"submodules/windows-rs/crates/targets/x86_64_gnullvm\") , dep_path ! (\"windows-implement\" , \"submodules/windows-rs/crates/libs/implement\") , dep_path ! (\"windows-numerics\" , \"submodules/windows-rs/crates/libs/numerics\") , dep_path ! (\"windows_x86_64_msvc\" , \"submodules/windows-rs/crates/targets/x86_64_msvc\") , dep_path ! (\"windows_x86_64_gnu\" , \"submodules/windows-rs/crates/targets/x86_64_gnu\") , dep_path ! (\"windows-bindings\" , \"submodules/jni-rs/windows-bindings\") , dep_path ! (\"windows-bindgen\" , \"submodules/windows-rs/crates/libs/bindgen\") , dep_path ! (\"windows-services\" , \"submodules/windows-rs/crates/libs/services\") , dep_path ! (\"windows-interface\" , \"submodules/windows-rs/crates/libs/interface\") , dep_path ! (\"windows-future\" , \"submodules/windows-rs/crates/libs/future\") , dep_path ! (\"windows-core\" , \"submodules/windows-rs/crates/libs/core\") , dep_path ! (\"windows-strings\" , \"submodules/windows-rs/crates/libs/strings\") , dep_path ! (\"windows_aarch64_gnullvm\" , \"submodules/windows-rs/crates/targets/aarch64_gnullvm\") , dep_path ! (\"windows-metadata\" , \"submodules/windows-rs/crates/libs/metadata\") , dep_path ! (\"windows\" , \"submodules/windows-rs/crates/libs/windows\") , dep_path ! (\"windows-registry\" , \"submodules/windows-rs/crates/libs/registry\") , dep_path ! (\"windows-result\" , \"submodules/windows-rs/crates/libs/result\") , dep_path ! (\"windows-sys\" , \"submodules/windows-rs/crates/libs/sys\") , dep_path ! (\"windows-targets\" , \"submodules/rust/library/windows_targets\") , dep_path ! (\"windows-threading\" , \"submodules/windows-rs/crates/libs/threading\") , dep_path ! (\"windows-version\" , \"submodules/windows-rs/crates/libs/version\") , dep_path ! (\"windows-collections\" , \"submodules/windows-rs/crates/libs/collections\") , dep_path ! (\"windows-link\" , \"submodules/windows-rs/crates/libs/link\") , dep_path ! (\"windows_aarch64_msvc\" , \"submodules/windows-rs/crates/targets/aarch64_msvc\") , dep_path ! (\"windows_i686_gnu\" , \"submodules/windows-rs/crates/targets/i686_gnu\") , dep_path ! (\"windows_i686_msvc\" , \"submodules/windows-rs/crates/targets/i686_msvc\") , } ; }"
+        }
+      ]
+    },
+    {
+      "file_path": "./tools/rustmacrodoc/src/main.rs",
+      "content_hash": "7d4c993ba4b60c95d178978e559cccf4dd2c2d2bf4cd86c5cc52c3fb2e9b7832",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./patches/unimacro_derive/my_test_patch.rs",
+      "content_hash": "824f78af0c8b965a87b1a663d98a15770bbd4630eeb65f6e067f2ca6502f64cf",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./split-decls-types/src/lib.rs",
+      "content_hash": "084fa30bee228133cf0b9139d422a095717371ea1b0bc38b630aef153ca33266",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./buildrs_parts_for_target_crate/part1.rs",
+      "content_hash": "959a71a67358e32cf7eda94689f60a8279fc835b5f3387e6a447001bd688417a",
+      "status": "Ok",
+      "macros": []
+    },
+    {
+      "file_path": "./build.rs",
+      "content_hash": "f2cc7f62fb33f0c3f212d52c504ea0e34037e2d29cb11f61a0f057186b27dee9",
+      "status": "Ok",
+      "macros": []
+    }
+  ]
+}
