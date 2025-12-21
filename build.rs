@@ -4,6 +4,9 @@ use std::{env, fs, path::Path};
 #[path = "build_src/example_module.rs"]
 mod example_module;
 
+#[path = "build_src/os.rs"]
+mod os_specific_logic;
+
 // Add more modules here as needed:
 // #[path = "build_src/another_module.rs"]
 // mod another_module;
@@ -12,10 +15,14 @@ mod example_module;
 fn main() {
     // Tell Cargo to rerun this build script if build.rs or any file in build_src changes.
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=build_src/"); // Watch the entire directory
+    println!("cargo:rerun-if-changed=build_src/"); // Watch the entire build_src directory
+    println!("cargo:rerun-if-changed=build_src/os/"); // Watch the OS-specific subdirectory
 
     // Call the run function from the included example_module
     example_module::run();
+
+    // Call the run function from the OS-specific logic module
+    os_specific_logic::run();
 
     // Re-introduce the original Cargo.toml generation logic,
     // assuming build_helpers and other necessary modules are available or will be made available.

@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use split_decls_rs::patch_config::PatchConfig;
 use split_decls_types::SplitDeclsConfig;
 use split_decls_rs::generate_wrapped_workspace::generate_wrapped_workspace;
+use split_decls_rs::buildrs_generator::build_script_composer; // Import the new build_script_composer
 use toml;
 use std::collections::HashMap;
 use std::fs;
@@ -24,6 +25,7 @@ fn dep_to_toml_value_iter<'a>(
 
 fn main() -> Result<()> {
     println!("Starting split-decls-rs tool...");
+    println!("DBG: Current working directory of tool: {:?}", std::env::current_dir());
 
     // Hardcode values for minimal execution
     let dry_run = false;
@@ -82,8 +84,23 @@ fn main() -> Result<()> {
         current_crate_name,
         dry_run,
     )?;
-    println!("\nWrapped workspace generation finished.");
 
+    // --- NEW: Generate a sample build.rs using the new composer ---
+    let target_build_rs_parts_dir = PathBuf::from("buildrs_parts_for_target_crate");
+    let generated_target_build_rs_path = wrapped_workspace_output_dir.join("generated_target_build.rs");
+    
+    // Ensure the output directory exists
+    fs::create_dir_all(&wrapped_workspace_output_dir)
+        .context(format!("Failed to create output directory for target build.rs: {}", wrapped_workspace_output_dir.display()))?;
+
+    println!("Attempting to compose target build.rs from parts in: {}", target_build_rs_parts_dir.display());
+    build_script_composer::compose_build_script_from_parts(
+        &target_build_rs_parts_dir,
+        &generated_target_build_rs_path,
+    )?;
+    // --- END NEW ---
+
+    println!("\nWrapped workspace generation finished.");
     println!("\nSplit-decls-rs tool finished.");
     Ok(())
 }

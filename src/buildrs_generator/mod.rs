@@ -6,6 +6,7 @@ use std::path::Path;
 
 mod static_parts;
 mod main_logic;
+pub mod build_script_composer;
 
 /// Generates the TokenStream for the target build.rs file.
 pub fn generate_build_rs_token_stream(
