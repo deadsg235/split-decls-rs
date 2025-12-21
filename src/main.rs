@@ -8,6 +8,20 @@ use std::collections::HashMap;
 use std::fs;
 use cargo_toml_generator_types::{CargoToml, Dependency}; // Import the new CargoToml and Dependency structs
 
+/// Helper function to convert an iterator of (String, cargo_toml_generator_types::Dependency)
+/// to an iterator of (String, toml::Value).
+fn dep_to_toml_value_iter<'a>(
+    iter: impl IntoIterator<Item = (String, Dependency)> + 'a,
+) -> impl Iterator<Item = (String, toml::Value)> + 'a {
+    iter.into_iter().map(|(name, dep)| {
+        let serialized_dep = toml::to_string(&dep)
+            .expect("Failed to serialize Dependency to TOML string");
+        let toml_value: toml::Value = toml::from_str(&serialized_dep)
+            .expect("Failed to parse serialized Dependency TOML string to toml::Value");
+        (name, toml_value)
+    })
+}
+
 fn main() -> Result<()> {
     println!("Starting split-decls-rs tool...");
 
@@ -39,16 +53,16 @@ fn main() -> Result<()> {
 
     // Populate workspace dependencies from the generated CargoToml
     if let Some(workspace_section) = root_cargo_toml.workspace {
-        global_config.workspace_dependencies.extend(workspace_section.workspace_dependencies);
+        global_config.workspace_dependencies.extend(dep_to_toml_value_iter(workspace_section.workspace_dependencies));
     }
     // Also extend with top-level dependencies, if any, for compatibility
-    global_config.workspace_dependencies.extend(root_cargo_toml.dependencies);
-    global_config.workspace_dependencies.extend(root_cargo_toml.dev_dependencies);
-    global_config.workspace_dependencies.extend(root_cargo_toml.build_dependencies); // Include build-dependencies as well
+    global_config.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.dependencies));
+    global_config.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.dev_dependencies));
+    global_config.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.build_dependencies)); // Include build-dependencies as well
 
     // Add dependencies from [patch] sections to workspace_dependencies
     if let Some(patch_section) = root_cargo_toml.patch {
-        global_config.workspace_dependencies.extend(patch_section.crates_io);
+        global_config.workspace_dependencies.extend(dep_to_toml_value_iter(patch_section.crates_io));
     }
     // --- END new logic ---
 

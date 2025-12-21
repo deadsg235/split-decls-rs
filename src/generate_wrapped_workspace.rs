@@ -52,11 +52,15 @@ pub fn generate_wrapped_workspace(
 ) -> Result<()> {
     // Project root is assumed to be two levels up from split-decls-rs,
     // i.e., /mnt/data1/nix/vendor/rust/cargo2nix
-    let project_root = PathBuf::from("./").canonicalize()?
+    let current_pathbuf = PathBuf::from("./").canonicalize()?;
+    let parent1_pathbuf = current_pathbuf
         .parent()
         .ok_or_else(|| anyhow::anyhow!("Failed to get parent of current directory."))?
+        .to_path_buf(); // Convert to owned PathBuf
+    let project_root = parent1_pathbuf
         .parent()
-        .ok_or_else(|| anyhow::anyhow!("Failed to get parent of submodule directory (expected project root)."))?;
+        .ok_or_else(|| anyhow::anyhow!("Failed to get parent of submodule directory (expected project root)."))?
+        .to_path_buf(); // Convert to owned PathBuf
 
     if !dry_run {
         fs::create_dir_all(output_dir)
