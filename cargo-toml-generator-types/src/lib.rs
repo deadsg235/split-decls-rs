@@ -69,12 +69,17 @@ pub struct Workspace {
 // --- Dependency structure ---
 // This struct tries to be flexible enough to represent different ways to define a dependency.
 // Cargo's TOML structure for dependencies can be complex (simple version string, table with path/version/features, etc.)
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)] // Allows deserializing different shapes into this struct
 pub enum Dependency {
-    #[default]
     Version(String), // e.g., `dep = "1.0"`
     Table(DependencyTable), // e.g., `dep = { version = "1.0", features = ["foo"] }`
+}
+
+impl Default for Dependency {
+    fn default() -> Self {
+        Dependency::Version(String::new())
+    }
 }
 
 // Helper struct for the table form of a dependency
