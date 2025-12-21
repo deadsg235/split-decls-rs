@@ -1,0 +1,53 @@
+[package]
+name = "unimacro_derive"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+[dependencies.proc-macro2]
+workspace = true
+
+[dependencies.quote]
+workspace = true
+
+[dependencies.syn]
+features = ["full"]
+workspace = true
+
+[dev-dependencies]
+
+[build-dependencies.anyhow]
+workspace = true
+
+[build-dependencies.introspector_decl2_macros]
+workspace = true
+
+[build-dependencies.introspector_decl_common]
+workspace = true
+
+[build-dependencies.introspector_decl_core]
+workspace = true
+
+[build-dependencies.introspector_macro_helpers]
+workspace = true
+
+[build-dependencies.proc-macro2]
+workspace = true
+
+[build-dependencies.quote]
+workspace = true
+
+[build-dependencies.serde]
+features = ["derive"]
+workspace = true
+
+[build-dependencies.syn]
+features = ["full", "visit"]
+workspace = true
+
+[build-dependencies.toml]
+workspace = true
+
+[patch]

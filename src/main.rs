@@ -4,6 +4,7 @@ use std::path::PathBuf;
  // Keep for now
 use split_decls_rs::patch_config::PatchConfig;
 use split_decls_types::SplitDeclsConfig;
+use split_decls_rs::generate_wrapped_workspace::generate_wrapped_workspace;
  // Keep for now
  // Keep for now
 use toml;
@@ -17,6 +18,12 @@ use std::fs;
 #[derive(Debug, serde::Deserialize)]
 struct RootCargoToml {
     workspace: Option<RootWorkspace>,
+    #[serde(default)]
+    dependencies: HashMap<String, toml::Value>,
+    #[serde(rename = "dev-dependencies", default)]
+    dev_dependencies: HashMap<String, toml::Value>,
+    #[serde(default)]
+    patch: Option<PatchSection>, // Changed to Option<PatchSection>
 }
 
 #[derive(Debug, serde::Deserialize)]
@@ -25,17 +32,33 @@ struct RootWorkspace {
     dependencies: HashMap<String, toml::Value>,
 }
 
+#[derive(Debug, serde::Deserialize)]
+struct PatchSection {
+    #[serde(rename = "crates-io", default)]
+    crates_io: HashMap<String, toml::Value>,
+    // Potentially other patch sources like git
+}
+
+#[derive(Debug, serde::Deserialize)]
+struct GenericCargoToml {
+    #[serde(default)]
+    dependencies: HashMap<String, toml::Value>,
+    #[serde(rename = "dev-dependencies", default)]
+    dev_dependencies: HashMap<String, toml::Value>,
+    // We don't care about build-dependencies at the root level for workspace inheritance for now
+}
+
 fn main() -> Result<()> {
     println!("Starting split-decls-rs tool...");
 
     // Commented out: Argument parsing is removed for minimal edits
     // let cli_args = cli_args::parse_args()?;
-    // println!("Parsed args: dry_run={}, verbose={}, output_dir={}, patch_config={}, generate_wrapped_workspace_mode={}", 
+    // println!("Parsed args: dry_run={}, verbose={}, output_dir={}, patch_config={}, generate_wrapped_workspace_mode={}",
     //          cli_args.dry_run, cli_args.verbose, cli_args.wrapped_workspace_output_dir.display(), cli_args.patch_config_path_str, cli_args.generate_wrapped_workspace_mode);
 
     // Hardcode values for minimal execution
     let dry_run = false;
-    let verbose = false;
+    let _verbose = false;
     let wrapped_workspace_output_dir = PathBuf::from("output");
     let patch_config_path_str = "patch.toml";
     // let generate_wrapped_workspace_mode = true; // This will be implicitly true as we call the function directly
@@ -55,12 +78,23 @@ fn main() -> Result<()> {
     // --- Load root Cargo.toml and extract workspace dependencies ---
     let root_cargo_toml_content = fs::read_to_string(&root_cargo_toml_path)
         .context(format!("Failed to read root Cargo.toml from {}", root_cargo_toml_path.display()))?;
-    
+
     let root_cargo_toml: RootCargoToml = toml::from_str(&root_cargo_toml_content)
         .context(format!("Failed to parse root Cargo.toml from {}", root_cargo_toml_path.display()))?;
 
     if let Some(root_workspace) = root_cargo_toml.workspace {
         global_config.workspace_dependencies = root_workspace.dependencies;
+    } else {
+        // If no [workspace] section, try to read top-level dependencies directly
+        // This is done by `RootCargoToml` itself now
+    }
+    // Always add top-level dependencies from root Cargo.toml to workspace_dependencies
+    global_config.workspace_dependencies.extend(root_cargo_toml.dependencies);
+    global_config.workspace_dependencies.extend(root_cargo_toml.dev_dependencies);
+
+    // Add dependencies from [patch] sections to workspace_dependencies
+    if let Some(patch_section) = root_cargo_toml.patch {
+        global_config.workspace_dependencies.extend(patch_section.crates_io);
     }
     // --- END new logic ---
 
@@ -71,9 +105,10 @@ fn main() -> Result<()> {
 
     let current_crate_name = "split-decls-rs"; // This tool's crate name
 
+
     // Always generate a wrapped workspace in this mode (hardcoded for now)
     println!("Generating wrapped workspace in: {}", wrapped_workspace_output_dir.display());
-    split_decls_rs::generate_wrapped_workspace(
+    generate_wrapped_workspace(
         &wrapped_workspace_output_dir,
         &patch_config,
         &global_config,

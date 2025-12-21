@@ -1,0 +1,62 @@
+use std::fs;
+use std::path::{Path, PathBuf};
+use anyhow::{Context, Result};
+use std::collections::HashMap;
+use syn::{Item};
+use syn::visit_mut::{self, VisitMut};
+use split_decls_types::SplitDeclsConfig;
+use crate::get_item_name::get_item_name;
+use crate::get_item_kind::get_item_kind;
+
+pub fn apply_patches_to_syntax_tree(
+    syntax_tree: &mut syn::File,
+    crate_name_sanitized: &str,
+    global_config: &SplitDeclsConfig,
+) -> Result<()> {
+    let mut patch_items: Vec<Item> = Vec::new();
+
+    if let Some(patches_map) = &global_config.patches {
+        if let Some(patches_for_crate) = patches_map.get(crate_name_sanitized) {
+            for patch_spec in patches_for_crate {
+            let patch_path = PathBuf::from(&patch_spec.path); // Assuming patch_path is absolute or relative to CWD
+            let patch_content = fs::read_to_string(&patch_path)
+                .context(format!("Failed to read patch file {}", patch_path.display()))?;
+            let patch_ast = syn::parse_file(&patch_content)
+                .context(format!("Failed to parse patch file {} AST", patch_path.display()))?;
+            patch_items.extend(patch_ast.items);
+            println!("Loaded patch: {}", patch_path.display());
+            // TODO: Handle git_reference for conditional patch application if needed
+        }
+    } // Added missing brace
+    } // Added missing brace
+
+    struct PatchVisitor {
+        patch_items: HashMap<String, Item>,
+    }
+
+    impl<'ast> VisitMut for PatchVisitor {
+        fn visit_item_mut(&mut self, i: &mut Item) {
+            if let Some(s_name) = get_item_name(i) {
+                if let Some(p_item) = self.patch_items.get(&s_name) {
+                    if get_item_kind(i) == get_item_kind(p_item) {
+                        *i = p_item.clone();
+                        println!("Applied patch: Replaced item {:?}", s_name);
+                    }
+                }
+            }
+            visit_mut::visit_item_mut(self, i);
+        }
+    }
+
+    let mut patch_map: HashMap<String, Item> = HashMap::new();
+    for p_item in patch_items {
+        if let Some(name) = get_item_name(&p_item) {
+            patch_map.insert(name, p_item);
+        }
+    }
+
+    let mut visitor = PatchVisitor { patch_items: patch_map };
+    visit_mut::visit_file_mut(&mut visitor, syntax_tree);
+
+    Ok(())
+    }

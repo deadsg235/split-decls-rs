@@ -3,10 +3,10 @@ use proc_macro2::{Ident, TokenStream};
 use quote::quote;
 use std::fs;
 
-use crate::buildrs_ast_utils::ExtractedDecl;
+//use crate::buildrs_ast_utils::ExtractedDecl;
 use crate::CratePaths;
 use split_decls_types::SplitDeclsConfig;
-
+use crate::ExtractedDecl;
 /// Generates the file content for a single declaration and writes it to disk.
 pub fn write_declaration_file(
     decl: ExtractedDecl,

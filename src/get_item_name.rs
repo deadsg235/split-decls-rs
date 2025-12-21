@@ -1,0 +1,28 @@
+use syn::Item;
+use quote::ToTokens;
+
+// --- Helper functions for item name/kind ---
+pub fn get_item_name(item: &Item) -> Option<String> {
+    match item {
+        Item::Fn(item_fn) => Some(item_fn.sig.ident.to_string()),
+        Item::Struct(item_struct) => Some(item_struct.ident.to_string()),
+        Item::Enum(item_enum) => Some(item_enum.ident.to_string()),
+        Item::Const(item_const) => Some(item_const.ident.to_string()),
+        Item::Static(item_static) => Some(item_static.ident.to_string()),
+        Item::Trait(item_trait) => Some(item_trait.ident.to_string()),
+        Item::Type(item_type) => Some(item_type.ident.to_string()),
+        Item::Union(item_union) => Some(item_union.ident.to_string()),
+        Item::Impl(item_impl) => {
+            // Impl names are complex; this needs refinement to be robust.
+            // For now, let's try to get a name based on the self type or trait.
+            if let Some((_, path, _)) = &item_impl.trait_ {
+                Some(format!("impl_for_{}", path.to_token_stream().to_string().replace("::", "_")))
+            } else if let syn::Type::Path(type_path) = &*item_impl.self_ty {
+                type_path.path.segments.last().map(|s| format!("impl_for_{}", s.ident.to_string()))
+            } else {
+                None // Cannot determine a simple name for this impl
+            }
+        },
+        _ => None,
+    }
+}

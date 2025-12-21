@@ -1,24 +1,24 @@
-# split-decls-rs.toml - Global configuration for split-decls-rs
-
-# Custom prelude overlay to be injected into all generated declaration files
-custom_prelude_overlay = """
-// Custom prelude from split-decls-rs.toml
-use std::collections::HashMap;
-"""
-
-# Example patch for 'unimacro_derive'
-[patches.unimacro_derive]
-# This path is relative to the directory where split-decls-rs.toml is, which is the split-decls-rs project root.
-# The patch file itself will be created in ./patches/unimacro_derive/my_test_patch.rs
-path = "patches/unimacro_derive/my_test_patch.rs"
-git_reference = "main" # Placeholder, will not be used in this initial test
-
-# Crate.io patches for modules
-[crates_io_patches]
-# Example: Patch 'some_crate' to use a local path
-some_crate = "path/to/local/some_crate"
-another_crate = "../some_other_local_crate"
-
-# Git management configuration
-github_org = "meta-introspector" # Example GitHub organization
+# # split-decls-rs.toml - Global configuration for split-decls-rs
+# 
+# # Custom prelude overlay to be injected into all generated declaration files
+# custom_prelude_overlay = """
+# // Custom prelude from split-decls-rs.toml
+# use std::collections::HashMap;
+# """
+# 
+# # Example patch for 'unimacro_derive'
+# [patches.unimacro_derive]
+# # This path is relative to the directory where split-decls-rs.toml is, which is the split-decls-rs project root.
+# # The patch file itself will be created in ./patches/unimacro_derive/my_test_patch.rs
+# path = "patches/unimacro_derive/my_test_patch.rs"
+# git_reference = "main" # Placeholder, will not be used in this initial test
+# 
+# # Crate.io patches for modules
+# [crates_io_patches]
+# # Example: Patch 'some_crate' to use a local path
+# some_crate = "path/to/local/some_crate"
+# another_crate = "../some_other_local_crate"
+# 
+# # Git management configuration
+# github_org = "meta-introspector" # Example GitHub organization
 default_branches_to_patch = ["main", "dev"] # Example branches

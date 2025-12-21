@@ -1,8 +1,8 @@
 use quote::ToTokens;
 use syn::{self, Item};
 
-use crate::buildrs_ast_utils::ExtractedDecl;
-
+//use crate::buildrs_ast_utils::ExtractedDecl;
+use crate::ExtractedDecl;
 /// Extracts a single declaration from a `syn::Item`.
 /// Returns `Some(ExtractedDecl)` if the item is a supported declaration type, `None` otherwise.
 pub fn extract_single_declaration(item: &Item, item_count: usize) -> Option<ExtractedDecl> {

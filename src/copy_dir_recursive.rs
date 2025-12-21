@@ -1,0 +1,17 @@
+// Helper function for recursive directory copy - this was added in the test, so move it to lib
+pub fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<()> {
+    fs::create_dir_all(dst).context(format!("Failed to create destination directory {}", dst.display()))?;
+    for entry in fs::read_dir(src).context(format!("Failed to read source directory {}", src.display()))? {
+        let entry = entry?;
+        let ty = entry.file_type()?;
+        if ty.is_dir() {
+            copy_dir_recursive(&entry.path(), &dst.join(entry.file_name()))?;
+        } else {
+            fs::copy(&entry.path(), &dst.join(entry.file_name()))
+                .context(format!("Failed to copy file from {} to {}", entry.path().display(), dst.join(entry.file_name()).display()))?;
+        }
+    }
+    Ok(())
+}
+
+
