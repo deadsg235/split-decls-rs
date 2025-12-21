@@ -3,8 +3,6 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::fs;
 use toml::Value;
-use tempfile::tempdir;
-use crate::resolve_crate_path_in_submodule;
 
 /// Manages workspace dependencies in the root Cargo.toml.
 pub fn manage_workspace_dependencies(root_cargo_toml_path: &Path, deps_to_add: &[(String, Value)], dry_run: bool) -> Result<()> {
@@ -27,7 +25,7 @@ pub fn manage_workspace_dependencies(root_cargo_toml_path: &Path, deps_to_add: &
         other: toml::Table,
     }
 
-    let mut cargo_toml_content = fs::read_to_string(root_cargo_toml_path)
+    let cargo_toml_content = fs::read_to_string(root_cargo_toml_path)
         .context(format!("Failed to read root Cargo.toml from {}", root_cargo_toml_path.display()))?;
     
     let mut cargo_toml: CargoToml = toml::from_str(&cargo_toml_content)

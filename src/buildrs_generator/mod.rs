@@ -20,7 +20,6 @@ pub fn generate_build_rs_token_stream(
     let crate_name_sanitized_lit = LitStr::new(crate_name_sanitized, Span::call_site());
 
     let macros_ts = static_parts::generate_build_rs_macros();
-    let ast_helpers_ts = static_parts::generate_build_rs_ast_helpers_for_generated_buildrs();
 
     let main_logic_ts = main_logic::generate_main_logic_token_stream(
         &old_lib_rs_path_lit,
@@ -45,7 +44,6 @@ pub fn generate_build_rs_token_stream(
         use toml; // Keep toml for SplitDeclsConfig::load_from_file
 
         #macros_ts
-        #ast_helpers_ts
 
         #main_logic_ts
     }; // End of build_rs_token_stream quote! block
@@ -113,7 +111,7 @@ mod tests {
                         }
                     } else {
                         None
-                    }
+                        }
                 });
                 assert!(main_fn_item.is_some(), "Generated code should contain a main function.");
                 let main_fn = main_fn_item.unwrap();

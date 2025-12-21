@@ -11,7 +11,7 @@ serde = { workspace = true }
 serde_derive = { workspace = true }
 url = { workspace = true }
 quote = { workspace = true }
-syn = { workspace = true, features= ["full","visit"] }
+syn = { workspace = true, features= ["full","visit", "visit-mut"] }
 walkdir = { workspace = true }
 #visit = { workspace = true }
 split-decls-types = { workspace = true }

@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use std::collections::HashMap;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct PatchTarget {

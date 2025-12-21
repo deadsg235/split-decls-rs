@@ -1,20 +1,20 @@
 use std::{
     fs,
-    path::{Path, PathBuf},
-    process::Command, // For running git commands
+    path::{Path, PathBuf}, // For running git commands
 };
 
 use anyhow::{Context, Result};
 use quote::quote;
 use walkdir::WalkDir;
 
-use split_decls_types::{SplitDeclsConfig, PatchSpec, StringReplacement};
+use split_decls_types::SplitDeclsConfig;
 
 pub mod buildrs_ast_utils;
 pub mod buildrs_generator;
 pub mod git_manager; // New module
 pub mod patch_config; // New module
 pub mod workspace_manager; // New module
+pub mod eager_splitter;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
     struct Package {
@@ -96,29 +96,34 @@ pub fn setup_crate_paths(crate_path: &Path) -> Result<CratePaths> {
 fn process_dependency_table(
     table: &mut toml::Table,
     global_config: &SplitDeclsConfig,
+    original_crate_path: &Path, // New parameter
 ) -> Result<()> {
-    let mut deps_to_update = Vec::new();
+    let mut deps_to_update_to_workspace = Vec::new();
+    let mut deps_to_update_to_absolute_path: Vec<(String, PathBuf)> = Vec::new();
 
     for (dep_name, dep_value) in table.iter_mut() {
         if let Some(dep_table) = dep_value.as_table_mut() {
-            // Check if it's a path dependency
             if let Some(path_value) = dep_table.get("path") {
                 if let Some(path_str) = path_value.as_str() {
-                    let dep_path = PathBuf::from(path_str);
+                    // Resolve the dependency path relative to the original crate's Cargo.toml
+                    let resolved_original_dep_path = original_crate_path.join(path_str);
+
                     // Check if this path dependency corresponds to a workspace dependency
-                    // A simple check is if a workspace dependency with the same name exists
-                    // and its path matches (or resolves to) the current dep_path.
                     if global_config.workspace_dependencies.contains_key(dep_name) {
-                        // We found a workspace dependency. Replace the path with workspace = true.
-                        deps_to_update.push(dep_name.clone());
+                        deps_to_update_to_workspace.push(dep_name.clone());
+                    } else {
+                        // If not a workspace dependency, convert to an absolute path
+                        let absolute_path = resolved_original_dep_path.canonicalize()
+                            .context(format!("Failed to canonicalize path for dependency '{}': {}", dep_name, resolved_original_dep_path.display()))?;
+                        deps_to_update_to_absolute_path.push((dep_name.clone(), absolute_path));
                     }
                 }
             }
         }
     }
 
-    // Now update the dependencies that need to be changed to workspace = true
-    for dep_name in deps_to_update {
+    // First, update to workspace = true
+    for dep_name in deps_to_update_to_workspace {
         let mut new_dep_table = toml::Table::new();
         new_dep_table.insert("workspace".to_string(), toml::Value::Boolean(true));
         // Preserve features if they exist in the original dependency
@@ -131,11 +136,20 @@ fn process_dependency_table(
         }
         table.insert(dep_name, toml::Value::Table(new_dep_table));
     }
+
+    // Then, update path dependencies to absolute paths
+    for (dep_name, absolute_path) in deps_to_update_to_absolute_path {
+        if let Some(dep_value) = table.get_mut(&dep_name) {
+            if let Some(dep_table) = dep_value.as_table_mut() {
+                dep_table.insert("path".to_string(), toml::Value::String(absolute_path.to_str().context("Path not valid UTF-8")?.to_string()));
+            }
+        }
+    }
     Ok(())
 }
 
 /// Generates the new Cargo.toml for the crate, adding necessary build-dependencies.
-pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConfig, dry_run: bool) -> Result<()> {
+pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConfig, original_crate_real_path: &Path, dry_run: bool) -> Result<()> {
     // List of dependencies that should use `workspace = true`
     const RUNTIME_WORKSPACE_DEPS: &[&str] = &[
         "proc-macro2",
@@ -205,7 +219,7 @@ pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConf
 
     // Process [dependencies] to ensure RUNTIME_WORKSPACE_DEPS are present and convert path-deps to workspace = true
     let deps_table = &mut cargo_toml.dependencies;
-    process_dependency_table(deps_table, global_config)?; // Apply general dependency processing
+    process_dependency_table(deps_table, global_config, original_crate_real_path)?; // Apply general dependency processing
     for dep_name in RUNTIME_WORKSPACE_DEPS {
         match *dep_name {
             "syn" => ensure_workspace_dependency(deps_table, dep_name, Some(vec!["full"])),
@@ -215,7 +229,7 @@ pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConf
 
     // Process [dev-dependencies] (existing logic remains)
     let dev_deps_table = &mut cargo_toml.dev_dependencies;
-    process_dependency_table(dev_deps_table, global_config)?; // Apply general dependency processing
+    process_dependency_table(dev_deps_table, global_config, original_crate_real_path)?; // Apply general dependency processing
     for dep_name in RUNTIME_WORKSPACE_DEPS { // Also update if runtime deps exist in dev-deps
         if dev_deps_table.contains_key(*dep_name) {
             ensure_workspace_dependency(dev_deps_table, dep_name, None); // Added None for features
@@ -224,7 +238,7 @@ pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConf
 
     // Process [build-dependencies] to ensure BUILD_WORKSPACE_DEPS are present
     let build_deps_table = &mut cargo_toml.build_dependencies;
-    process_dependency_table(build_deps_table, global_config)?; // Apply general dependency processing
+    process_dependency_table(build_deps_table, global_config, original_crate_real_path)?; // Apply general dependency processing
     for dep_name in BUILD_WORKSPACE_DEPS {
         match *dep_name {
             "syn" => ensure_workspace_dependency(build_deps_table, dep_name, Some(vec!["full", "visit"])),
@@ -330,7 +344,7 @@ pub fn generate_new_lib_rs(paths: &CratePaths, dry_run: bool) -> Result<()> {
         // Re-export prelude macros if desired
         pub use introspector_decl2_macros::prelude::*;
 
-        // Include the module generated by the build.rs
+        // Include the module generated by the split-decls-rs tool (eagerly)
         pub mod decls;
         pub use decls::*;
     };
@@ -445,8 +459,39 @@ pub fn process_crate(crate_path: &Path, global_config: &SplitDeclsConfig, dry_ru
 
     backup_original_cargotoml(&paths, dry_run)?;
     backup_original_files(&paths, dry_run)?;
-    generate_new_cargotoml(&paths, global_config, dry_run)?;
+    generate_new_cargotoml(&paths, global_config, &paths.crate_path, dry_run)?;
     generate_new_lib_rs(&paths, dry_run)?;
+    // generate_new_build_rs(&paths, dry_run)?; // We will modify this or remove it later
+
+    // --- Eager Splitting Logic ---
+    let mut old_lib_rs_content = fs::read_to_string(&paths.old_lib_rs_path)
+        .context("Failed to read oldlib.rs content for eager splitting")?;
+
+    if let Some(replacements) = &global_config.string_replacements {
+        for sr in replacements {
+            old_lib_rs_content = old_lib_rs_content.replace(&sr.old, &sr.new);
+            println!("Applied string replacement: '{}' -> '{}'", sr.old, sr.new);
+        }
+    }
+
+    let mut syntax_tree = syn::parse_file(&old_lib_rs_content)
+        .context("Failed to parse oldlib.rs content for eager splitting")?;
+
+    buildrs_ast_utils::apply_patches_to_syntax_tree(
+        &mut syntax_tree,
+        &paths.crate_name.replace("-", "_"),
+        &crate_config, // Use crate_config which has filtered patches
+    )?;
+
+    eager_splitter::split_and_generate_decls(
+        &syntax_tree,
+        &paths,
+        &crate_config,
+        dry_run,
+    )?;
+    // --- End Eager Splitting Logic ---
+
+    // Now generate a simplified build.rs that handles dynamic patching if needed
     generate_new_build_rs(&paths, dry_run)?;
 
     Ok(())
@@ -541,5 +586,174 @@ pub fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<()> {
                 .context(format!("Failed to copy file from {} to {}", entry.path().display(), dst.join(entry.file_name()).display()))?;
         }
     }
+    Ok(())
+}
+
+/// Generates a new workspace containing "wrapped" versions of the target crates.
+/// Each wrapped crate will have its declarations eagerly split and patched.
+pub fn generate_wrapped_workspace(
+    output_dir: &Path,
+    patch_config: &patch_config::PatchConfig,
+    global_config: &SplitDeclsConfig,
+    current_crate_name: &str, // Name of the split-decls-rs tool crate
+    dry_run: bool,
+) -> Result<()> {
+    if !dry_run {
+        fs::create_dir_all(output_dir)
+            .context(format!("Failed to create wrapped workspace directory: {}", output_dir.display()))?;
+    }
+    println!("Wrapped workspace directory: {}", output_dir.display());
+
+    let mut workspace_members = Vec::new();
+    for target in &patch_config.targets {
+        let wrapped_crate_name = format!("wrapped-{}", target.name);
+        workspace_members.push(format!("\"{}\"", wrapped_crate_name));
+        
+        // Call a helper function to generate the individual wrapped crate
+        generate_wrapped_crate(
+            output_dir,
+            target,
+            global_config,
+            current_crate_name,
+            &wrapped_crate_name,
+            dry_run,
+        )?;
+    }
+
+    // Generate root Cargo.toml for the wrapped workspace
+    let workspace_cargo_toml_content = format!(
+        r#"[workspace]
+members = [
+    {}
+]
+"#,
+        workspace_members.join(",\n    ")
+    );
+
+    let workspace_cargo_toml_path = output_dir.join("Cargo.toml");
+    if !dry_run {
+        fs::write(&workspace_cargo_toml_path, workspace_cargo_toml_content)
+            .context(format!("Failed to write Cargo.toml for wrapped workspace: {}", workspace_cargo_toml_path.display()))?;
+    }
+    println!("Generated workspace Cargo.toml at: {}", workspace_cargo_toml_path.display());
+
+    Ok(())
+}
+
+// Placeholder for generate_wrapped_crate - will implement next
+fn generate_wrapped_crate(
+    wrapped_workspace_root: &Path,
+    target: &patch_config::PatchTarget,
+    global_config: &SplitDeclsConfig,
+    current_crate_name: &str, // Name of the split-decls-rs tool crate
+    wrapped_crate_name: &str,
+    dry_run: bool,
+) -> Result<()> {
+    println!("\n=== Generating wrapped crate: {} ===", wrapped_crate_name);
+
+    let original_workspace_root = PathBuf::from("../../"); // Relative to current crate (split-decls-rs)
+    let original_crate_path = original_workspace_root.join(&target.path);
+
+    let wrapped_crate_path = wrapped_workspace_root.join(wrapped_crate_name);
+    if !dry_run {
+        fs::create_dir_all(&wrapped_crate_path)
+            .context(format!("Failed to create wrapped crate directory: {}", wrapped_crate_path.display()))?;
+        fs::create_dir_all(&wrapped_crate_path.join("src"))
+            .context(format!("Failed to create src directory for wrapped crate: {}", wrapped_crate_path.display()))?;
+    }
+
+    // Setup CratePaths for the *wrapped* crate
+    // The `old_lib_rs_path` etc. for this `CratePaths` will refer to the copies *within* the wrapped crate.
+    let wrapped_crate_paths = setup_crate_paths(&wrapped_crate_path)?;
+
+    // Copy original oldlib.rs and oldCargo.toml into the wrapped crate's location
+    // These will be the source for eager splitting within the wrapped crate context.
+    let original_lib_rs_path = original_crate_path.join("src").join("lib.rs");
+    let original_cargo_toml_path = original_crate_path.join("Cargo.toml");
+    
+    if original_lib_rs_path.exists() {
+        if !dry_run {
+            fs::copy(&original_lib_rs_path, &wrapped_crate_paths.old_lib_rs_path)
+                .context(format!("Failed to copy {} to {}", original_lib_rs_path.display(), wrapped_crate_paths.old_lib_rs_path.display()))?;
+        }
+        println!("Copied original lib.rs to {}", wrapped_crate_paths.old_lib_rs_path.display());
+    } else {
+        // If no original lib.rs, create an empty oldlib.rs in the wrapped crate
+        if !dry_run { fs::write(&wrapped_crate_paths.old_lib_rs_path, "")?; }
+        println!("No original lib.rs found, created empty {}", wrapped_crate_paths.old_lib_rs_path.display());
+    }
+
+    if original_cargo_toml_path.exists() {
+        if !dry_run {
+            fs::copy(&original_cargo_toml_path, &wrapped_crate_paths.old_cargo_toml_path)
+                .context(format!("Failed to copy {} to {}", original_cargo_toml_path.display(), wrapped_crate_paths.old_cargo_toml_path.display()))?;
+        }
+        println!("Copied original Cargo.toml to {}", wrapped_crate_paths.old_cargo_toml_path.display());
+    } else {
+        // If no original Cargo.toml, create an empty oldCargo.toml in the wrapped crate
+        if !dry_run { fs::write(&wrapped_crate_paths.old_cargo_toml_path, "")?; }
+        println!("No original Cargo.toml found, created empty {}", wrapped_crate_paths.old_cargo_toml_path.display());
+    }
+
+
+    // Generate Cargo.toml for the wrapped crate
+    // This will reference the original project's crates if they are part of the original workspace
+    generate_new_cargotoml(&wrapped_crate_paths, global_config, &original_crate_path, dry_run)?;
+    
+    // Generate lib.rs for the wrapped crate
+    generate_new_lib_rs(&wrapped_crate_paths, dry_run)?;
+
+    // Create a crate-specific config for writing to .split-decls-config.toml
+    let mut crate_config = SplitDeclsConfig::default();
+    crate_config.active_overlay_modules = global_config.active_overlay_modules.clone();
+    crate_config.custom_prelude_overlay = global_config.custom_prelude_overlay.clone();
+    crate_config.string_replacements = global_config.string_replacements.clone();
+    crate_config.crates_io_patches = global_config.crates_io_patches.clone();
+
+    // Filter patches relevant to this crate from the global config
+    let crate_name_str = target.name.clone(); // Use original crate name for patch lookup
+    if let Some(crate_patches) = global_config.patches.get(&crate_name_str) {
+        crate_config.patches.insert(crate_name_str.clone(), crate_patches.clone());
+    }
+
+    let serialized_config = toml::to_string(&crate_config)
+        .context("Failed to serialize SplitDeclsConfig for wrapped crate")?;
+    if !dry_run {
+        fs::write(&wrapped_crate_paths.target_config_path, serialized_config)
+            .context(format!("Failed to write .split-decls-config.toml to {}", wrapped_crate_paths.target_config_path.display()))?;
+    }
+    println!("Wrote config to {}", wrapped_crate_paths.target_config_path.display());
+
+
+    // Eager Splitting Logic for the wrapped crate
+    let mut old_lib_rs_content = fs::read_to_string(&wrapped_crate_paths.old_lib_rs_path)
+        .context("Failed to read oldlib.rs content for eager splitting in wrapped crate")?;
+
+    if let Some(replacements) = &global_config.string_replacements {
+        for sr in replacements {
+            old_lib_rs_content = old_lib_rs_content.replace(&sr.old, &sr.new);
+            println!("Applied string replacement: '{}' -> '{}'", sr.old, sr.new);
+        }
+    }
+
+    let mut syntax_tree = syn::parse_file(&old_lib_rs_content)
+        .context("Failed to parse oldlib.rs content for eager splitting in wrapped crate")?;
+
+    buildrs_ast_utils::apply_patches_to_syntax_tree(
+        &mut syntax_tree,
+        &wrapped_crate_paths.crate_name.replace("-", "_"), // Use wrapped crate name for patching
+        &crate_config,
+    )?;
+
+    eager_splitter::split_and_generate_decls(
+        &syntax_tree,
+        &wrapped_crate_paths,
+        &crate_config,
+        dry_run,
+    )?;
+
+    // Generate build.rs for the wrapped crate (minimal version for monitoring patches)
+    generate_new_build_rs(&wrapped_crate_paths, dry_run)?;
+
     Ok(())
 }
