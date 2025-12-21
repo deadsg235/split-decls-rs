@@ -3,32 +3,23 @@ use std::path::{Path, PathBuf};
 use anyhow::{Context, Result};
 use crate::{CratePaths, CargoToml, process_dependency_table};
 use split_decls_types::SplitDeclsConfig;
+use crate::patch_config;
 
 /// Generates the new Cargo.toml for the crate, adding necessary build-dependencies.
-pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConfig, original_crate_real_path: &Path, dry_run: bool) -> Result<()> {
-    // List of dependencies that should use `workspace = true`
-    const RUNTIME_WORKSPACE_DEPS: &[&str] = &[
-        "proc-macro2",
-        "quote",
-        "syn",
-    ];
-
-    const BUILD_WORKSPACE_DEPS: &[&str] = &[
-        "anyhow",
-        "proc-macro2",
-        "quote",
-        "syn",
-        "serde", // Added for build script
-        "toml",    // Added for build script
-    ];
-
+pub fn generate_new_cargotoml(
+    paths: &CratePaths,
+    global_config: &SplitDeclsConfig, // Still needed for root workspace info
+    original_crate_real_path: &Path,
+    patch_config: &patch_config::PatchConfig, // New: to get crate-specific dependencies
+    dry_run: bool,
+) -> Result<()> {
     let mut cargo_toml_content = fs::read_to_string(&paths.old_cargo_toml_path)
         .context(format!("Failed to read old Cargo.toml from {}", paths.old_cargo_toml_path.display()))?;
     
     // If the file was empty (no Cargo.toml existed), initialize with a minimal structure
     if cargo_toml_content.trim().is_empty() {
         cargo_toml_content = format!(
-            "[package]\nname = \"{}\"\nversion = \"0.1.0\"\nedition = \"2021\"\n",
+            "[package]\nname = \"{}\nversion = \"0.1.0\"\nedition = \"2021\"\n",
             paths.crate_name
         );
     }
@@ -58,90 +49,56 @@ pub fn generate_new_cargotoml(paths: &CratePaths, global_config: &SplitDeclsConf
         cargo_toml.other.remove(&key);
     }
 
-    // Helper to ensure a dependency uses workspace = true and specified features, or explicit version if no workspace dependencies are found
-    let ensure_dependency = |table: &mut toml::Table, dep_name: &str, features: Option<Vec<&str>>, default_version: &str| {
-        let mut dep_table_value = toml::Table::new();
-        // Check if the dependency exists in the global workspace dependencies
-        if let Some(global_dep_value) = global_config.workspace_dependencies.get(dep_name) {
-            // If it exists in global workspace dependencies, use `workspace = true`
-            dep_table_value.insert("workspace".to_string(), toml::Value::Boolean(true));
-            // Preserve features from global_dep_value if they exist
-            if let Some(global_dep_table) = global_dep_value.as_table() {
-                if let Some(global_features) = global_dep_table.get("features") {
-                    dep_table_value.insert("features".to_string(), global_features.clone());
-                }
-            }
-        } else {
-            // Otherwise, use the explicit version
-            dep_table_value.insert("version".to_string(), toml::Value::String(default_version.to_string()));
+    // Process existing dependencies from the old Cargo.toml
+    // This will convert any path dependencies to workspace = true if they are found in global_config.workspace_dependencies
+    process_dependency_table(&mut cargo_toml.dependencies, global_config, original_crate_real_path)?;
+    process_dependency_table(&mut cargo_toml.dev_dependencies, global_config, original_crate_real_path)?;
+    process_dependency_table(&mut cargo_toml.build_dependencies, global_config, original_crate_real_path)?;
+
+
+    // Dynamically add/update dependencies from patch_config.generated_crate_dependency
+    for dep_entry in &patch_config.generated_crate_dependency {
+        // Only process dependencies relevant to this specific crate
+        if dep_entry.crate_name != paths.crate_name {
+            continue;
         }
-        
-        // Add specific features if provided (these would override global features if both exist)
-        if let Some(feats) = features {
-            let features_array = toml::Value::Array(feats.into_iter().map(|f| toml::Value::String(f.to_string())).collect());
+
+        let target_table = match dep_entry.section.as_str() {
+            "dependencies" => &mut cargo_toml.dependencies,
+            "dev-dependencies" => &mut cargo_toml.dev_dependencies,
+            "build-dependencies" => &mut cargo_toml.build_dependencies,
+            _ => {
+                eprintln!("Warning: Unknown dependency section '{}' for crate '{}'", dep_entry.section, dep_entry.name);
+                continue;
+            }
+        };
+
+        let mut dep_table_value = toml::Table::new();
+        if dep_entry.workspace {
+            dep_table_value.insert("workspace".to_string(), toml::Value::Boolean(true));
+        } else if let Some(version) = &dep_entry.version {
+            dep_table_value.insert("version".to_string(), toml::Value::String(version.clone()));
+        }
+
+        if let Some(features) = &dep_entry.features {
+            let features_array = toml::Value::Array(
+                features.iter().map(|f| toml::Value::String(f.clone())).
+                collect()
+            );
             dep_table_value.insert("features".to_string(), features_array);
         }
-        table.insert(dep_name.to_string(), toml::Value::Table(dep_table_value));
-    };
 
-    // Process [dependencies] to ensure RUNTIME_WORKSPACE_DEPS are present and convert path-deps to workspace = true
-    let deps_table = &mut cargo_toml.dependencies;
-    process_dependency_table(deps_table, global_config, original_crate_real_path)?; // Apply general dependency processing
-    for dep_name in RUNTIME_WORKSPACE_DEPS {
-        match *dep_name {
-            "proc-macro2" => ensure_dependency(deps_table, dep_name, None, "1.0"),
-            "quote" => ensure_dependency(deps_table, dep_name, None, "1.0"),
-            "syn" => ensure_dependency(deps_table, dep_name, Some(vec!["full"]), "1.0"),
-            _ => ensure_dependency(deps_table, dep_name, None, ""), // Fallback, though all should be covered
+        if let Some(package) = &dep_entry.package {
+            dep_table_value.insert("package".to_string(), toml::Value::String(package.clone()));
         }
+
+        target_table.insert(dep_entry.name.clone(), toml::Value::Table(dep_table_value));
     }
 
-    // Process [dev-dependencies] (existing logic remains)
-    let dev_deps_table = &mut cargo_toml.dev_dependencies;
-    process_dependency_table(dev_deps_table, global_config, original_crate_real_path)?; // Apply general dependency processing
-    for dep_name in RUNTIME_WORKSPACE_DEPS { // Also update if runtime deps exist in dev-deps
-        if dev_deps_table.contains_key(*dep_name) {
-            match *dep_name {
-                "proc-macro2" => ensure_dependency(dev_deps_table, dep_name, None, "1.0"),
-                "quote" => ensure_dependency(dev_deps_table, dep_name, None, "1.0"),
-                "syn" => ensure_dependency(dev_deps_table, dep_name, Some(vec!["full"]), "1.0"),
-                _ => ensure_dependency(dev_deps_table, dep_name, None, ""), // Fallback
-            }
-        }
-    }
 
-    // Process [build-dependencies] to ensure BUILD_WORKSPACE_DEPS are present
-    let build_deps_table = &mut cargo_toml.build_dependencies;
-    process_dependency_table(build_deps_table, global_config, original_crate_real_path)?; // Apply general dependency processing
-    for dep_name in BUILD_WORKSPACE_DEPS {
-        match *dep_name {
-            "anyhow" => ensure_dependency(build_deps_table, dep_name, None, "1.0"),
-            "proc-macro2" => ensure_dependency(build_deps_table, dep_name, None, "1.0"),
-            "quote" => ensure_dependency(build_deps_table, dep_name, None, "1.0"),
-            "syn" => ensure_dependency(build_deps_table, dep_name, Some(vec!["full", "visit"]), "1.0"),
-            "serde" => ensure_dependency(build_deps_table, dep_name, Some(vec!["derive"]), "1.0"),
-            "toml" => ensure_dependency(build_deps_table, dep_name, None, "0.5"),
-            _ => ensure_dependency(build_deps_table, dep_name, None, ""), // Fallback
-        }
-    }
+    // Remove [patch.crates-io] section from individual crate Cargo.toml
+    cargo_toml.patch.clear();
 
-    // Apply [patch.crates-io] entries
-    if let Some(crates_io_patches_map) = &global_config.crates_io_patches {
-        if !crates_io_patches_map.is_empty() {
-            let mut crates_io_table = toml::Table::new();
-            for (crate_name, path) in crates_io_patches_map {
-            crates_io_table.insert(
-                crate_name.clone(),
-                toml::Table::from_iter([(
-                    "path".to_string(),
-                    toml::Value::String(path.to_str().context("Path not valid UTF-8")?.to_string()),
-                )])
-                .into(),
-            );
-        }
-        cargo_toml.patch.insert("crates-io".to_string(), crates_io_table.into());
-    } // This was the missing brace
-    }
 
     let new_cargo_toml_content = toml::to_string(&cargo_toml)
         .context("Failed to serialize new Cargo.toml")?;

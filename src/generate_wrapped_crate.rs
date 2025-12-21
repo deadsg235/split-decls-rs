@@ -14,20 +14,19 @@ use crate::eager_splitter;
 
 /// Generates a new workspace containing "wrapped" versions of the target crates.
 /// Each wrapped crate will have its declarations eagerly split and patched.
+#[allow(clippy::too_many_arguments)] // This function has many arguments, but they are all necessary.
 pub fn generate_wrapped_crate(
     wrapped_workspace_root: &Path,
-    target: &patch_config::PatchTarget,
+    original_crate_name: &str, // The original name of the crate, e.g., "unimacro_derive"
+    original_crate_path: &Path, // Path to the original crate's directory (relative to project root)
     global_config: &SplitDeclsConfig,
-    current_crate_name: &str, // Name of the split-decls-rs tool crate
-    wrapped_crate_name: &str,
+    patch_config: &patch_config::PatchConfig, // New: Pass patch_config here
     dry_run: bool,
 ) -> Result<()> {
+    let wrapped_crate_name = format!("wrapped-{}", original_crate_name);
     println!("\n=== Generating wrapped crate: {} ===", wrapped_crate_name);
 
-    let original_workspace_root = PathBuf::from("../../"); // Relative to current crate (split-decls-rs)
-    let original_crate_path = original_workspace_root.join(&target.path);
-
-    let wrapped_crate_path = wrapped_workspace_root.join(wrapped_crate_name);
+    let wrapped_crate_path = wrapped_workspace_root.join(&wrapped_crate_name);
     if !dry_run {
         fs::create_dir_all(&wrapped_crate_path)
             .context(format!("Failed to create wrapped crate directory: {}", wrapped_crate_path.display()))?;
@@ -71,7 +70,7 @@ pub fn generate_wrapped_crate(
 
     // Generate Cargo.toml for the wrapped crate
     // This will reference the original project's crates if they are part of the original workspace
-    generate_new_cargotoml(&wrapped_crate_paths, global_config, &original_crate_path, dry_run)?;
+    generate_new_cargotoml(&wrapped_crate_paths, global_config, original_crate_path, patch_config, dry_run)?;
     
     // Generate lib.rs for the wrapped crate
     generate_new_lib_rs(&wrapped_crate_paths, dry_run)?;
@@ -84,7 +83,7 @@ pub fn generate_wrapped_crate(
     crate_config.crates_io_patches = global_config.crates_io_patches.clone();
 
     // Filter patches relevant to this crate from the global config
-    let crate_name_str = target.name.clone(); // Use original crate name for patch lookup
+    let crate_name_str = original_crate_name.to_string(); // Use original crate name for patch lookup
     if let Some(global_patches_map) = &global_config.patches {
         if let Some(patches_for_crate) = global_patches_map.get(&crate_name_str) {
             let mut new_patches_map = HashMap::new();
@@ -118,7 +117,7 @@ pub fn generate_wrapped_crate(
 
     apply_patches_to_syntax_tree(
         &mut syntax_tree,
-        &wrapped_crate_paths.crate_name.replace("-", "_"), // Use wrapped crate name for patching
+        &wrapped_crate_name.replace("-", "_"), // Use wrapped crate name for patching
         &crate_config,
     )?;
 

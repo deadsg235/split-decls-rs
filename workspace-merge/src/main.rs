@@ -1,9 +1,10 @@
 use clap::Parser;
 use std::path::{Path, PathBuf};
 use anyhow::{Context, Result};
-use serde::{Deserialize, Serialize};
 use std::fs;
 use std::collections::HashMap;
+
+use cargo_toml_generator_types::{CargoToml, Package, Workspace, Dependency, DependencyTable, PatchSection}; // Import necessary types
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -17,46 +18,7 @@ struct Args {
     child_crate_root: PathBuf,
 }
 
-#[derive(Debug, Default, Deserialize, Serialize)]
-struct Package {
-    name: String,
-    version: String,
-    edition: String,
-    #[serde(default)]
-    authors: Vec<String>, // Authors can be an empty array
-}
-
-#[derive(Debug, Default, Deserialize, Serialize)]
-struct Dependency {
-    // This could be more complex, but for now, just store the version string
-    version: Option<String>,
-    path: Option<String>,
-    workspace: Option<bool>,
-    // Add other fields as needed
-}
-
-#[derive(Debug, Default, Deserialize, Serialize)]
-struct Workspace {
-    members: Option<Vec<String>>,
-    // Dependencies within a [workspace] section are typically handled by [workspace.dependencies] top-level table
-    // Removing `dependencies` field from here.
-}
-
-#[derive(Debug, Default, Deserialize, Serialize)]
-struct CargoToml {
-    package: Option<Package>,
-    workspace: Option<Workspace>,
-    #[serde(rename = "workspace.dependencies")]
-    #[serde(default)]
-    #[serde(skip_serializing_if = "HashMap::is_empty")] // Add this line
-    workspace_dependencies: HashMap<String, Dependency>,
-    #[serde(default)]
-    #[serde(skip_serializing_if = "HashMap::is_empty")]
-    dependencies: HashMap<String, Dependency>,
-    #[serde(flatten)] // Add this line
-    other: toml::Table, // Add this field
-}
-
+// read_cargo_toml function now uses the common CargoToml struct
 fn read_cargo_toml(path: &Path) -> Result<CargoToml> {
     let content = fs::read_to_string(path)
         .context(format!("Failed to read Cargo.toml from {:?}", path))?;
@@ -65,6 +27,7 @@ fn read_cargo_toml(path: &Path) -> Result<CargoToml> {
     Ok(toml)
 }
 
+// write_cargo_toml function now uses the common CargoToml struct
 fn write_cargo_toml(path: &Path, toml_data: &CargoToml) -> Result<()> {
     let toml_string = toml::to_string_pretty(toml_data)
         .context(format!("Failed to serialize Cargo.toml data for {:?}", path))?;
@@ -93,7 +56,7 @@ fn main() -> Result<()> {
 
     // 1. Remove [workspace] from the child's Cargo.toml
     child_toml.workspace = None;
-    // CRITICAL FIX: Also clear its workspace_dependencies as it's no longer a workspace
+    // Clear its workspace_dependencies as it's no longer a workspace
     child_toml.workspace_dependencies.clear();
     println!("\nChild TOML (After removing workspace and clearing workspace_dependencies):\n{:#?}", child_toml);
 
@@ -105,28 +68,32 @@ fn main() -> Result<()> {
         .context("Failed to convert child relative path to string")?
         .to_string();
 
+    // Ensure parent_toml has a workspace section to add members to
+    if parent_toml.workspace.is_none() {
+        parent_toml.workspace = Some(Workspace::default());
+    }
+    
+    // Access and modify members. Since Workspace.members is now Vec<String>, no get_or_insert_with needed.
     if let Some(workspace) = &mut parent_toml.workspace {
-        let members = workspace.members.get_or_insert_with(Vec::new);
-        if !members.contains(&child_relative_path) {
-            members.push(child_relative_path.clone());
+        if !workspace.members.contains(&child_relative_path) {
+            workspace.members.push(child_relative_path.clone());
             println!("Added '{}' to parent workspace members.", child_relative_path);
         } else {
             println!("'{}' already exists in parent workspace members.", child_relative_path);
         }
-    } else {
-        // If parent_toml has no workspace section, create one
-        parent_toml.workspace = Some(Workspace {
-            members: Some(vec![child_relative_path.clone()]),
-            ..Default::default()
-        });
-        println!("Created parent workspace and added '{}' to members.", child_relative_path);
     }
 
     println!("\nParent TOML (After adding child to members):\n{:#?}", parent_toml);
 
     // 3. Merge workspace dependencies
+    // Iterate over child_toml's direct dependencies
     for (dep_name, child_dep) in child_toml.dependencies.iter_mut() {
-        if child_dep.workspace == Some(true) {
+        let is_workspace_dep_in_child = match child_dep {
+            Dependency::Version(_) => false, // Simple version string is not workspace=true
+            Dependency::Table(table) => table.workspace == Some(true),
+        };
+
+        if is_workspace_dep_in_child {
             // If child's dependency explicitly uses workspace = true, ensure it's in parent's workspace_dependencies
             if !parent_toml.workspace_dependencies.contains_key(dep_name) {
                 // Add to parent's workspace_dependencies
@@ -137,15 +104,44 @@ fn main() -> Result<()> {
                 // For simplicity, we assume compatibility or parent's definition takes precedence.
                 println!("'{}' already exists in parent's workspace dependencies. Keeping parent's definition.", dep_name);
             }
-        } else if parent_toml.workspace_dependencies.contains_key(dep_name) {
-            // If child has a regular dependency that is now in parent's workspace_dependencies,
-            // update child to use workspace = true
-            child_dep.version = None; // Remove local version
-            child_dep.path = None; // Remove local path
-            child_dep.workspace = Some(true); // Set to workspace = true
-            println!("Updated child dependency '{}' to use workspace = true as it's in parent's workspace.", dep_name);
+        } else {
+            // Check if this child's dependency should become a workspace dependency
+            if parent_toml.workspace_dependencies.contains_key(dep_name) {
+                // If child has a regular dependency that is now in parent's workspace_dependencies,
+                // update child to use workspace = true
+                *child_dep = Dependency::Table(DependencyTable {
+                    workspace: Some(true),
+                    ..Default::default()
+                });
+                println!("Updated child dependency '{}' to use workspace = true as it's in parent's workspace.", dep_name);
+            }
         }
     }
+    // Iterate over child_toml's dev-dependencies
+    for (dep_name, child_dep) in child_toml.dev_dependencies.iter_mut() {
+        let is_workspace_dep_in_child = match child_dep {
+            Dependency::Version(_) => false,
+            Dependency::Table(table) => table.workspace == Some(true),
+        };
+
+        if is_workspace_dep_in_child {
+            if !parent_toml.workspace_dependencies.contains_key(dep_name) {
+                parent_toml.workspace_dependencies.insert(dep_name.clone(), child_dep.clone());
+                println!("Migrated dev-dependency '{}' to parent's workspace dependencies.", dep_name);
+            } else {
+                println!("dev-dependency '{}' already exists in parent's workspace dependencies. Keeping parent's definition.", dep_name);
+            }
+        } else {
+            if parent_toml.workspace_dependencies.contains_key(dep_name) {
+                *child_dep = Dependency::Table(DependencyTable {
+                    workspace: Some(true),
+                    ..Default::default()
+                });
+                println!("Updated child dev-dependency '{}' to use workspace = true as it's in parent's workspace.", dep_name);
+            }
+        }
+    }
+
 
     // Write back modified Cargo.toml files
     write_cargo_toml(&parent_cargo_toml_path, &parent_toml)?;

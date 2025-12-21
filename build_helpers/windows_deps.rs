@@ -1,0 +1,40 @@
+use cargo_toml_generator_macros::{dep_path, dep_table};
+use quote::quote;
+use proc_macro2::TokenStream;
+
+#[macro_export]
+macro_rules! windows_dependencies_macro {
+    () => {
+        dep_path!("windows_i686_gnullvm", "submodules/windows-rs/crates/targets/i686_gnullvm"),
+        dep_path!("windows_x86_64_gnullvm", "submodules/windows-rs/crates/targets/x86_64_gnullvm"),
+        dep_path!("windows-implement", "submodules/windows-rs/crates/libs/implement"),
+        dep_path!("windows-numerics", "submodules/windows-rs/crates/libs/numerics"),
+        dep_path!("windows_x86_64_msvc", "submodules/windows-rs/crates/targets/x86_64_msvc"),
+        dep_path!("windows_x86_64_gnu", "submodules/windows-rs/crates/targets/x86_64_gnu"),
+        dep_path!("windows-bindings", "submodules/jni-rs/windows-bindings"),
+        dep_path!("windows-bindgen", "submodules/windows-rs/crates/libs/bindgen"),
+        dep_path!("windows-services", "submodules/windows-rs/crates/libs/services"),
+        dep_path!("windows-interface", "submodules/windows-rs/crates/libs/interface"),
+        dep_path!("windows-future", "submodules/windows-rs/crates/libs/future"),
+        dep_path!("windows-core", "submodules/windows-rs/crates/libs/core"),
+        dep_path!("windows-strings", "submodules/windows-rs/crates/libs/strings"),
+        dep_path!("windows_aarch64_gnullvm", "submodules/windows-rs/crates/targets/aarch64_gnullvm"),
+        dep_path!("windows-metadata", "submodules/windows-rs/crates/libs/metadata"),
+        dep_path!("windows", "submodules/windows-rs/crates/libs/windows"),
+        dep_path!("windows-registry", "submodules/windows-rs/crates/libs/registry"),
+        dep_path!("windows-result", "submodules/windows-rs/crates/libs/result"),
+        dep_path!("windows-sys", "submodules/windows-rs/crates/libs/sys"),
+        dep_path!("windows-targets", "submodules/rust/library/windows_targets"),
+        dep_path!("windows-threading", "submodules/windows-rs/crates/libs/threading"),
+        dep_path!("windows-version", "submodules/windows-rs/crates/libs/version"),
+        dep_path!("windows-collections", "submodules/windows-rs/crates/libs/collections"),
+        dep_path!("windows-link", "submodules/windows-rs/crates/libs/link"),
+        dep_path!("windows_aarch64_msvc", "submodules/windows-rs/crates/targets/aarch64_msvc"),
+        dep_path!("windows_i686_gnu", "submodules/windows-rs/crates/targets/i686_gnu"),
+        dep_path!("windows_i686_msvc", "submodules/windows-rs/crates/targets/i686_msvc"),
+    };
+}
+
+pub fn get_windows_dependencies() -> TokenStream {
+    quote! { windows_dependencies_macro!() }
+}

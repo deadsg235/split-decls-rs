@@ -111,6 +111,8 @@ members = [
     #        
     "submodules/split-decls-rs/workspace-merge",
     "submodules/split-decls-rs/split-decls-types",
+    "cargo-toml-generator-types",
+    "cargo-toml-generator-macros",
 ]
 
 [workspace.dependencies]
