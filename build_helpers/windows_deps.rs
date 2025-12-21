@@ -1,7 +1,3 @@
-use cargo_toml_generator_macros::{dep_path, dep_table};
-use quote::quote;
-use proc_macro2::TokenStream;
-
 #[macro_export]
 macro_rules! windows_dependencies_macro {
     () => {
@@ -33,8 +29,4 @@ macro_rules! windows_dependencies_macro {
         dep_path!("windows_i686_gnu", "submodules/windows-rs/crates/targets/i686_gnu"),
         dep_path!("windows_i686_msvc", "submodules/windows-rs/crates/targets/i686_msvc"),
     };
-}
-
-pub fn get_windows_dependencies() -> TokenStream {
-    quote! { windows_dependencies_macro!() }
 }
