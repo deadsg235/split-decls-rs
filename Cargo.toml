@@ -49,10 +49,15 @@ cargo-toml-generator-types = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 toml = { workspace = true }
+cargo-toml-parts = { path = "build_helpers/cargo_toml_parts" }
 
 [[bin]]
 name = "rustmacrodoc"
 path = "src/bin/rustmacrodoc.rs"
+
+[[bin]]
+name = "testbuild"
+path = "src/bin/testbuild.rs"
 
 [patch.'crates-io']
 proc-macro2 = { path = "../proc-macro2" }

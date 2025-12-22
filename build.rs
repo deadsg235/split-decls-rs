@@ -1,4 +1,5 @@
 use std::{env, fs, path::Path};
+use cargo_toml_parts::mkbuildrs;
 
 // Use mod with path to directly include code from build_src/
 #[path = "build_src/example_module.rs"]
@@ -32,10 +33,14 @@ fn main() {
     // within a module in `build_src` or adapt it directly here.
 
     // placeholder for original build.rs logic that generates Cargo.toml
-    // use cargo_toml_generator_macros::define_root_cargo_toml;
-    // use cargo_toml_generator_types::CargoToml;
-    // // Make sure build_helpers is accessible, possibly by moving it into build_src or using a relative path.
-    // mod build_helpers; // This would assume build_helpers.rs is in the same directory as build.rs
-    // use build_helpers::cargo_toml_parts::mkbuildrs;
-    // let generated_cargo_toml: CargoToml = define_root_cargo_toml! { mkbuildrs!() };
+    use cargo_toml_generator_macros::define_root_cargo_toml;
+    use cargo_toml_generator_types::CargoToml;
+    // Make sure build_helpers is accessible, possibly by moving it into build_src or using a relative path.
+extern crate cargo_toml_parts;
+// ...
+    let generated_cargo_toml: CargoToml = define_root_cargo_toml! {
+        package {
+            cargo_toml_parts::mkbuildrs!()
+        }
+    };
 }

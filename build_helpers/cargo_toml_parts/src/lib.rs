@@ -2,20 +2,18 @@
 
 macro_rules! define_package_config {
     () => {
-        package {
-            name = "split-decls-rs", // This is the actual name of the crate where build.rs resides
-            version = "0.1.0",
-            edition = "2024",
-            authors = [],
-            description = "",
-            homepage = "",
-            include = [],
-            keywords = [],
-            license = "AGPL 3.0",
-            publish = false,
-            repository = "",
-            rust_version = "1.85.0",
-        }
+        name = "split-decls-rs",
+        version = "0.1.0",
+        edition = "2024",
+        authors = [],
+        description = "",
+        homepage = "",
+        include = [],
+        keywords = [],
+        license = "AGPL 3.0",
+        publish = false,
+        repository = "",
+        rust_version = "1.85.0",
     };
 }
 
@@ -392,6 +390,7 @@ macro_rules! define_workspace_dependencies_part5 {
 }
 
 
+#[macro_export]
 macro_rules! mkbuildrs {
     () => {
         define_package_config!()
