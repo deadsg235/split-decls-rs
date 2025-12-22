@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_MockInferCtxtAt] pub struct MockInferCtxtAt ;

@@ -82,12 +82,24 @@ pub fn extract_single_declaration(item: &Item, item_count: usize) -> Option<Extr
             None
         },
         Item::Macro(item_macro) => {
-            println!("Including top-level macro invocation: {}", item_macro.mac.path.to_token_stream());
-            None // Macros are not treated as separate decls but as part of the overall file content
+            let macro_name = item_macro.mac.path.segments.last()
+                .map_or("unknown_macro".to_string(), |s| s.ident.to_string());
+            Some(ExtractedDecl {
+                name: macro_name,
+                kind: "macro".to_string(),
+                content: item_macro.to_token_stream(),
+            })
         },
         Item::Mod(item_mod) => {
-            println!("Skipping top-level module: {}", item_mod.ident);
-            None
+            let mod_name = item_mod.ident.to_string();
+            println!("Processing module: {}", mod_name);
+            
+            // Return a placeholder declaration for the module itself
+            Some(ExtractedDecl {
+                name: mod_name,
+                content: item.to_token_stream(),
+                kind: "module".to_string(),
+            })
         }
         _ => {
             println!("Skipping unsupported item type: {}", item.to_token_stream());

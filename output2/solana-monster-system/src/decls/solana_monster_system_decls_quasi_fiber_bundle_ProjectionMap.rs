@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_quasi_fiber_bundle_ProjectionMap] # [derive (Debug , Clone)] pub struct ProjectionMap { pub map_name : String , pub projection_rule : String , pub fiber_preservation : bool , }

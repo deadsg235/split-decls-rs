@@ -56,6 +56,27 @@ pub fn generate_new_cargotoml(
     process_dependency_table(&mut cargo_toml.build_dependencies, global_config, original_crate_real_path)?;
 
 
+    // Ensure essential build dependencies are present
+    let build_deps_table = &mut cargo_toml.build_dependencies;
+    let essential_build_deps = [
+        ("anyhow", None),
+        ("syn", Some(vec!["full", "visit"])),
+        ("serde", Some(vec!["derive"])),
+        ("toml", None),
+    ];
+
+    for (dep_name, features) in essential_build_deps {
+        let mut dep_table_value = toml::Table::new();
+        dep_table_value.insert("workspace".to_string(), toml::Value::Boolean(true));
+        if let Some(feats) = features {
+            let features_array = toml::Value::Array(
+                feats.into_iter().map(|f| toml::Value::String(f.to_string())).collect()
+            );
+            dep_table_value.insert("features".to_string(), features_array);
+        }
+        build_deps_table.insert(dep_name.to_string(), toml::Value::Table(dep_table_value));
+    }
+
     // Dynamically add/update dependencies from patch_config.generated_crate_dependency
     for dep_entry in &patch_config.generated_crate_dependency {
         // Only process dependencies relevant to this specific crate

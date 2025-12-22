@@ -1,0 +1,1 @@
+use rustc_ast :: { self as ast , NodeId } ; use rustc_span :: Ident ; use smallvec :: SmallVec ; use crate :: base :: MacResult ; prelude ! { } # [decl_ rustc_ast_fragments_decls_MethodReceiverTag] # [doc = " This struct is a hack to workaround unstable of `stmt_expr_attributes`."] # [doc = " It can be removed once that feature is stabilized."] struct MethodReceiverTag ;

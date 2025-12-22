@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_git_modules_cas_db_GitModule] # [derive (Debug , Clone)] struct GitModule { name : String , path : String , git_hash : String , dependencies : Vec < String > , exports : Vec < String > , cas_address : u64 , }

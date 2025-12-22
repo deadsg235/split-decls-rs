@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_juniper_build_order_Crate] # [derive (Debug)] struct Crate { name : String , version : String , branch : String , repo : String , path : String , git_hash : String , criticality : i32 , }

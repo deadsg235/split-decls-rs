@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_system_stability_StabilityReport] # [derive (Debug)] pub struct StabilityReport { pub is_stable : bool , pub singularities : Vec < (String , String) > , pub coherence_score : f64 , }

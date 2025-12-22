@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer};
 use std::collections::HashMap;
 
 // --- Top-level Cargo.toml structure ---
@@ -69,11 +69,41 @@ pub struct Workspace {
 // --- Dependency structure ---
 // This struct tries to be flexible enough to represent different ways to define a dependency.
 // Cargo's TOML structure for dependencies can be complex (simple version string, table with path/version/features, etc.)
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(untagged)] // Allows deserializing different shapes into this struct
+#[derive(Debug, Clone, PartialEq)]
 pub enum Dependency {
-    Version(String), // e.g., `dep = "1.0"`
-    Table(DependencyTable), // e.g., `dep = { version = "1.0", features = ["foo"] }`
+    Version(String),
+    Table(DependencyTable),
+}
+
+impl Serialize for Dependency {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            Dependency::Version(s) if s.is_empty() => serializer.serialize_str("*"),
+            Dependency::Version(s) => serializer.serialize_str(s),
+            Dependency::Table(table) => table.serialize(serializer),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for Dependency {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::Error;
+        let value = toml::Value::deserialize(deserializer)?;
+        match value {
+            toml::Value::String(s) => Ok(Dependency::Version(s)),
+            toml::Value::Table(_) => {
+                let table = DependencyTable::deserialize(value).map_err(D::Error::custom)?;
+                Ok(Dependency::Table(table))
+            }
+            _ => Err(D::Error::custom("Invalid dependency format")),
+        }
+    }
 }
 
 impl Default for Dependency {

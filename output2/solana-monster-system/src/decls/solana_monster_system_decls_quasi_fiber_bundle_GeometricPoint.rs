@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_quasi_fiber_bundle_GeometricPoint] # [derive (Debug , Clone)] pub struct GeometricPoint { pub coordinates : Vec < f64 > , pub chart_id : String , pub semantic_content : String , }

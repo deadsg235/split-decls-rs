@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_quasi_fiber_bundle_TotalSpace] # [derive (Debug , Clone)] pub struct TotalSpace { pub space_description : String , pub projection_map : ProjectionMap , pub section_maps : Vec < SectionMap > , }

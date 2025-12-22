@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_git_modules_cas_db_GitRelation] # [derive (Debug , Clone)] struct GitRelation { from_module : String , to_module : String , relation_type : String , phi_weight : u64 , }

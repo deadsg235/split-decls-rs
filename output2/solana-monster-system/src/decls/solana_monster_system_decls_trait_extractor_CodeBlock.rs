@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_trait_extractor_CodeBlock] # [derive (Debug , Clone)] pub struct CodeBlock { pub id : String , pub consumes : HashSet < String > , pub produces : HashSet < String > , pub external_deps : HashSet < String > , }

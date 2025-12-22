@@ -1,0 +1,1 @@
+decl_module ! (ast_parser_impl_decls_decls , ast_parser_impl_decls_oldlib_decls) ;

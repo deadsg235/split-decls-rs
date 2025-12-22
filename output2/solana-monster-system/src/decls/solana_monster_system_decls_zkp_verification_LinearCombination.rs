@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_zkp_verification_LinearCombination] # [doc = " Linear combination of proof variables"] # [derive (Debug)] pub struct LinearCombination { # [doc = " Variable coefficients"] coefficients : Vec < (String , i64) > , }

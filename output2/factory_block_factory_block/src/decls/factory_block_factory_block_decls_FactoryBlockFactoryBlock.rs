@@ -1,0 +1,1 @@
+use anyhow :: { Context , Result } ; use std :: path :: { Path , PathBuf } ; use ast_parser_impl :: RealRustAstParser ; use monster_math_traits :: { Declaration , RustAstParser } ; use rusttycoon :: { Factory , FactoryBlock } ; prelude ! { } # [decl_ factory_block_factory_block_decls_FactoryBlockFactoryBlock] # [derive (Clone)] pub struct FactoryBlockFactoryBlock ;

@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_scalable_rocksdb_ingester_main] fn main () -> Result < () , Box < dyn std :: error :: Error > > { let mut ingester = ScalableIngester :: new () ; ingester . ingest_100k_cargo_files () ? ; Ok (()) }

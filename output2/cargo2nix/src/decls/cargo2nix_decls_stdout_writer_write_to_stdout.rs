@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ cargo2nix_decls_stdout_writer_write_to_stdout] pub fn write_to_stdout (rendered : & str) -> Result < () > { write ! (io :: stdout () . lock () , "{}" , rendered) ? ; Ok (()) }

@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_quasi_fiber_bundle_CurvatureAnalysis] # [derive (Debug , Clone)] pub struct CurvatureAnalysis { pub curvature_type : String , pub curvature_measures : Vec < String > , pub geometric_interpretation : String , }

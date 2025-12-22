@@ -1,0 +1,1 @@
+decl_module ! (monster_multivector_decls_decls , monster_multivector_decls_monster_constants_MONSTER_GROUP_ORDER_STR , monster_multivector_decls_monster_constants_CANONICAL_MONSTER_FACTORS , monster_multivector_decls_oldlib_decls) ;

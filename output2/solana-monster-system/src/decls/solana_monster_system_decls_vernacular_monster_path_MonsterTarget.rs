@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_vernacular_monster_path_MonsterTarget] # [derive (Debug , Clone , Serialize , Deserialize)] pub struct MonsterTarget { pub element_id : i32 , pub stabilizer_class : i32 , pub eigenvalue : f64 , }

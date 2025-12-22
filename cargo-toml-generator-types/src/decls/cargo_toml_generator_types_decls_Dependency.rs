@@ -1,0 +1,1 @@
+use proc_macro :: TokenStream ; use quote :: quote ; use syn ::*; use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; prelude ! { } # [decl_ cargo_toml_generator_types_decls_Dependency] # [derive (Debug , Clone , PartialEq , Serialize , Deserialize)] # [serde (untagged)] pub enum Dependency { Version (String) , Table (DependencyTable) , }

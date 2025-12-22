@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ trait_fixer_rustc_mock_decls_impl_for_MockInferCtxtAt] impl MockInferCtxtAt { pub fn predicate_may_hold (self , _predicate : & MockPredicate) -> bool { true } }

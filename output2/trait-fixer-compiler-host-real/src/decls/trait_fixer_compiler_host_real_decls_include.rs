@@ -1,0 +1,1 @@
+prelude ! { } # [decl_ trait_fixer_compiler_host_real_decls_include] include ! (concat ! (env ! ("OUT_DIR") , "/generated_lib.rs")) ;

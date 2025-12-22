@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_monster_ffi_verify_monster_element] pub fn verify_monster_element (element : u64) -> bool { unsafe { monster_verify_element (element) } }

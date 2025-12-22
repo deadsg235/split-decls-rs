@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_monster_ast_mapping_MONSTER_DIMENSION] # [doc = " Monster Group has order ~8×10^53 with 194 conjugacy classes"] # [doc = " Each AST node maps to this 192k dimensional space"] const MONSTER_DIMENSION : usize = 196883 ;

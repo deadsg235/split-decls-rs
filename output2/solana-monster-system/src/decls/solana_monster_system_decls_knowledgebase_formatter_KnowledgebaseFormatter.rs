@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_knowledgebase_formatter_KnowledgebaseFormatter] # [derive (Debug , Clone)] pub struct KnowledgebaseFormatter { entries : HashMap < String , KnowledgebaseEntry > , }

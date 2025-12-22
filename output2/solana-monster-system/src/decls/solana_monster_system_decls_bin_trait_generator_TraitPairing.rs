@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_trait_generator_TraitPairing] # [derive (Debug)] struct TraitPairing { original_type : String , trait_name : String , trait_code : String , impl_code : String , }

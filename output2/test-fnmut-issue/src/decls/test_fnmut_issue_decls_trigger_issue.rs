@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_trigger_issue] pub fn trigger_issue < 'tcx > (mock_tcx : QueryContextMockTyCtxt < 'tcx >) { let _item = Item (std :: marker :: PhantomData) ; mock_tcx . walk_hir_tops (| _item_ref | { }) ; }

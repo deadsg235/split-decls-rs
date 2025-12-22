@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_the_two_impl_for_TheTwo] impl TheTwo { pub fn new () -> Self { Self { value : 2 } } pub fn is_the_two (& self) -> bool { self . value == 2 } }

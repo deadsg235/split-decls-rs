@@ -1,0 +1,1 @@
+use proc_macro :: TokenStream ; use quote :: quote ; use syn ::*; use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; prelude ! { } # [decl_ cargo_toml_generator_types_decls_impl_for_Default] impl Default for Dependency { fn default () -> Self { Dependency :: Version (String :: new ()) } }

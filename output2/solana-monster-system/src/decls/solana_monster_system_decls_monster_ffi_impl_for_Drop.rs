@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_monster_ffi_impl_for_Drop] impl Drop for MonsterTrait { fn drop (& mut self) { unsafe { monster_free_trait (self . ptr) } ; } }

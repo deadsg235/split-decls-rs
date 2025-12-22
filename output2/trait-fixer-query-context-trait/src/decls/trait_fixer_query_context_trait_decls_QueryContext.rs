@@ -1,0 +1,1 @@
+prelude ! { } # [decl_ trait_fixer_query_context_trait_decls_QueryContext] pub trait QueryContext < 'tcx , T , I > where T : Sized + 'tcx , I : Sized + 'tcx , { fn walk_hir_tops (& self , f : impl FnMut (& 'tcx I)) ; }

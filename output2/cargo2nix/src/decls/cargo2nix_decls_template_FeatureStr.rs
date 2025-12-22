@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ cargo2nix_decls_template_FeatureStr] type FeatureStr < 'a > = & 'a str ;

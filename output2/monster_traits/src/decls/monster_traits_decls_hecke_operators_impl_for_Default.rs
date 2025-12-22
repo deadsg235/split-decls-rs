@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ monster_traits_decls_hecke_operators_impl_for_Default] impl Default for ASTComposition { fn default () -> Self { Self :: new () } }

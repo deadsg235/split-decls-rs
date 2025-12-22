@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_cargo_phi_sum_CratePhi] # [derive (Debug , Clone)] struct CratePhi { name : String , phi_value : u64 , dependencies : Vec < String > , total_phi_sum : u64 , }

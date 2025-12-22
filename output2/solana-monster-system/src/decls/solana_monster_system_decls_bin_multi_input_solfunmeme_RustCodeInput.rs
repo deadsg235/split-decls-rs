@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_multi_input_solfunmeme_RustCodeInput] # [derive (Debug)] struct RustCodeInput { crate_name : String , ast_complexity : u64 , monster_factor : u64 , viral_power : f64 , }

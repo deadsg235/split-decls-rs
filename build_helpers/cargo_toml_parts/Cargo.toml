@@ -7,3 +7,9 @@ edition = "2024"
 cargo-toml-generator-macros = { workspace = true }
 cargo-toml-generator-types = { workspace = true }
 toml = { workspace = true }
+
+[build-dependencies]
+anyhow = { workspace = true }
+syn = { workspace = true, features = ["full", "visit"] }
+serde = { workspace = true, features = ["derive"] }
+toml = { workspace = true }

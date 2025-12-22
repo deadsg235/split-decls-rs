@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ monster_traits_decls_number_properties_has_factor] # [doc = " Checks if `value` is divisible by `factor`."] pub fn has_factor (value : u32 , factor : u32) -> bool { if factor == 0 { return false ; } value % factor == 0 }

@@ -1,0 +1,1 @@
+decl_module ! (rustc_ast_fragments_decls_decls , rustc_ast_fragments_decls_oldlib_decls) ;

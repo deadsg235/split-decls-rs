@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_quasi_fiber_bundle_BaseProjection] # [derive (Debug)] pub struct BaseProjection { pub total_point : String , pub base_point : String , pub fiber_component : String , pub projection_successful : bool , }

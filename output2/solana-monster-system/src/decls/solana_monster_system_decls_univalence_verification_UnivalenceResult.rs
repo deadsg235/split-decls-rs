@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_univalence_verification_UnivalenceResult] # [derive (Debug)] pub struct UnivalenceResult { pub is_univalent : bool , pub violations : Vec < String > , pub equivalence_classes : usize , }

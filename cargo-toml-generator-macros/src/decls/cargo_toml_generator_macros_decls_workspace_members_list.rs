@@ -1,0 +1,1 @@
+use proc_macro :: TokenStream ; use quote :: quote ; use syn ::*; use proc_macro :: TokenStream ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_workspace_members_list] # [proc_macro] pub fn workspace_members_list (input : TokenStream) -> TokenStream { macros :: workspace_members_list_impl (input) }

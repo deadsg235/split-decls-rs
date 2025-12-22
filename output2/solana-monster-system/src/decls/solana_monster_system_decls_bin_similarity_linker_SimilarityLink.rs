@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_similarity_linker_SimilarityLink] # [derive (Debug)] struct SimilarityLink { decl1_cas : u64 , decl2_cas : u64 , similarity_score : f64 , link_type : String , }

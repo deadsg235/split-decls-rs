@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bott_universal_synthesis_Complex] # [doc = " Complex number for Bott calculations"] # [derive (Debug , Clone , PartialEq)] pub struct Complex { real : f64 , imag : f64 , }

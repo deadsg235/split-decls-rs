@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_semantic_analyzer_RepoSemantics] # [derive (Debug , Clone , serde :: Serialize)] struct RepoSemantics { name : String , category : String , purpose : String , language : String , priority : u8 , }

@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ trait_fixer_rustc_mock_decls_impl_for_Symbol] impl Symbol { pub fn intern (_s : & str) -> Self { Symbol } }

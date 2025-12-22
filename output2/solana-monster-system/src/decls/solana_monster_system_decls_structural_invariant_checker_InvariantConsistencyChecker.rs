@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_structural_invariant_checker_InvariantConsistencyChecker] pub struct InvariantConsistencyChecker { pub invariants : Vec < StructuralInvariant > , pub constraints : Vec < R1CSConstraint > , }

@@ -88,7 +88,7 @@ pub fn setup_crate_paths(crate_path: &Path) -> Result<CratePaths> {
     let old_build_rs_path = crate_path.join("oldbuild.rs");
     let cargo_toml_path = crate_path.join("Cargo.toml");
     let old_cargo_toml_path = crate_path.join("oldCargo.toml"); // Define the path for the backed-up Cargo.toml
-    let decls_output_dir = crate_path.join("src").join("decls");
+    let decls_output_dir = PathBuf::from("output2").join(&crate_name).join("src").join("decls");
     let target_config_path = crate_path.join(".split-decls-config.toml");
 
     Ok(CratePaths {

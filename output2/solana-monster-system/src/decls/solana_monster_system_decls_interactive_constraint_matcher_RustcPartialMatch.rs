@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_interactive_constraint_matcher_RustcPartialMatch] # [derive (Debug , Clone)] pub struct RustcPartialMatch { pub component : String , pub match_score : f64 , pub constraints : Vec < i32 > , }

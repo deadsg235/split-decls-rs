@@ -1,0 +1,1 @@
+use rustc_hir :: def_id :: DefId ; use rustc_middle :: ty :: TyCtxt ; use rustc_span :: symbol :: sym ; use trait_fixer_lang_items_trait :: LangItems ; prelude ! { } # [decl_ trait_fixer_lang_items_real_decls_RustcTyCtxt] pub struct RustcTyCtxt < 'tcx > (pub TyCtxt < 'tcx >) ;

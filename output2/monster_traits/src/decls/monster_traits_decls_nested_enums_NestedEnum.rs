@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ monster_traits_decls_nested_enums_NestedEnum] pub type NestedEnum = Depth1Enum ;

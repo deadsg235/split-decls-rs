@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ rusttycoon_decls_factory_blocks_mod_solana_platform_blocks] pub mod solana_platform_blocks ;

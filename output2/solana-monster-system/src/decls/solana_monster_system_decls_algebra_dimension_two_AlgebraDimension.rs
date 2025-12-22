@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_algebra_dimension_two_AlgebraDimension] pub struct AlgebraDimension { pub dimension : i64 , }

@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_cargo_crates_cas_db2_CargoCratesDB2] struct CargoCratesDB2 { crates : HashMap < u64 , CargoCrate > , name_to_cas : HashMap < String , u64 > , }

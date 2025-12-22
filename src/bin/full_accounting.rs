@@ -1,0 +1,62 @@
+use split_decls_rs::{setup_crate_paths, eager_splitter};
+use split_decls_types::SplitDeclsConfig;
+use std::path::PathBuf;
+use std::fs;
+
+fn main() -> anyhow::Result<()> {
+    println!("📊 FULL WORKSPACE ACCOUNTING REPORT");
+    println!("=====================================\n");
+    
+    let crates_dir = PathBuf::from("../../crates");
+    let mut total_processed = 0;
+    let mut total_skipped = 0;
+    let mut total_decls = 0;
+    
+    for entry in fs::read_dir(&crates_dir)? {
+        let entry = entry?;
+        if entry.file_type()?.is_dir() {
+            let crate_path = entry.path();
+            let crate_name = crate_path.file_name().unwrap().to_string_lossy();
+            let lib_rs = crate_path.join("src/lib.rs");
+            
+            if lib_rs.exists() {
+                let content = fs::read_to_string(&lib_rs)?;
+                let lines = content.lines().count();
+                let bytes = content.len();
+                
+                if bytes > 0 {
+                    println!("✅ PROCESSING: {}", crate_name);
+                    println!("   📄 File: {} lines, {} bytes", lines, bytes);
+                    
+                    let paths = setup_crate_paths(&crate_path)?;
+                    let config = SplitDeclsConfig::default();
+                    
+                    eager_splitter::eager_split_crate(&paths, &config)?;
+                    
+                    let decl_count = if paths.decls_output_dir.exists() {
+                        fs::read_dir(&paths.decls_output_dir)?.count()
+                    } else { 0 };
+                    
+                    println!("   🔧 Generated: {} declaration files", decl_count);
+                    total_decls += decl_count;
+                    total_processed += 1;
+                } else {
+                    println!("⚠️  SKIPPED: {} (empty lib.rs)", crate_name);
+                    total_skipped += 1;
+                }
+            } else {
+                println!("❌ SKIPPED: {} (no lib.rs)", crate_name);
+                total_skipped += 1;
+            }
+            println!();
+        }
+    }
+    
+    println!("📈 SUMMARY:");
+    println!("• Total crates found: {}", total_processed + total_skipped);
+    println!("• Processed: {}", total_processed);
+    println!("• Skipped: {}", total_skipped);
+    println!("• Total declarations generated: {}", total_decls);
+    
+    Ok(())
+}

@@ -1,0 +1,1 @@
+decl_module ! (cargo_toml_generator_types_decls_CargoToml , cargo_toml_generator_types_decls_Package , cargo_toml_generator_types_decls_Workspace , cargo_toml_generator_types_decls_Dependency , cargo_toml_generator_types_decls_impl_for_Default , cargo_toml_generator_types_decls_DependencyTable , cargo_toml_generator_types_decls_PatchSection) ;

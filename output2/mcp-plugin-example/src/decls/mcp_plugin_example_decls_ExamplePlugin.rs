@@ -1,0 +1,1 @@
+use mcp_plugin_traits :: { McpPlugin , MorphologicalIndex } ; use anyhow :: { Result , anyhow } ; use std :: ffi :: { CStr , CString } ; use std :: os :: raw :: c_char ; use super :: * ; prelude ! { } # [decl_ mcp_plugin_example_decls_ExamplePlugin] struct ExamplePlugin ;

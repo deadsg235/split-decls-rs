@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_sat_zkp_prover_ZKCircuit] # [derive (Debug)] pub struct ZKCircuit { pub gates : Vec < CircuitGate > , pub public_inputs : Vec < PublicInput > , pub private_witnesses : Vec < PrivateWitness > , }

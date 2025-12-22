@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_impl_for_MockAttribute] impl MockAttribute { pub fn meta_item_list (self) -> Vec < MockMetaItem > { vec ! [MockMetaItem] } }

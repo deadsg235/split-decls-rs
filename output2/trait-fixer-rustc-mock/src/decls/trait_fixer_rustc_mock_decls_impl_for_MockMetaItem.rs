@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ trait_fixer_rustc_mock_decls_impl_for_MockMetaItem] impl MockMetaItem { pub fn has_name (self , _symbol : Symbol) -> bool { true } }

@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ tool_refactorings_decls_movie_toolkits_Movie] pub struct Movie { pub id : String , pub title : String , pub release_date : String , pub crew : Vec < CrewMember > , }

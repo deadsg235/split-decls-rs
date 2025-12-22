@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_multi_input_solfunmeme_WikidataInput] # [derive (Debug)] struct WikidataInput { entity_id : String , semantic_weight : f64 , connection_count : u64 , knowledge_factor : f64 , }

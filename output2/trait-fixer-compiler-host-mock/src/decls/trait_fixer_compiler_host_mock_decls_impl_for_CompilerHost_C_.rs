@@ -1,0 +1,1 @@
+use trait_fixer_compiler_host_trait :: CompilerHost ; prelude ! { } # [decl_ trait_fixer_compiler_host_mock_decls_impl_for_CompilerHost_C_] impl < C > CompilerHost < C > for MockCompilerHost { fn run_compiler_callbacks (& self , _args : Vec < String > , _callbacks : & mut C) { println ! ("MockCompilerHost::run_compiler_callbacks called") ; } }

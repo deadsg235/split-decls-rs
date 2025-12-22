@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ monster_traits_decls_number_properties_get_type_parts_count_for_enum_variants] # [doc = " Returns the number of variants in an enum."] pub fn get_type_parts_count_for_enum_variants (num_variants : u32) -> u32 { num_variants }

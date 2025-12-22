@@ -1,0 +1,1 @@
+use std :: ffi :: { CStr , CString } ; use std :: os :: raw :: { c_char , c_void } ; prelude ! { } # [decl_ factory_abi_decls_from_c_string] pub fn from_c_string < 'a > (ptr : * const c_char) -> & 'a str { unsafe { CStr :: from_ptr (ptr) } . to_str () . expect ("CStr::to_str failed") }

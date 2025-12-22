@@ -1,0 +1,20 @@
+use split_decls_rs::{setup_crate_paths, eager_splitter};
+use split_decls_types::SplitDeclsConfig;
+use std::path::PathBuf;
+
+fn main() -> anyhow::Result<()> {
+    let crate_path = PathBuf::from("../../crates/rustc_ast_fragments");
+    let paths = setup_crate_paths(&crate_path)?;
+    let config = SplitDeclsConfig::default();
+    
+    println!("Processing largest crate: rustc_ast_fragments");
+    println!("Input: {}", crate_path.display());
+    println!("Output: {}", paths.decls_output_dir.display());
+    
+    eager_splitter::eager_split_crate(&paths, &config)?;
+    
+    let decl_count = std::fs::read_dir(&paths.decls_output_dir)?.count();
+    println!("✅ Generated {} declaration files!", decl_count);
+    
+    Ok(())
+}

@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_quasi_fiber_bundle_TopologicalStructure] # [derive (Debug , Clone)] pub struct TopologicalStructure { pub topology_type : String , pub open_sets : Vec < String > , pub continuity_conditions : Vec < String > , }

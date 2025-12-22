@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::ToTokens;
 use std::fs;
+use std::io::Write;
 use syn::visit::Visit;
 use syn::{self};
 
@@ -14,28 +15,191 @@ pub mod declaration_extractor;
 pub mod declaration_writer;
 pub mod invocation_generator;
 
+/// Recursively finds all .rs files in src directory that cargo would build
+fn find_all_rust_files(src_dir: &std::path::Path) -> Result<Vec<std::path::PathBuf>> {
+    let mut rust_files = Vec::new();
+    
+    if !src_dir.exists() {
+        return Ok(rust_files);
+    }
+    
+    for entry in std::fs::read_dir(src_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+        
+        if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
+            rust_files.push(path);
+        } else if path.is_dir() {
+            // Recursively search subdirectories
+            rust_files.extend(find_all_rust_files(&path)?);
+        }
+    }
+    
+    Ok(rust_files)
+}
+
+/// Processes all .rs files found in src directory
+fn process_all_rust_files(
+    paths: &CratePaths,
+    config: &SplitDeclsConfig,
+    collected_module_names: &mut Vec<Ident>,
+    item_count: &mut usize,
+    common_uses: &TokenStream,
+    dry_run: bool,
+) -> Result<()> {
+    let src_dir = paths.crate_path.join("src");
+    let rust_files = find_all_rust_files(&src_dir)?;
+    
+    for rust_file in rust_files {
+        // Skip lib.rs and main.rs as they're handled separately
+        if let Some(file_name) = rust_file.file_name() {
+            if file_name == "lib.rs" || file_name == "main.rs" {
+                continue;
+            }
+        }
+        
+        println!("Processing file: {}", rust_file.display());
+        
+        let file_content = fs::read_to_string(&rust_file)?;
+        let file_ast: syn::File = syn::parse_str(&file_content)?;
+        
+        // Get relative path for naming
+        let rel_path = rust_file.strip_prefix(&src_dir).unwrap_or(&rust_file);
+        let path_str = rel_path.to_string_lossy().replace("/", "_").replace("\\", "_").replace(".rs", "");
+        
+        for item in &file_ast.items {
+            if let Some(decl) = declaration_extractor::extract_single_declaration(item, *item_count) {
+                let module_name_str = format!("{}_decls_{}_{}", 
+                    paths.crate_name.replace("-", "_").replace(".", "_"), 
+                    path_str.replace("-", "_").replace(".", "_"),
+                    decl.name
+                );
+                let module_name_ident = Ident::new(&module_name_str, Span::call_site());
+                collected_module_names.push(module_name_ident.clone());
+                
+                declaration_writer::write_declaration_file(
+                    decl.clone(),
+                    paths,
+                    config,
+                    dry_run,
+                    common_uses,
+                    module_name_ident,
+                )?;
+                print!("{}, ", decl.name);
+                *item_count += 1;
+            }
+        }
+    }
+    
+    Ok(())
+}
+fn process_module_recursively(
+    paths: &CratePaths,
+    config: &SplitDeclsConfig,
+    mod_name: &str,
+    parent_path: &str,
+    collected_module_names: &mut Vec<Ident>,
+    item_count: &mut usize,
+    common_uses: &TokenStream,
+    dry_run: bool,
+) -> Result<()> {
+    let src_dir = paths.crate_path.join("src");
+    let mod_file1 = src_dir.join(format!("{}.rs", mod_name));
+    let mod_file2 = src_dir.join(mod_name).join("mod.rs");
+    
+    let mod_file = if mod_file1.exists() {
+        mod_file1
+    } else if mod_file2.exists() {
+        mod_file2
+    } else {
+        println!("Module file not found for: {}", mod_name);
+        return Ok(());
+    };
+    
+    let mod_content = fs::read_to_string(&mod_file)?;
+    let mod_ast: syn::File = syn::parse_str(&mod_content)?;
+    
+    for item in &mod_ast.items {
+        if let Some(decl) = declaration_extractor::extract_single_declaration(item, *item_count) {
+            let full_path = if parent_path.is_empty() {
+                mod_name.to_string()
+            } else {
+                format!("{}_{}", parent_path, mod_name)
+            };
+            
+            let module_name_str = format!("{}_decls_{}_{}", 
+                paths.crate_name.replace("-", "_").replace(".", "_"), 
+                full_path.replace("-", "_").replace(".", "_"),
+                decl.name
+            );
+            let module_name_ident = Ident::new(&module_name_str, Span::call_site());
+            collected_module_names.push(module_name_ident.clone());
+            
+            declaration_writer::write_declaration_file(
+                decl.clone(),
+                paths,
+                config,
+                dry_run,
+                common_uses,
+                module_name_ident,
+            )?;
+            print!("{}, ", decl.name);
+            *item_count += 1;
+        }
+        
+        // Recursively process nested modules
+        if let syn::Item::Mod(item_mod) = item {
+            let nested_mod_name = item_mod.ident.to_string();
+            let new_parent_path = if parent_path.is_empty() {
+                mod_name.to_string()
+            } else {
+                format!("{}_{}", parent_path, mod_name)
+            };
+            
+            process_module_recursively(
+                paths,
+                config,
+                &nested_mod_name,
+                &new_parent_path,
+                collected_module_names,
+                item_count,
+                common_uses,
+                dry_run,
+            )?;
+        }
+    }
+    
+    Ok(())
+}
+
 /// Main entry point for eager splitting of a crate
 pub fn eager_split_crate(paths: &CratePaths, config: &SplitDeclsConfig) -> Result<()> {
     // 1. Backup original files
     backup_original_files(paths)?;
     
     // 2. Parse the original lib.rs
+    println!("📖 Parsing lib.rs...");
     let lib_content = fs::read_to_string(&paths.old_lib_rs_path)
         .context(format!("Failed to read {}", paths.old_lib_rs_path.display()))?;
     
+    println!("🔧 Parsing {} bytes of Rust code...", lib_content.len());
     let syntax_tree: syn::File = syn::parse_file(&lib_content)
         .context("Failed to parse lib.rs as Rust code")?;
     
-    // 3. Split declarations into individual files
+    // 3. Split declarations into individual files (to output directory)
     split_and_generate_decls(&syntax_tree, paths, config, false)?;
     
-    // 4. Generate new lib.rs
+    // 4. Generate new lib.rs in output directory
+    generate_output_lib_rs(paths)?;
+    
+    // 5. Generate new lib.rs in original location (for compatibility)
     generate_new_lib_rs(paths)?;
     
-    // 5. Generate new build.rs
+    // 6. Generate new build.rs
     generate_new_build_rs(paths)?;
     
     println!("Eager splitting completed for crate: {}", paths.crate_name);
+    println!("Output generated in: {}", paths.decls_output_dir.parent().unwrap().display());
     Ok(())
 }
 
@@ -57,6 +221,33 @@ fn backup_original_files(paths: &CratePaths) -> Result<()> {
         println!("Backed up build.rs to oldbuild.rs");
     }
     
+    Ok(())
+}
+
+/// Generate new lib.rs that re-exports the split declarations in the output directory
+fn generate_output_lib_rs(paths: &CratePaths) -> Result<()> {
+    let output_lib_path = paths.decls_output_dir.parent().unwrap().join("lib.rs");
+    let new_lib_content = format!(r#"// Generated by split-decls-rs
+// Re-exports all split declarations
+
+pub mod decls {{
+    include!("decls/_decl_module_invocation.rs");
+}}
+pub use decls::*;
+
+// Re-export prelude macros if available
+#[cfg(feature = "introspector_decl2_macros")]
+pub use introspector_decl2_macros::*;
+"#);
+    
+    // Ensure the output src directory exists
+    fs::create_dir_all(output_lib_path.parent().unwrap())
+        .context("Failed to create output src directory")?;
+    
+    fs::write(&output_lib_path, new_lib_content)
+        .context(format!("Failed to write output lib.rs at {}", output_lib_path.display()))?;
+    
+    println!("Generated output lib.rs at {}", output_lib_path.display());
     Ok(())
 }
 
@@ -135,26 +326,57 @@ pub fn split_and_generate_decls(
     let mut item_count = 0; // For generating unique names for impls without explicit paths
 
     // Extract and split declarations
+    println!("🔍 Processing {} items in AST...", syntax_tree.items.len());
     for item in &syntax_tree.items {
         if let Some(decl) = declaration_extractor::extract_single_declaration(item, item_count) {
-            let module_name_str = format!("{}_decls_{}", paths.crate_name.replace("-", "_"), decl.name);
+            let module_name_str = format!("{}_decls_{}", paths.crate_name.replace("-", "_").replace(".", "_"), decl.name);
             let module_name_ident = Ident::new(&module_name_str, Span::call_site());
             collected_module_names.push(module_name_ident.clone());
 
             declaration_writer::write_declaration_file(
-                decl,
+                decl.clone(),
                 paths,
                 config,
                 dry_run,
                 &common_uses,
                 module_name_ident,
             )?;
+            print!("{}, ", decl.name);
+            std::io::Write::flush(&mut std::io::stdout()).ok();
         }
+        
+        // Process modules recursively
+        if let syn::Item::Mod(item_mod) = item {
+            let mod_name = item_mod.ident.to_string();
+            process_module_recursively(
+                paths,
+                config,
+                &mod_name,
+                "",
+                &mut collected_module_names,
+                &mut item_count,
+                &common_uses,
+                dry_run,
+            )?;
+        }
+        
         item_count += 1;
     }
+    
+    // Process ALL .rs files in src directory (force include everything cargo would build)
+    println!("🔍 Force including all .rs files in src directory...");
+    process_all_rust_files(
+        paths,
+        config,
+        &mut collected_module_names,
+        &mut item_count,
+        &common_uses,
+        dry_run,
+    )?;
 
     // Generate decl_module! invocation
     invocation_generator::generate_decl_module_invocation(collected_module_names, paths, dry_run)?;
 
+    println!(); // Add newline after declaration list
     Ok(())
 }

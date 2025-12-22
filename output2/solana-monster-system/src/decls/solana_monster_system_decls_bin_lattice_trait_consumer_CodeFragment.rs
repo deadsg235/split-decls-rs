@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_lattice_trait_consumer_CodeFragment] # [derive (Debug , Clone)] struct CodeFragment { content : String , phi_signature : u64 , functions : Vec < String > , source_file : String , line_range : (usize , usize) , }

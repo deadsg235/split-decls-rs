@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ trait_fixer_rustc_mock_decls_impl_for_MockInferCtxtBuilder] impl MockInferCtxtBuilder { pub fn build (self , _typing_mode : MockTypingMode) -> MockInferCtxt { MockInferCtxt } }

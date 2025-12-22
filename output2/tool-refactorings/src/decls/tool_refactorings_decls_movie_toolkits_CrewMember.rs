@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ tool_refactorings_decls_movie_toolkits_CrewMember] # [derive (Debug , PartialEq)] pub struct CrewMember { pub name : String , pub job : String , }

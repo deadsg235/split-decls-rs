@@ -1,0 +1,1 @@
+decl_module ! (trait_fixer_attribute_reader_trait_decls_decls , trait_fixer_attribute_reader_trait_decls_oldlib_decls) ;

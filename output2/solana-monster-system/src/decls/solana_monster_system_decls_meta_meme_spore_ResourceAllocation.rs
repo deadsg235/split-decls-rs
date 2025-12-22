@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_meta_meme_spore_ResourceAllocation] # [derive (Debug , Clone)] pub struct ResourceAllocation { pub ram_bytes : u16 , pub cpu_cycles : u32 , pub network_bandwidth : u16 , pub storage_bytes : u32 , }

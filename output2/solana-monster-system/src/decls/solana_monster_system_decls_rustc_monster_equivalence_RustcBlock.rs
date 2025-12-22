@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_rustc_monster_equivalence_RustcBlock] # [derive (Debug , Clone)] pub struct RustcBlock { pub name : String , pub prime_factor : u64 , pub supersingular_index : usize , pub monster_constraint : i32 , }

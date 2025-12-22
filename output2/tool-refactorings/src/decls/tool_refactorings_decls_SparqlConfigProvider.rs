@@ -1,0 +1,1 @@
+prelude ! { } # [decl_ tool_refactorings_decls_SparqlConfigProvider] # [doc = " Trait for providing SPARQL configuration values."] pub trait SparqlConfigProvider { fn get_sparql_endpoint_url (& self) -> & str ; fn get_freebase_uri_prefix (& self) -> & str ; fn get_time_offset_string (& self) -> & str ; }

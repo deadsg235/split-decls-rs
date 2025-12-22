@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bott_universal_synthesis_TopologicalProof] # [derive (Debug , Clone)] pub struct TopologicalProof { euler_characteristic_preserved : bool , betti_numbers_invariant : bool , genus_maintained : bool , }

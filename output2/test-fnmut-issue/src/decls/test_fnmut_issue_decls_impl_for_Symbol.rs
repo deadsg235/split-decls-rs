@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_impl_for_Symbol] impl Symbol { pub fn intern (_s : & str) -> Self { Symbol } }

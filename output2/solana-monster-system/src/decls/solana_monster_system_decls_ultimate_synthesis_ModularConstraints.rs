@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_ultimate_synthesis_ModularConstraints] # [derive (Debug , Clone)] pub struct ModularConstraints { j_invariant_satisfied : bool , modular_form_constraints : Vec < i64 > , sl2z_invariance_maintained : bool , }

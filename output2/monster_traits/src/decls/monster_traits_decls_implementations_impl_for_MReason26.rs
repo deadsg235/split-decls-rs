@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ monster_traits_decls_implementations_impl_for_MReason26] impl MReason26 for NestedEnum { fn extract_numerical_property (& self) -> u32 { Self :: MAX_DEPTH } }

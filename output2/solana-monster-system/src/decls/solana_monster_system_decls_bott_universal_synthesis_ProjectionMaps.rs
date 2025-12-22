@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bott_universal_synthesis_ProjectionMaps] # [derive (Debug , Clone)] pub struct ProjectionMaps { base_projection : BaseProjection , fiber_projection : FiberProjection , }

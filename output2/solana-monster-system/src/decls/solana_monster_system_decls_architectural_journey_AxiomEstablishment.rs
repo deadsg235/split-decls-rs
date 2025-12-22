@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_architectural_journey_AxiomEstablishment] # [derive (Debug)] pub struct AxiomEstablishment { equivalence_verified : bool , monster_correspondence : bool , axiom_consistent : bool , axiom_strength : AxiomStrength , }

@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_volume_complement_impl_for_Volume] impl Volume { pub fn new (value : f64) -> Self { Self { value } } }

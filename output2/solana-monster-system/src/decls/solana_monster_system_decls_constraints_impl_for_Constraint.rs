@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_constraints_impl_for_Constraint] impl Constraint { pub fn new (id : usize , a : i64 , b : i64 , c : i64) -> Self { Self { id , a , b , c } } pub fn verify (& self , witness : i64) -> bool { witness > 0 } }

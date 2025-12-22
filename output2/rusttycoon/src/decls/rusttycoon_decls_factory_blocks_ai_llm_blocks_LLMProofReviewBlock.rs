@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ rusttycoon_decls_factory_blocks_ai_llm_blocks_LLMProofReviewBlock] # [derive (Clone , Serialize , Deserialize)] # [typetag :: serde] pub struct LLMProofReviewBlock ;

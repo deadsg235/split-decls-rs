@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_meta_meme_spore_rand] mod rand { pub fn random < T > () -> T where T : From < f64 > , { T :: from (0.5) } }

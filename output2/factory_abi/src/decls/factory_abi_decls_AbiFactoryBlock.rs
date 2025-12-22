@@ -1,0 +1,1 @@
+use std :: ffi :: { CStr , CString } ; use std :: os :: raw :: { c_char , c_void } ; prelude ! { } # [decl_ factory_abi_decls_AbiFactoryBlock] # [repr (C)] pub struct AbiFactoryBlock { pub block_ptr : * mut c_void , pub get_name : FactoryBlockGetName , pub get_cost : FactoryBlockGetCost , pub execute : FactoryBlockExecute , }

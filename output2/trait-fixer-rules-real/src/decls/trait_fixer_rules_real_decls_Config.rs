@@ -1,0 +1,1 @@
+use serde :: Deserialize ; use toml ; use trait_fixer_rules_trait :: { ConfigTrait , Rule } ; prelude ! { } # [decl_ trait_fixer_rules_real_decls_Config] # [derive (Debug , Deserialize)] pub struct Config { pub rule : Vec < Rule > , }

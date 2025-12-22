@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_k_theory_equivalence_KTheoryEquivalence] pub struct KTheoryEquivalence { pub x : i64 , pub ko_x : i64 , }

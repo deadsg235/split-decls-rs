@@ -1,5 +1,6 @@
 use proc_macro2::TokenStream;
 /// Represents a single extracted declaration.
+#[derive(Debug, Clone)]
 pub struct ExtractedDecl {
     pub name: String,
     pub kind: String, // e.g., "fn", "struct", "enum"

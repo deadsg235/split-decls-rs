@@ -1,0 +1,1 @@
+use trait_fixer_query_context_trait :: QueryContext ; use trait_fixer_rustc_mock :: { Item , TyCtxt } ; prelude ! { } # [decl_ trait_fixer_query_context_mock_decls_MockTyCtxt] pub struct MockTyCtxt < 'tcx > (pub TyCtxt < 'tcx >) ;

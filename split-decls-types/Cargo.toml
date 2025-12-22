@@ -7,3 +7,9 @@ edition = "2024"
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
 anyhow = { workspace = true }
+
+[build-dependencies]
+anyhow = { workspace = true }
+syn = { workspace = true, features = ["full", "visit"] }
+serde = { workspace = true, features = ["derive"] }
+toml = { workspace = true }

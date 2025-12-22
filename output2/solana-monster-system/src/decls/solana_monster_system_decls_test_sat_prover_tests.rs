@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_test_sat_prover_tests] # [cfg (test)] mod tests { use super :: * ; # [test] fn test_monster_group_detection () { run_all_tests () ; } }

@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_crate_usage_phi_matcher_CrateUsageProfile] # [derive (Debug , Clone)] struct CrateUsageProfile { crate_name : String , used_functions : Vec < String > , usage_phi_signature : u64 , usage_pattern : Vec < u64 > , }

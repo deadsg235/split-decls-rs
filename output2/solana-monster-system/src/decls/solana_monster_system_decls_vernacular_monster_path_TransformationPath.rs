@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_vernacular_monster_path_TransformationPath] # [derive (Debug , Clone , Serialize , Deserialize)] pub struct TransformationPath { pub steps : Vec < i32 > , pub cost : f64 , pub satisfiable : bool , }

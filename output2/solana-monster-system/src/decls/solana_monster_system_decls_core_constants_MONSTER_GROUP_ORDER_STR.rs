@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_core_constants_MONSTER_GROUP_ORDER_STR] pub const MONSTER_GROUP_ORDER_STR : & str = "808017424794512875886459904961710757005754368000000000" ;

@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ tool_refactorings_decls_monster_semantic_indexer_SemanticHash] # [derive (Debug)] pub struct SemanticHash { pub file_index : u64 , pub prime_exponents : Vec < (u64 , u8) > , pub hash_value : u128 , }

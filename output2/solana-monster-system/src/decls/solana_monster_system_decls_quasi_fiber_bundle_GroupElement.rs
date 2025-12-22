@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_quasi_fiber_bundle_GroupElement] # [derive (Debug , Clone)] pub struct GroupElement { pub element_id : String , pub conjugacy_class : String , pub order : u64 , pub geometric_point : GeometricPoint , }

@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ trait_fixer_rustc_mock_decls_MockPredicate] # [derive (Debug , Clone , Copy , PartialEq , Eq , Hash)] pub struct MockPredicate ;

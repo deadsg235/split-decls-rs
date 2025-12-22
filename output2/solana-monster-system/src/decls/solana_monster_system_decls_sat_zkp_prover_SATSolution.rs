@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_sat_zkp_prover_SATSolution] # [derive (Debug)] pub struct SATSolution { pub assignment : HashMap < String , bool > , }

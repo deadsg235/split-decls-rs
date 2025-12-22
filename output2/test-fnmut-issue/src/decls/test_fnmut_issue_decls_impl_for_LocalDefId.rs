@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_impl_for_LocalDefId] impl LocalDefId { pub fn to_def_id (self) -> DefId { DefId } }

@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_eigenvalue_smooth_check_impl_for_Eigenvalue] impl Eigenvalue { pub fn new (value : f64) -> Self { Self { value } } }

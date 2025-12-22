@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use trait_fixer_hir_info_trait :: HirInfo ; use trait_fixer_rustc_mock :: { DUMMY_SP , ItemKind , OwnerId , Span } ; use trait_fixer_rustc_mock :: Item ; prelude ! { } # [decl_ trait_fixer_hir_info_mock_decls_MockItem] pub struct MockItem < 'tcx > (pub Item < 'tcx > , PhantomData < & 'tcx () >) ;

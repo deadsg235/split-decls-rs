@@ -1,0 +1,1 @@
+decl_module ! (monster_math_traits_decls_decls , monster_math_traits_decls_oldlib_decls) ;

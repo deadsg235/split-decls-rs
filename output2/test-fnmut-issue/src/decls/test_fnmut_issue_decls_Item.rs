@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_Item] # [derive (Debug , Clone , Copy , PartialEq , Eq , Hash)] pub struct Item < 'tcx > (PhantomData < & 'tcx () >) ;

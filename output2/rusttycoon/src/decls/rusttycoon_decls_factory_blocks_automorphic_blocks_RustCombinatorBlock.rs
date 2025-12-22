@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ rusttycoon_decls_factory_blocks_automorphic_blocks_RustCombinatorBlock] # [doc = "use crate::factory_blocks::rustc_meta_blocks::RustcCrateBlock;"] # [derive (Clone , Serialize , Deserialize)] # [typetag :: serde] pub struct RustCombinatorBlock ;

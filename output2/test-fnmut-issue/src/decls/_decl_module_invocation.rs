@@ -1,0 +1,1 @@
+decl_module ! (test_fnmut_issue_decls_decls , test_fnmut_issue_decls_oldlib_decls) ;

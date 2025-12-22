@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_trait_binding_calculator_TraitBinding] # [derive (Debug)] struct TraitBinding { crate_name : String , exports : Vec < String > , imports : Vec < String > , modular_form_index : u64 , }

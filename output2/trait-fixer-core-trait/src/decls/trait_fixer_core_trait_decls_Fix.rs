@@ -1,0 +1,1 @@
+use trait_fixer_rules_trait :: ConfigTrait ; use std :: fmt :: Debug ; prelude ! { } # [decl_ trait_fixer_core_trait_decls_Fix] # [derive (Debug)] pub enum Fix < S , D , ID > { AddDerive { span : S , trait_name : String } , AddCloneImpl { def_id : D } , RemoveImpl { item_id : ID } , }

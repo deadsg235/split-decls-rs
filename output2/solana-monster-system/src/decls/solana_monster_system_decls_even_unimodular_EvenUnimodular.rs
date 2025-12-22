@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_even_unimodular_EvenUnimodular] pub struct EvenUnimodular { pub matrix : [[i64 ; 2] ; 2] , pub determinant : i64 , }

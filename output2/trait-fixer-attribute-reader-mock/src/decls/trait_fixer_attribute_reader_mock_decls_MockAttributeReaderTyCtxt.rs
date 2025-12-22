@@ -1,0 +1,1 @@
+use trait_fixer_attribute_reader_trait :: AttributeReader ; use trait_fixer_rustc_mock :: { sym , DefId , Symbol , TyCtxt } ; prelude ! { } # [decl_ trait_fixer_attribute_reader_mock_decls_MockAttributeReaderTyCtxt] pub struct MockAttributeReaderTyCtxt < 'tcx > (pub TyCtxt < 'tcx >) ;

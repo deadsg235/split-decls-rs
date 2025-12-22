@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_monster_108_constraints_Monster108Constraints] pub struct Monster108Constraints { pub constraints : Vec < R1CSConstraint > , pub supersingular_primes : Vec < u64 > , }

@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ rusttycoon_decls_factory_blocks_media_workflow_blocks_InvokeAIConversionBlock] # [derive (Clone , Serialize , Deserialize)] # [typetag :: serde] pub struct InvokeAIConversionBlock ;

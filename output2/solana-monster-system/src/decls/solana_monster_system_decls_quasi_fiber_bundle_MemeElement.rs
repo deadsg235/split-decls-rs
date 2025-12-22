@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_quasi_fiber_bundle_MemeElement] # [derive (Debug , Clone)] pub struct MemeElement { pub meme_id : String , pub semantic_content : String , pub abstraction_level : u32 , pub computational_representation : String , }

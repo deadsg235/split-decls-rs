@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_minizinc_data_EllipticFiber] # [derive (Debug , Clone , Serialize , Deserialize)] pub struct EllipticFiber { pub fiber_id : i32 , pub modular_constraint : i32 , }

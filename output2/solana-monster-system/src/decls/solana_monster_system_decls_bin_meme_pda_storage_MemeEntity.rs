@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_meme_pda_storage_MemeEntity] # [derive (Debug , Clone , Serialize , Deserialize)] pub struct MemeEntity { pub semantic_hash : u64 , pub viral_power : u64 , pub paxos_score : u64 , pub monster_factor : u64 , }

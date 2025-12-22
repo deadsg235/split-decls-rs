@@ -4,6 +4,7 @@ use split_decls_rs::patch_config::PatchConfig;
 use split_decls_types::SplitDeclsConfig;
 use split_decls_rs::generate_wrapped_workspace::generate_wrapped_workspace;
 use split_decls_rs::buildrs_generator::build_script_composer;
+use split_decls_rs::{setup_crate_paths, eager_splitter};
 use toml;
 use std::fs;
 use cargo_toml_generator_types::{CargoToml, Dependency};
@@ -13,12 +14,22 @@ use cargo_toml_generator_types::{CargoToml, Dependency};
 fn dep_to_toml_value_iter<'a>(
     iter: impl IntoIterator<Item = (String, Dependency)> + 'a,
 ) -> impl Iterator<Item = (String, toml::Value)> + 'a {
-    iter.into_iter().map(|(name, dep)| {
-        let serialized_dep = toml::to_string(&dep)
-            .expect("Failed to serialize Dependency to TOML string");
-        let toml_value: toml::Value = toml::from_str(&serialized_dep)
-            .expect("Failed to parse serialized Dependency TOML string to toml::Value");
-        (name, toml_value)
+    iter.into_iter().filter_map(|(name, dep)| {
+        match toml::to_string(&dep) {
+            Ok(serialized_dep) => {
+                match toml::from_str(&serialized_dep) {
+                    Ok(toml_value) => Some((name, toml_value)),
+                    Err(_) => {
+                        eprintln!("Warning: Failed to parse serialized Dependency TOML for {}", name);
+                        None
+                    }
+                }
+            }
+            Err(_) => {
+                eprintln!("Warning: Failed to serialize Dependency to TOML for {}", name);
+                None
+            }
+        }
     })
 }
 
@@ -55,7 +66,7 @@ fn main() -> Result<()> {
     println!("dry_run flag: {}", dry_run);
     println!("verbose flag: {}", verbose);
 
-    let wrapped_workspace_output_dir = PathBuf::from("output");
+    let wrapped_workspace_output_dir = PathBuf::from("output2");
     let patch_config_path_str = "patch.toml";
 
     if dry_run {
@@ -64,7 +75,7 @@ fn main() -> Result<()> {
 
     let workspace_root = PathBuf::from("./");
     let global_config_path = workspace_root.join("split-decls-rs.toml");
-    let root_cargo_toml_path = workspace_root.join("output/Cargo.toml");
+    let root_cargo_toml_path = workspace_root.join("output2/Cargo.toml");
     
     let mut global_config = if global_config_path.exists() {
         SplitDeclsConfig::load_from_file(&global_config_path)
@@ -81,7 +92,7 @@ fn main() -> Result<()> {
         fs::read_to_string(&root_cargo_toml_path)
             .context(format!("Failed to read generated Cargo.toml from {}", root_cargo_toml_path.display()))?
     } else {
-        println!("No output/Cargo.toml found, using target directory Cargo.toml");
+        println!("No output2/Cargo.toml found, using target directory Cargo.toml");
         let target_dir = target_dir_override.as_deref().unwrap_or("../../");
         let target_cargo_path = PathBuf::from(target_dir).join("Cargo.toml");
         fs::read_to_string(&target_cargo_path)
@@ -143,6 +154,24 @@ fn main() -> Result<()> {
         &generated_target_build_rs_path,
     )?;
     // --- END NEW ---
+
+    // Process each crate for declaration splitting
+    println!("Processing crates for declaration splitting...");
+    let crates_dir = workspace_root.join("crates");
+    if crates_dir.exists() {
+        for entry in fs::read_dir(&crates_dir)? {
+            let entry = entry?;
+            if entry.file_type()?.is_dir() {
+                let crate_path = entry.path();
+                let lib_rs = crate_path.join("src/lib.rs");
+                if lib_rs.exists() {
+                    println!("Processing crate: {}", crate_path.file_name().unwrap().to_string_lossy());
+                    let paths = setup_crate_paths(&crate_path)?;
+                    eager_splitter::eager_split_crate(&paths, &global_config)?;
+                }
+            }
+        }
+    }
 
     println!("\nWrapped workspace generation finished.");
     println!("\nSplit-decls-rs tool finished.");

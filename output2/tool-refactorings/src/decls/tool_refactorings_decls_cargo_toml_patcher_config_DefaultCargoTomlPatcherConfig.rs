@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ tool_refactorings_decls_cargo_toml_patcher_config_DefaultCargoTomlPatcherConfig] # [doc = " Dummy implementation of `CargoTomlPatcherConfig` with hardcoded values."] pub struct DefaultCargoTomlPatcherConfig ;

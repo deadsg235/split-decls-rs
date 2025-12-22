@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ tool_refactorings_decls_file_browser_config_DefaultFileBrowserConfig] # [doc = " Dummy implementation of CodeExecutorFileBrowserConfigProvider returning hardcoded values."] pub struct DefaultFileBrowserConfig ;

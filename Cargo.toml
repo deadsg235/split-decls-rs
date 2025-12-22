@@ -14,10 +14,22 @@ build = "build.rs"
 #     "src/bin/rustmacrodoc", # The new binary target
 # ]
 
-# [workspace.dependencies]
-# anyhow = "1.0"
-# toml = "0.8"
-# serde = { version = "1.0", features = ["derive"] }
+[workspace.dependencies]
+anyhow = "1.0"
+toml = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_derive = "1.0"
+serde_json = "1.0"
+url = "2.0"
+quote = "1.0"
+syn = { version = "2.0", features = ["full", "visit", "visit-mut", "extra-traits"] }
+walkdir = "2.0"
+proc-macro2 = "1.0"
+tempfile = "3.0"
+clap = { version = "4.0", features = ["derive"] }
+split-decls-types = { path = "split-decls-types" }
+cargo-toml-generator-types = { path = "cargo-toml-generator-types" }
+cargo-toml-generator-macros = { path = "cargo-toml-generator-macros" }
 # serde_json = "1.0"
 # url = "2.0"
 # quote = "1.0"
@@ -75,6 +87,10 @@ path = "src/bin/test_splitter.rs"
 [[bin]]
 name = "submodule_decl_report"
 path = "src/bin/submodule_decl_report.rs"
+
+[[bin]]
+name = "eigenmatrix_analyzer"
+path = "src/bin/eigenmatrix_analyzer.rs"
 
 [patch.'crates-io']
 proc-macro2 = { path = "../proc-macro2" }

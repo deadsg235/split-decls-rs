@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_ultimate_synthesis_macro_rules] macro_rules ! impl_simple_struct { ($ name : ident) => { # [derive (Debug , Clone)] pub struct $ name ; impl $ name { pub fn new () -> Self { Self } } } ; }

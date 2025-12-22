@@ -1,0 +1,1 @@
+use trait_fixer_lang_items_trait :: LangItems ; use trait_fixer_rustc_mock :: { DefId , TyCtxt } ; prelude ! { } # [decl_ trait_fixer_lang_items_mock_decls_MockTyCtxt] pub struct MockTyCtxt < 'tcx > (pub TyCtxt < 'tcx >) ;

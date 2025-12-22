@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_ultimate_synthesis_impl_for_CliffordRealization] impl CliffordRealization { fn period_8 () -> Self { Self } }

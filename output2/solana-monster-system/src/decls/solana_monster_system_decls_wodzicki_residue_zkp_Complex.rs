@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_wodzicki_residue_zkp_Complex] # [doc = " Complex number for residue calculations"] # [derive (Debug , Clone , PartialEq)] pub struct Complex { real : f64 , imag : f64 , }

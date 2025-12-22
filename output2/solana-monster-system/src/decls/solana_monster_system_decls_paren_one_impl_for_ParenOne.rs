@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_paren_one_impl_for_ParenOne] impl ParenOne { pub fn new () -> Self { Self { result : 1 } } pub fn is_one (& self) -> bool { self . result == 1 } }

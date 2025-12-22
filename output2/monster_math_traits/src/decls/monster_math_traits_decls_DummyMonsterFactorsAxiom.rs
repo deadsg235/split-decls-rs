@@ -1,0 +1,1 @@
+use serde :: { Deserialize , Serialize } ; use std :: collections :: HashSet ; use std :: path :: { Path , PathBuf } ; use std :: sync :: Arc ; prelude ! { } # [decl_ monster_math_traits_decls_DummyMonsterFactorsAxiom] # [doc = " A dummy implementation of `MonsterFactorsAxiom` for testing."] # [derive (Debug , Default)] pub struct DummyMonsterFactorsAxiom ;

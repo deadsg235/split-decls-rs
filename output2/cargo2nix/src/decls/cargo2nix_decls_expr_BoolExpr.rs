@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ cargo2nix_decls_expr_BoolExpr] pub enum BoolExpr { And (Box < BoolExpr > , Box < BoolExpr >) , Or (Box < BoolExpr > , Box < BoolExpr >) , Not (Box < BoolExpr >) , Single (String) , True , False , }

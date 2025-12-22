@@ -1,0 +1,1 @@
+prelude ! { } # [decl_ tool_refactorings_decls_impl_for_SparqlConfigProvider] impl SparqlConfigProvider for DefaultSparqlConfig { fn get_sparql_endpoint_url (& self) -> & str { "http://164.107.116.56:3093/sparql" } fn get_freebase_uri_prefix (& self) -> & str { "http://rdf.freebase.com/ns/" } fn get_time_offset_string (& self) -> & str { "-08:00" } }

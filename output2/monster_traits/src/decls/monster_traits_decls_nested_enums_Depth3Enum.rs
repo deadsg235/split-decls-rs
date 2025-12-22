@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ monster_traits_decls_nested_enums_Depth3Enum] # [derive (Debug , PartialEq , Eq , Clone , Copy)] pub enum Depth3Enum { Tier1 (Depth4Enum) , Tier2 , Tier3 (Depth4Enum) , }

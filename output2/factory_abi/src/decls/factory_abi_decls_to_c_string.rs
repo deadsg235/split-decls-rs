@@ -1,0 +1,1 @@
+use std :: ffi :: { CStr , CString } ; use std :: os :: raw :: { c_char , c_void } ; prelude ! { } # [decl_ factory_abi_decls_to_c_string] pub fn to_c_string (s : & str) -> * const c_char { CString :: new (s) . expect ("CString::new failed") . into_raw () }

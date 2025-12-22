@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_lattice_trait_consumer_LatticeStructure] # [derive (Debug)] struct LatticeStructure { layers : Vec < TraitLayer > , consumed_code : Vec < CodeFragment > , similarity_graph : HashMap < u64 , Vec < u64 > > , }

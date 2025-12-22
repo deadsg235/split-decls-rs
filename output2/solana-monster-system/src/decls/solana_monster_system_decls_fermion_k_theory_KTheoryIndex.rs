@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_fermion_k_theory_KTheoryIndex] pub struct KTheoryIndex { pub index : i64 , }

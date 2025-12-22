@@ -1,0 +1,1 @@
+use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_QueryContext] pub trait QueryContext < 'tcx > { fn walk_hir_tops (& self , f : impl FnMut (& 'tcx Item < 'tcx >)) ; }

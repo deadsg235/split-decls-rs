@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_hidden_lattice_component_HiddenLatticeComponent] pub struct HiddenLatticeComponent { pub visible_dims : usize , pub hidden_dims : usize , }

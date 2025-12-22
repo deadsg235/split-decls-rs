@@ -1,0 +1,1 @@
+pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_sl2z_orbit_SL2ZMatrix] # [doc = " SL₂(ℤ) matrix representation"] # [derive (Debug , Clone , Copy , PartialEq , Eq , Hash)] pub struct SL2ZMatrix { # [doc = " 2x2 matrix with determinant 1"] matrix : [[i64 ; 2] ; 2] , }
