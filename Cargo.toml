@@ -63,6 +63,7 @@ clap = { workspace = true, features = ["derive"] }
 cargo-toml-generator-macros = { workspace = true }
 cargo-toml-parts = { path = "build_helpers/cargo_toml_parts" }
 pagerank_rs = { path = "submodules/pagerank_rs" }
+chrono = { version = "0.4", features = ["local"] }
 
 
 
