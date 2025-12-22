@@ -105,11 +105,58 @@ fn main() -> anyhow::Result<()> {
         term_scores_by_macro.insert(macro_name.clone(), current_macro_local_scores);
     }
 
+    // Call the new function to format scores and create output_data
+    let output_data = calculate_and_format_scores(
+        analysis,
+        term_scores_by_macro,
+        global_module_term_scores,
+    );
 
-        Ok(())
+    // Serialize to TOML
+    let toml_string = toml::to_string_pretty(&output_data)
+        .context("Failed to serialize analysis results to TOML")?;
+
+    // Create output directory if it doesn’t exist
+    let output_dir = PathBuf::from("output/");
+    fs::create_dir_all(&output_dir)
+        .with_context(|| format!("Failed to create output directory: {}", output_dir.display()))?;
+
+    // Write to file
+    let output_file_path = output_dir.join("macro_scores.toml");
+    fs::write(&output_file_path, toml_string)
+        .with_context(|| format!("Failed to write analysis results to file: {}", output_file_path.display()))?;
+
+    println!("Analysis results written to {}", output_file_path.display());
 
 
+    // Print frequencies and scores for verification
+    println!("--- Term Analysis Results ---");
+    println!("\nModule Frequencies (Total terms: {})", output_data.total_module_terms);
+    for (term, count) in &output_data.module_frequencies {
+        println!("  {:?}: {}\n", term, count);
     }
+
+    println!("\nGlobal Frequencies (Total terms: {})", output_data.total_global_terms);
+    let mut sorted_global_frequencies: Vec<(&String, &usize)> = output_data.global_frequencies.iter().collect();
+    sorted_global_frequencies.sort_by(|a, b| b.1.cmp(a.1));
+    for (term, count) in sorted_global_frequencies {
+        println!("  {:?}: {}\n", term, count);
+    }
+
+    println!("\nTerm Scores (Module, Global, and Local per macro):");
+    for (term, (module_score, global_score)) in &output_data.global_module_term_scores {
+        print!("  {:?}: Module: {:.4}, Global: {:.4}", term, module_score, global_score);
+        for (macro_name, local_scores_map) in &output_data.term_scores_by_macro {
+            if let Some(&local_score) = local_scores_map.get(term) {
+                specialprint(macro_name, local_score);
+            }
+        }
+        println!();
+    }
+
+
+    Ok(())
+}
 
 
     
