@@ -1,0 +1,1 @@
+impl_deserialize_choice ! (Choice2 : (First , "first") , (Second , "second")) ;

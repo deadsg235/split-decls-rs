@@ -1,0 +1,1 @@
+cfg_not_signal_internal ! { pub (crate) type SignalHandle = () ; cfg_io_driver ! { type SignalDriver = IoDriver ; fn create_signal_driver (io_driver : IoDriver , _io_handle : & crate :: runtime :: io :: Handle) -> io :: Result < (SignalDriver , SignalHandle) > { Ok ((io_driver , ())) } } }

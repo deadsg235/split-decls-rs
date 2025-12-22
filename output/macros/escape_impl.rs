@@ -1,0 +1,1 @@
+escape_impl ! { escape_safe ; b'&' => b"&amp;" , b'<' => b"&lt;" , b'>' => b"&gt;" , b'"' => b"&quot;" , b'\'' => b"&#x27;" , b'/' => b"&#x2F;" , }

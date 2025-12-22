@@ -1,0 +1,1 @@
+impl_bounded_measure_float ! (f32 , f64) ;

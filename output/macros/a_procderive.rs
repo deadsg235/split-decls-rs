@@ -1,0 +1,1 @@
+# [proc_macro_derive (AProcDerive)] pub fn a_procderive (_ : TokenStream) -> TokenStream { unimplemented ! () } . sig

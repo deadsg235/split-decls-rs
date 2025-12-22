@@ -1,0 +1,1 @@
+ecdsa_core :: new_wycheproof_test ! (wycheproof , "wycheproof" , NistP521) ;

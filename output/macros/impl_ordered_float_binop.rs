@@ -1,0 +1,1 @@
+impl_ordered_float_binop ! { Rem , rem , RemAssign , rem_assign }

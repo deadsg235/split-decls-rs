@@ -1,0 +1,1 @@
+impl_bitop ! (u32x4x2_avx2 , Add , add , _mm256_add_epi32) ;

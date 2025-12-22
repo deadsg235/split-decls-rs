@@ -1,0 +1,1 @@
+chacha_impl ! (ChaCha8Core , ChaCha8Rng , 4 , "ChaCha with 8 rounds" , abstract8 ,) ;

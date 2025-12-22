@@ -1,0 +1,1 @@
+deserialized_to_only ! (ignored_any : Any = "any data" => Any (IgnoredAny)) ;

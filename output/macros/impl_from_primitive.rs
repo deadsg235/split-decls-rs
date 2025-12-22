@@ -1,0 +1,1 @@
+impl_from_primitive ! (f64 , to_f64) ;

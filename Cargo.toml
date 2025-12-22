@@ -41,6 +41,9 @@ proc-macro2 = { workspace = true }
 tempfile = { workspace = true }
 cargo-toml-generator-types = { workspace = true } # Use workspace dependency
 sha2 = "0.10"
+clap = { workspace = true, features = ["derive"] }
+cargo-toml-generator-macros = { workspace = true }
+cargo-toml-parts = { path = "build_helpers/cargo_toml_parts" }
 
 
 [build-dependencies]

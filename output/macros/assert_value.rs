@@ -1,0 +1,1 @@
+assert_value ! (tokio :: runtime :: LocalOptions : ! Send & ! Sync & Unpin) ;

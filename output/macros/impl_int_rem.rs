@@ -1,0 +1,1 @@
+impl_int_rem ! (NInt , NInt , NInt) ;

@@ -1,0 +1,1 @@
+define_sub_variants ! (LHS = AffinePoint , RHS = EdwardsPoint , Output = EdwardsPoint) ;

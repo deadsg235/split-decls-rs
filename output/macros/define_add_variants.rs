@@ -1,0 +1,1 @@
+define_add_variants ! (LHS = AffinePoint , RHS = EdwardsPoint , Output = EdwardsPoint) ;

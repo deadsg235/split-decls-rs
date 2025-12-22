@@ -1,0 +1,1 @@
+# [cfg (target_pointer_width = "32")] int_to_from_bytes_impl ! (isize , 4) ;

@@ -1,0 +1,1 @@
+impl_binop ! (u64x2_sse2 , Add , add , _mm_add_epi64) ;

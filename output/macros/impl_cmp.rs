@@ -1,0 +1,1 @@
+impl_cmp ! (Cow <'a , Utf8Path >, Utf8PathBuf) ;

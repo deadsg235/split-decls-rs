@@ -1,0 +1,1 @@
+event_without_message ! { nonzeroi32_event_without_message : std :: num :: NonZeroI32 :: new (42) . unwrap () }

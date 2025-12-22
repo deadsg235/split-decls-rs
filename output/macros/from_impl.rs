@@ -1,0 +1,1 @@
+from_impl ! (&'a String => &'a str ; as_ref) ;

@@ -1,0 +1,1 @@
+impl_input_slice_for_smart_ptr ! (Arc < [T] >) ;

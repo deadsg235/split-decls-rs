@@ -1,0 +1,1 @@
+define_other_core ! () ;

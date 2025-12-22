@@ -1,0 +1,1 @@
+assert_type_eq_all ! (super :: X , u8 , (super :: X)) ;

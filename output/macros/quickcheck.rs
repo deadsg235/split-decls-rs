@@ -1,0 +1,1 @@
+quickcheck :: quickcheck ! { fn fast_16_is_the_same_as_slow (crc : u32 , bytes : Vec < u8 >) -> bool { super :: update_fast_16 (crc , & bytes) == super :: update_slow (crc , & bytes) } }

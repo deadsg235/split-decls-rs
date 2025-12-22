@@ -1,0 +1,1 @@
+neg ! { impl < const N : usize > Neg for Simd < f32 , N > impl < const N : usize > Neg for Simd < f64 , N > impl < const N : usize > Neg for Simd < i8 , N > impl < const N : usize > Neg for Simd < i16 , N > impl < const N : usize > Neg for Simd < i32 , N > impl < const N : usize > Neg for Simd < i64 , N > impl < const N : usize > Neg for Simd < isize , N > }

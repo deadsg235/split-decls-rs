@@ -1,0 +1,1 @@
+impl_uniform_sampler ! { f64 }

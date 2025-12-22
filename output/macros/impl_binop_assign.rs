@@ -1,0 +1,1 @@
+impl_binop_assign ! (u64x2_sse2 , AddAssign , add_assign , add) ;

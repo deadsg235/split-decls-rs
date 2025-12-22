@@ -1,0 +1,1 @@
+# [proc_macro] pub fn a_proc_macro (_item : TokenStream) -> TokenStream { "fn ex() { foobar::f(); }" . parse () . unwrap () } . sig

@@ -1,0 +1,1 @@
+test_mappable ! { hash_map => HashMap , btree_map => BTreeMap , }

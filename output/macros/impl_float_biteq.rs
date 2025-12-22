@@ -1,0 +1,1 @@
+impl_float_biteq ! { f32 , f64 }

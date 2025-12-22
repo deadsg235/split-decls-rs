@@ -1,0 +1,1 @@
+define_std_as_non_existent ! () ;

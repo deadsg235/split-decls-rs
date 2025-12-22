@@ -1,0 +1,1 @@
+small_buffers_tests ! (# [tokio :: test] read_event_into_async : tokio :: io :: BufReader < _ >, async , await) ;

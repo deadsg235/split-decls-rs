@@ -1,0 +1,1 @@
+impl_stream ! (impl <'sval , 'd > sval :: Stream <'sval > for dyn Stream <'sval > + Send + Sync + 'd) ;

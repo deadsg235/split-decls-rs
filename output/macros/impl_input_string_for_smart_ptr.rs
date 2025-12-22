@@ -1,0 +1,1 @@
+impl_input_string_for_smart_ptr ! (std :: sync :: Arc < str >) ;

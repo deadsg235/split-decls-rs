@@ -1,0 +1,1 @@
+err2 ! (unclosed_hex2 (".&#xF") => 1 : IllFormedError :: UnclosedReference) ;

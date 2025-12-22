@@ -1,0 +1,1 @@
+impl_from_int_primitive ! (u16 , f32) ;

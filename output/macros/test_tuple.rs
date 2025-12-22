@@ -1,0 +1,1 @@
+test_tuple ! { test_0 => 0 , () ; test_1 => 1 , (123 ,) ; test_2 => 2 , (123 , "foo") ; test_3 => 3 , (123 , "foo" , "bar" . to_string ()) ; test_4 => 4 , ("bar" . to_string () , 123 , "foo" , Foo { name : "Foo" }) ; test_10 => 10 , (1 , "two" , 3_u64 , 4_f32 , "five" . to_string () , 6 , 7 , 8 , Foo { name : "nine" } , 10 ,) ; }

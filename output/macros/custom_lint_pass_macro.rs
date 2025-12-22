@@ -1,0 +1,1 @@
+custom_lint_pass_macro ! () ;

@@ -1,0 +1,1 @@
+cfg_not_time ! { type TimeDriver = IoStack ; pub (crate) type Clock = () ; pub (crate) type TimeHandle = () ; fn create_clock (_enable_pausing : bool , _start_paused : bool) -> Clock { () } fn create_time_driver (_enable : bool , io_stack : IoStack , _clock : & Clock ,) -> (TimeDriver , TimeHandle) { (io_stack , ()) } }

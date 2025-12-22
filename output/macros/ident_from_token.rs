@@ -1,0 +1,1 @@
+ident_from_token ! (extern) ;

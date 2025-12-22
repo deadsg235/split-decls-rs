@@ -1,0 +1,1 @@
+ecdsa_core :: new_signing_test ! (NistP521 , ECDSA_TEST_VECTORS) ;

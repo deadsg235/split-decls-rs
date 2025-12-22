@@ -1,0 +1,1 @@
+assert_obj_safe ! (ObjSafe) ;

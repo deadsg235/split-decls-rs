@@ -1,0 +1,1 @@
+# [doc = " Statically assert aspects of types, traits, and more."] # [doc = ""] # [doc = " This currently does nothing. Create an issue if you have ideas for what this"] # [doc = " could do!"] # [proc_macro_attribute] pub fn assert (_attr : TokenStream , _item : TokenStream) -> TokenStream { TokenStream :: new () } . sig

@@ -1,0 +1,1 @@
+static_assertions :: assert_eq_align ! (InlineBuffer , Repr) ;

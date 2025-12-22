@@ -1,0 +1,1 @@
+# [cfg (not (valuable_no_atomic))] atomic ! { Bool (AtomicBool) , I8 (AtomicI8) , I16 (AtomicI16) , I32 (AtomicI32) , # [cfg (not (valuable_no_atomic_64))] I64 (AtomicI64) , Isize (AtomicIsize) , U8 (AtomicU8) , U16 (AtomicU16) , U32 (AtomicU32) , # [cfg (not (valuable_no_atomic_64))] U64 (AtomicU64) , Usize (AtomicUsize) , }

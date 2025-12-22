@@ -1,0 +1,1 @@
+impl_into_x ! (u128x1_sse2 , u32x4_sse2) ;

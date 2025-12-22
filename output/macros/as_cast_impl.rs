@@ -1,0 +1,1 @@
+as_cast_impl ! (f64 , as_f64) ;

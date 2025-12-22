@@ -1,0 +1,1 @@
+# [proc_macro] pub fn dbg_and_swallow (input : TokenStream) -> TokenStream { for token in input { println ! ("{} -> {:#?}" , token , Literal :: try_from (& token)) ; } TokenStream :: new () } . sig

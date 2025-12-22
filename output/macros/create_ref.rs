@@ -1,0 +1,1 @@
+create_ref ! (pub struct PtrMut < T : ? Sized > (pub * mut T)) ;

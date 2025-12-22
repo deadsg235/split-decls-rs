@@ -1,0 +1,1 @@
+impl_fmt_span_bit_op ! (BitXor , bitxor , ^) ;

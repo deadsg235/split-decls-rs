@@ -1,0 +1,1 @@
+simple_only ! (utf8 , ignored_any : Any = "any data" => Any (IgnoredAny)) ;

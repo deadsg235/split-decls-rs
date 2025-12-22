@@ -38,9 +38,5 @@ fn main() {
     // Make sure build_helpers is accessible, possibly by moving it into build_src or using a relative path.
 extern crate cargo_toml_parts;
 // ...
-    let generated_cargo_toml: CargoToml = define_root_cargo_toml! {
-        package {
-            cargo_toml_parts::mkbuildrs!()
-        }
-    };
+    let generated_cargo_toml: CargoToml = define_root_cargo_toml!();
 }

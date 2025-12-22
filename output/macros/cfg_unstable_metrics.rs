@@ -1,0 +1,1 @@
+cfg_unstable_metrics ! { impl Spawner { pub (crate) fn num_threads (& self) -> usize { self . inner . metrics . num_threads () } pub (crate) fn num_idle_threads (& self) -> usize { self . inner . metrics . num_idle_threads () } pub (crate) fn queue_depth (& self) -> usize { self . inner . metrics . queue_depth () } } }

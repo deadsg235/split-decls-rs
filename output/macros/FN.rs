@@ -1,0 +1,1 @@
+FN ! { stdcall PRTL_SECURE_MEMORY_CACHE_CALLBACK (Address : PVOID , Length : SIZE_T ,) -> NTSTATUS }

@@ -1,0 +1,1 @@
+impl_float_approxeq ! { f32 , f64 }

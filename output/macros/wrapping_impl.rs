@@ -1,0 +1,1 @@
+wrapping_impl ! (WrappingMul , wrapping_mul , i128) ;

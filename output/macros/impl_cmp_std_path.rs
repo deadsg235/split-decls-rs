@@ -1,0 +1,1 @@
+impl_cmp_std_path ! (&'a Utf8Path , PathBuf) ;

@@ -1,0 +1,1 @@
+sizeof_impl ! (simd_json :: StaticNode) ;

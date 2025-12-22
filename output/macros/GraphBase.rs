@@ -1,0 +1,1 @@
+GraphBase ! { delegate_impl [['a , G] , G , &'a mut G , deref] }

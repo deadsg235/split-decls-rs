@@ -1,0 +1,1 @@
+define_mul_variants ! (LHS = EdwardsPoint , RHS = EdwardsScalar , Output = EdwardsPoint) ;

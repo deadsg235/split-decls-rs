@@ -1,0 +1,1 @@
+impl_cmp_str ! (&'a Utf8Path , String) ;

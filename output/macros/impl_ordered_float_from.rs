@@ -1,0 +1,1 @@
+impl_ordered_float_from ! { f32 , u16 }

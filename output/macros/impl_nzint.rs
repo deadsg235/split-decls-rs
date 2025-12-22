@@ -1,0 +1,1 @@
+impl_nzint ! (NonZeroI128 , NonZeroI128 :: new) ;

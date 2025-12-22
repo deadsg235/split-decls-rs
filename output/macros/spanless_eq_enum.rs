@@ -1,0 +1,1 @@
+spanless_eq_enum ! (TyKind ; Slice (0) Array (0 1) Ptr (0) Ref (0 1) PinnedRef (0 1) FnPtr (0) UnsafeBinder (0) Never Tup (0) Path (0 1) TraitObject (0 1) ImplTrait (0 1) Paren (0) Typeof (0) Infer ImplicitSelf MacCall (0) CVarArgs Pat (0 1) Dummy Err (0)) ;

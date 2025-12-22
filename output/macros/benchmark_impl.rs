@@ -1,0 +1,1 @@
+benchmark_impl ! (style_quoted_text , encode_style_quoted_text , encode_style_quoted_text_to_string , encode_style_quoted_text_to_writer) ;

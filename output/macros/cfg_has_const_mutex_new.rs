@@ -1,0 +1,1 @@
+cfg_has_const_mutex_new ! { # [path = "atomic_u64_static_const_new.rs"] mod static_macro ; }

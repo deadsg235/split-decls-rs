@@ -1,0 +1,1 @@
+impl_num_cast ! (f64 , to_f64) ;

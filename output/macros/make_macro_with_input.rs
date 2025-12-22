@@ -1,0 +1,1 @@
+nested_macro_rules_dep :: make_macro_with_input ! { gen }

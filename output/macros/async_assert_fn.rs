@@ -1,0 +1,1 @@
+async_assert_fn ! (tokio_stream :: StreamExt :: collect < Vec < () >> (& mut BoxStream < () >) : ! Unpin) ;

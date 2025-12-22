@@ -1,0 +1,1 @@
+# [proc_macro] pub fn number_of_tokens_in_a_prefixed_char_literal (_ : TokenStream) -> TokenStream { TokenStream :: from_str ("hey#'a'") . unwrap () . into_iter () . count () . to_string () . parse () . unwrap () } . sig

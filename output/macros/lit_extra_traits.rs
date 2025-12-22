@@ -1,0 +1,1 @@
+lit_extra_traits ! (LitFloat) ;

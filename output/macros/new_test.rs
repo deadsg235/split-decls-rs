@@ -1,0 +1,1 @@
+new_test ! (short_512 , "ShortMsgKAT_512" , jh_x86_64 :: Jh512 , digest_test) ;

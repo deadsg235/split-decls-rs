@@ -1,0 +1,1 @@
+# [cfg (target_feature = "avx512bw")] wmul_impl_16 ! { u16x32 , _mm512_mulhi_epu16 , _mm512_mullo_epi16 }

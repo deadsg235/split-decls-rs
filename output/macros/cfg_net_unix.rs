@@ -1,0 +1,1 @@
+cfg_net_unix ! (impl ReadyEvent { pub (crate) fn with_ready (& self , ready : Ready) -> Self { Self { ready , tick : self . tick , is_shutdown : self . is_shutdown , } } }) ;

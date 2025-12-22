@@ -1,0 +1,1 @@
+test_accept ! { (ip_str , "127.0.0.1:0") , (host_str , "localhost:0") , (socket_addr , "127.0.0.1:0" . parse ::< SocketAddr > () . unwrap ()) , (str_port_tuple , ("127.0.0.1" , 0)) , (ip_port_tuple , ("127.0.0.1" . parse ::< IpAddr > () . unwrap () , 0)) , }

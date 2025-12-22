@@ -1,0 +1,1 @@
+check_sizes ! (UnsafeCell < Vec4 < NonZero < u32 >>>: 16 => 32) ;

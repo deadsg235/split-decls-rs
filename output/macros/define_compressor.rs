@@ -1,0 +1,1 @@
+# [rustfmt :: skip] define_compressor ! (Compressor512 , vec256_storage , u64 , U128 , BLAKE512_U , 16 , round64 , u64x4) ;

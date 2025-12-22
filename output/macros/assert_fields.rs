@@ -1,0 +1,1 @@
+assert_fields ! (Baz < dyn Send >: inner , nul) ;

@@ -1,0 +1,1 @@
+# [proc_macro] pub fn a_procmacro (_ : TokenStream) -> TokenStream { unimplemented ! () } . sig

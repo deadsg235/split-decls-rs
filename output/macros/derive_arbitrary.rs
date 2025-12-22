@@ -1,0 +1,1 @@
+# [proc_macro_derive (Arbitrary)] pub fn derive_arbitrary (_item : TokenStream) -> TokenStream { CODE . parse () . unwrap () } . sig

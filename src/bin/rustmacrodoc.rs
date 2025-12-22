@@ -1,17 +1,19 @@
 use anyhow::{Context, Result};
+use clap::Parser;
+use quote; // Added quote for quote::quote!
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use sha2::{Digest, Sha256};
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
-use syn::visit::Visit;
-use syn::{Attribute, Ident, Item, ItemFn, Lit, Macro, Meta, PathSegment, ItemMacro};
 use syn::spanned::Spanned;
+use syn::visit::Visit;
+use syn::{Attribute, Ident, Item, ItemFn, ItemMacro, Lit, LitStr, Macro, Meta, PathSegment};
+use toml;
 use walkdir::WalkDir;
-use quote; // Added quote for quote::quote!
-use sha2::{Sha256, Digest};
 
 /// Represents information about a single macro.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 struct MacroInfo {
     name: String,
     kind: String, // e.g., "macro_rules", "proc_macro", "proc_macro_attribute", "proc_macro_derive"
@@ -123,68 +125,247 @@ fn get_doc_comment(attrs: &[Attribute]) -> Option<String> {
     }
 }
 
-fn main() -> Result<()> {
-    let args: Vec<String> = std::env::args().collect();
-    let root_path_str = args
-        .get(1)
-        .map_or(".", |s| s.as_str()); // Default to current directory
+struct IncludeVisitor {
+    includes: Vec<PathBuf>,
+    current_file_path: PathBuf,
+}
 
-    let root_path = PathBuf::from(root_path_str);
-    if !root_path.exists() {
-        anyhow::bail!("Root path does not exist: {}", root_path.display());
+impl<'ast> Visit<'ast> for IncludeVisitor {
+    fn visit_macro(&mut self, mac: &'ast Macro) {
+        if mac.path.is_ident("include") {
+            if let Ok(lit_str) = mac.parse_body::<LitStr>() {
+                let include_path = self
+                    .current_file_path
+                    .parent()
+                    .unwrap()
+                    .join(lit_str.value());
+                self.includes.push(include_path);
+            }
+        }
+        syn::visit::visit_macro(self, mac);
     }
+}
 
-    let mut all_files_metadata: Vec<FileMetadata> = Vec::new();
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
 
-    for entry in WalkDir::new(&root_path)
-        .into_iter()
-        .filter_map(|e| e.ok())
-    {
-        let path = entry.path();
-        if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
-            let file_content_bytes = fs::read(path)
-                .with_context(|| format!("Failed to read file: {}", path.display()))?;
+#[derive(Debug, Parser)]
+enum Commands {
+    /// Scan a directory for macros and produce a report
+    Scan {
+        /// Path to scan
+        #[arg()]
+        path: Option<PathBuf>,
 
-            let content_hash = format!("{:x}", Sha256::digest(&file_content_bytes));
-            let file_content = String::from_utf8(file_content_bytes)
-                .context("File content is not valid UTF-8")?;
+        /// Scan all local dependencies in the workspace
+        #[arg(short, long)]
+        workspace: bool,
 
-            let mut file_metadata = FileMetadata {
-                file_path: path.display().to_string(),
-                content_hash: content_hash.clone(),
-                status: FileStatus::Ok,
-                macros: None,
-                error: None,
-            };
+        /// Output file for the report
+        #[arg(short, long, default_value = "report.json")]
+        output: PathBuf,
+    },
+    /// Split macros from a report file into separate files
+    Split {
+        /// Path to the report.json file
+        #[arg()]
+        report_path: PathBuf,
 
-            let syntax_tree = match syn::parse_file(&file_content) {
-                Ok(tree) => tree,
-                Err(err) => {
-                    file_metadata.status = FileStatus::ParsingError;
-                    file_metadata.error = Some(err.to_string());
-                    all_files_metadata.push(file_metadata);
-                    continue; // Skip to the next file
+        /// Output directory for macros
+        #[arg(short, long, default_value = "output/macros")]
+        output: PathBuf,
+    },
+}
+
+fn main() -> Result<()> {
+    let cli = Cli::parse();
+
+    match cli.command {
+        Commands::Scan {
+            path,
+            workspace,
+            output,
+        } => {
+            let mut paths_to_scan: Vec<PathBuf> = Vec::new();
+            let mut scanned_paths: HashSet<PathBuf> = HashSet::new();
+
+            if workspace {
+                println!("Scanning workspace dependencies...");
+                let cargo_toml: toml::Value = toml::from_str(&fs::read_to_string("Cargo.toml")?)
+                    .context("Failed to parse Cargo.toml")?;
+                let dep_sections = ["dependencies", "dev-dependencies", "build-dependencies"];
+                for section in &dep_sections {
+                    if let Some(deps) = cargo_toml.get(*section).and_then(|d| d.as_table()) {
+                        for (_name, dep_info) in deps {
+                            if let Some(dep_table) = dep_info.as_table() {
+                                if let Some(path) = dep_table.get("path").and_then(|p| p.as_str()) {
+                                    let dep_path = PathBuf::from(path);
+                                    if dep_path.exists() {
+                                        paths_to_scan.push(dep_path);
+                                    } else {
+                                        println!("Warning: dependency path does not exist: {}", path);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+            } else if let Some(path) = path {
+                paths_to_scan.push(path);
+            }
+
+            let mut all_files_metadata: Vec<FileMetadata> = Vec::new();
+
+            while let Some(path_to_scan) = paths_to_scan.pop() {
+                if !scanned_paths.insert(path_to_scan.clone()) {
+                    continue;
+                }
+
+                println!("Scanning: {}", path_to_scan.display());
+
+                for entry in WalkDir::new(&path_to_scan).into_iter().filter_map(|e| e.ok()) {
+                    let path = entry.path();
+                    if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
+                        let canonical_path = match path.canonicalize() {
+                            Ok(p) => p,
+                            Err(_) => continue, // Ignore paths we can't canonicalize
+                        };
+                        if !scanned_paths.insert(canonical_path) {
+                            continue;
+                        }
+
+                        let file_content_bytes = match fs::read(path) {
+                            Ok(bytes) => bytes,
+                            Err(_) => continue, // Ignore files we can't read
+                        };
+
+                        let content_hash = format!("{:x}", Sha256::digest(&file_content_bytes));
+                        let file_content = match String::from_utf8(file_content_bytes) {
+                            Ok(content) => content,
+                            Err(_) => continue, // Ignore non-utf8 files
+                        };
+
+                        let mut file_metadata = FileMetadata {
+                            file_path: path.display().to_string(),
+                            content_hash,
+                            status: FileStatus::Ok,
+                            macros: None,
+                            error: None,
+                        };
+
+                        let syntax_tree = match syn::parse_file(&file_content) {
+                            Ok(tree) => tree,
+                            Err(err) => {
+                                file_metadata.status = FileStatus::ParsingError;
+                                file_metadata.error = Some(err.to_string());
+                                all_files_metadata.push(file_metadata);
+                                continue;
+                            }
+                        };
+
+                        let mut macro_visitor = MacroVisitor {
+                            macros: Vec::new(),
+                            file_path: path.to_path_buf(),
+                        };
+                        macro_visitor.visit_file(&syntax_tree);
+                        file_metadata.macros = Some(macro_visitor.macros);
+
+                        let mut include_visitor = IncludeVisitor {
+                            includes: Vec::new(),
+                            current_file_path: path.to_path_buf(),
+                        };
+                        include_visitor.visit_file(&syntax_tree);
+                        paths_to_scan.extend(include_visitor.includes);
+
+                        all_files_metadata.push(file_metadata);
+                    }
+                }
+            }
+
+            let report = MacroReport {
+                files: all_files_metadata,
             };
 
-            let mut visitor = MacroVisitor {
-                macros: Vec::new(),
-                file_path: path.to_path_buf(),
-            };
-            visitor.visit_file(&syntax_tree);
-            file_metadata.macros = Some(visitor.macros);
-            all_files_metadata.push(file_metadata);
+            let json_report = serde_json::to_string_pretty(&report)
+                .context("Failed to serialize macro report to JSON")?;
+            
+            fs::write(&output, json_report)?;
+            println!("Successfully generated report at {}", output.display());
+        }
+        Commands::Split {
+            report_path,
+            output,
+        } => {
+            let report_content = fs::read_to_string(&report_path)
+                .with_context(|| format!("Failed to read report file: {}", report_path.display()))?;
+            let report: MacroReport = serde_json::from_str(&report_content)
+                .context("Failed to deserialize report JSON")?;
+
+            fs::create_dir_all(&output)
+                .with_context(|| format!("Failed to create output directory: {}", output.display()))?;
+
+            let mut macros_by_name: HashMap<String, Vec<MacroInfo>> = HashMap::new();
+            for file_metadata in &report.files {
+                if let Some(macros) = &file_metadata.macros {
+                    for macro_info in macros {
+                        macros_by_name
+                            .entry(macro_info.name.clone())
+                            .or_default()
+                            .push(macro_info.clone());
+                    }
+                }
+            }
+
+            let mut total_macros_split = 0;
+            for (name, macros) in macros_by_name {
+                if macros.is_empty() || name.is_empty() {
+                    continue;
+                }
+                if macros.len() == 1 {
+                    if let Some(signature) = &macros[0].signature {
+                        let file_name = format!("{}.rs", name);
+                        let output_path = output.join(&file_name);
+                        fs::write(&output_path, signature).with_context(|| {
+                            format!("Failed to write macro to file: {}", output_path.display())
+                        })?;
+                        total_macros_split += 1;
+                    }
+                } else {
+                    for macro_info in macros {
+                        if let Some(signature) = &macro_info.signature {
+                            let mut hasher = Sha256::new();
+                            hasher.update(signature.as_bytes());
+                            let hash_result = hasher.finalize();
+                            let short_hash = &format!("{:x}", hash_result)[..7];
+
+                            let source_module = Path::new(&macro_info.file)
+                                .file_stem()
+                                .and_then(|s| s.to_str())
+                                .unwrap_or("unknown")
+                                .replace("-", "_");
+
+                            let file_name = format!("{}-{}-{}.rs", name, source_module, short_hash);
+                            let output_path = output.join(&file_name);
+                            fs::write(&output_path, signature).with_context(|| {
+                                format!("Failed to write macro to file: {}", output_path.display())
+                            })?;
+                            total_macros_split += 1;
+                        }
+                    }
+                }
+            }
+
+            println!(
+                "Successfully split {} macros into {}.",
+                total_macros_split,
+                output.display()
+            );
         }
     }
-
-    let report = MacroReport {
-        files: all_files_metadata,
-    };
-
-    let json_report = serde_json::to_string_pretty(&report)
-        .context("Failed to serialize macro report to JSON")?;
-
-    println!("{}", json_report);
 
     Ok(())
 }

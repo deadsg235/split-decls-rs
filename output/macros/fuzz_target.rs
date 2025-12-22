@@ -1,0 +1,1 @@
+fuzz_target ! (| data : & [u8] | { _ = from_slice ::< Value > (data) ; }) ;

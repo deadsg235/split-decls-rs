@@ -1,0 +1,1 @@
+unsupported ! (enum_other : Enum = "any data" => "unknown variant `any data`, expected one of `Unit`, `Newtype`, `Tuple`, `Struct`") ;

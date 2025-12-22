@@ -1,0 +1,1 @@
+in_struct ! (string : String = "<![CDATA[escaped&#x20;string]]>" , "escaped&#x20;string") ;

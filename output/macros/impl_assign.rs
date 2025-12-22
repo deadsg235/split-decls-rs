@@ -1,0 +1,1 @@
+impl_assign ! (u32x4x2_avx2 , AddAssign , add_assign , add) ;

@@ -1,0 +1,1 @@
+impl_token ! ("boolean literal" LitBool) ;

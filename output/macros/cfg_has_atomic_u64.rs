@@ -1,0 +1,1 @@
+cfg_has_atomic_u64 ! { use std :: sync :: atomic :: AtomicU64 ; static NEXT_OWNED_TASKS_ID : AtomicU64 = AtomicU64 :: new (1) ; fn get_next_id () -> NonZeroU64 { loop { let id = NEXT_OWNED_TASKS_ID . fetch_add (1 , Ordering :: Relaxed) ; if let Some (id) = NonZeroU64 :: new (id) { return id ; } } } }

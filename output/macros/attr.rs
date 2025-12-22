@@ -1,0 +1,1 @@
+# [proc_macro_attribute] pub fn attr (_attr : TokenStream , _item : TokenStream) -> TokenStream { CODE . parse () . unwrap () } . sig

@@ -1,0 +1,1 @@
+bounded_impl_nonzero ! (NonZeroI128 , i128 :: MIN , i128 :: MAX) ;

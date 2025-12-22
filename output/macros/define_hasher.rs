@@ -1,0 +1,1 @@
+define_hasher ! (Jh512 , consts :: JH512_H0 , U64) ;

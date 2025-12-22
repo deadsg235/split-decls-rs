@@ -1,0 +1,1 @@
+new_distribution ! (TenKilobyte , Vec < u8 >, rng , (0 .. 1024 * 10) . map (| _ | rng . gen ::< u8 > () | 1) . collect () , (0 .. 1024 * 10) . map (| _ | rng . gen ::< u8 > () & ! 1) . collect ()) ;

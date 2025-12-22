@@ -1,0 +1,1 @@
+impl_tuple_collect ! (dummy , a , b , c , d , e , f , g , h , i , j , k , l ,) ;

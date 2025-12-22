@@ -1,0 +1,1 @@
+libcall_trampoline ! (table_fill_externref ; impl_table_fill_externref) ;

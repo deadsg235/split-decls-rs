@@ -1,0 +1,1 @@
+rkyv_eq_ord ! { NotNan , f64 , rkyv :: rend :: f64_be }

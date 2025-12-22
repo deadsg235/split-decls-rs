@@ -1,0 +1,1 @@
+impl_distribution ! { OpenClosed01 , f32 , f64 }

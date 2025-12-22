@@ -1,0 +1,1 @@
+define_rust_editions ! { Edition2018 (2018) => 31 , Edition2021 (2021) => 56 , Edition2024 (2024) => 85 , }
