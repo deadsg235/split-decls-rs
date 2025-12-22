@@ -46,6 +46,7 @@ cargo-toml-generator-macros = { workspace = true }
 cargo-toml-parts = { path = "build_helpers/cargo_toml_parts" }
 
 
+
 [build-dependencies]
 cargo-toml-generator-macros = { workspace = true }
 cargo-toml-generator-types = { workspace = true }
@@ -61,6 +62,10 @@ path = "src/bin/rustmacrodoc.rs"
 [[bin]]
 name = "testbuild"
 path = "src/bin/testbuild.rs"
+
+[[bin]]
+name = "macro_analyzer"
+path = "src/bin/macro_analyzer.rs"
 
 [patch.'crates-io']
 proc-macro2 = { path = "../proc-macro2" }
