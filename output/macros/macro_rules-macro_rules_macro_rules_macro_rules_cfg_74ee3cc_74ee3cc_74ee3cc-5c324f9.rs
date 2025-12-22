@@ -1,0 +1,2 @@
+macro_rules ! ins_str { ($ key : expr , $ val_str : expr) => { ret . insert (($ key , Some (Symbol :: intern ($ val_str)))) ;}
+; }

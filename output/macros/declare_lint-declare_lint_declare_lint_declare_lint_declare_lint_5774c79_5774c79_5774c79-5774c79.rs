@@ -1,0 +1,1 @@
+declare_lint ! { pub TEST_LINT , Allow , "test" }

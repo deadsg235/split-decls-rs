@@ -1,0 +1,1 @@
+declare_tool_lint ! { #[doc = " The `usage_of_ty_tykind` lint detects usages of `ty::TyKind::<kind>`,"] #[doc = " where `ty::<kind>` would suffice."] pub rustc :: USAGE_OF_TY_TYKIND , Allow , "usage of `ty::TyKind` outside of the `ty::sty` module" , report_in_external_macro : true }

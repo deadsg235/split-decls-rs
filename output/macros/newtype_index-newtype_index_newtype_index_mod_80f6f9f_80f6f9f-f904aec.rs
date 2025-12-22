@@ -1,0 +1,2 @@
+rustc_index :: newtype_index ! { #[derive (HashStable)] #[encodable] #[orderable] #[debug_format = "_{}"] pub struct Local { const RETURN_PLACE = 0 ;}
+}

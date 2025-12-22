@@ -1,0 +1,2 @@
+#[macro_export] macro_rules ! throw_unsup { ($ ($ tt : tt) *) => { do yeet $ crate :: err_unsup ! ($ ($ tt) *)}
+; }

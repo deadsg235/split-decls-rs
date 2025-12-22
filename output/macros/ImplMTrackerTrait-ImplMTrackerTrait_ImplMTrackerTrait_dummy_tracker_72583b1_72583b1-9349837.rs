@@ -1,0 +1,6 @@
+ImplMTrackerTrait ! { DummyTracker { type Failure = Box < dyn ParseResultBase < () >>; fn description (self : & mut Self) -> &'static str { "dummy"}
+fn build_failure (self : & mut Self , _tok : rustc_ast :: token :: Token , _position : u32 , _msg : &'static str ,) -> Self :: Failure { Box :: new (ErrParse :: new (vec ! []))}
+fn before_match_loc (self : & mut Self , _loc : lib_matcher_loc :: MatcherLoc) {}
+fn after_arm (self : & mut Self , _matched : bool) {}
+fn recovery (self : & mut Self) -> rustc_parse :: parser :: Recovery { rustc_parse :: parser :: Recovery :: Forbidden}
+} }

@@ -1,1 +1,1 @@
-# [cfg (feature = "std")] euclid_forward_impl ! (f32 f64) ;
+#[cfg (feature = "std")] euclid_forward_impl ! (f32 f64) ;

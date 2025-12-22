@@ -8,7 +8,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use syn::spanned::Spanned;
 use syn::visit::Visit;
-use syn::{Attribute, Ident, Item, ItemFn, ItemMacro, Lit, LitStr, Macro, Meta, PathSegment};
+use syn::{Attribute, ItemFn, ItemMacro, Lit, LitStr, Macro};
 use toml;
 use walkdir::WalkDir;
 
@@ -109,7 +109,7 @@ impl<'ast> Visit<'ast> for MacroVisitor {
                 kind: macro_kind,
                 file: self.file_path.display().to_string(),
                 span_debug_string: format!("{:?}", i.span()),
-                signature: Some(quote::quote! { #i.sig }.to_string()), // Capture the function signature
+                signature: Some(quote::quote! { #i }.to_string()), // Capture the full function item
                 doc_comment: get_doc_comment(&i.attrs),
                 analysis: None,
             });
@@ -445,7 +445,8 @@ fn main() -> Result<()> {
                     continue;
                 }
                 if macros.len() == 1 {
-                    if let Some(signature) = &macros[0].signature {
+                    if let Some(signature) = macros[0].signature.clone() {
+
                         let file_name = format!("{}.rs", name);
                         let output_path = output.join(&file_name);
                         fs::write(&output_path, signature).with_context(|| {
@@ -455,7 +456,8 @@ fn main() -> Result<()> {
                     }
                 } else {
                     for macro_info in macros {
-                        if let Some(signature) = &macro_info.signature {
+                        if let Some(signature) = macro_info.signature.clone() {
+
                             let mut hasher = Sha256::new();
                             hasher.update(signature.as_bytes());
                             let hash_result = hasher.finalize();

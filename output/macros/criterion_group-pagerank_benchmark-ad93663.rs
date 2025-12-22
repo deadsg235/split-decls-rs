@@ -1,0 +1,1 @@
+criterion_group ! (benches , pagerank_graph_benchmark , simple_pagerank_benchmark , pagerank_rs_benchmark ,) ;

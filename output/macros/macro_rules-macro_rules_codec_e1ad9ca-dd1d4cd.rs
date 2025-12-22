@@ -1,0 +1,2 @@
+#[macro_export] macro_rules ! __impl_decoder_methods { ($ ($ name : ident -> $ ty : ty ;) *) => { $ (#[inline] fn $ name (& mut self) -> $ ty { self . opaque .$ name () }) *}
+}

@@ -1,0 +1,1 @@
+declare_lint_pass ! (Expr2024 => [EDITION_2024_EXPR_FRAGMENT_SPECIFIER ,]) ;

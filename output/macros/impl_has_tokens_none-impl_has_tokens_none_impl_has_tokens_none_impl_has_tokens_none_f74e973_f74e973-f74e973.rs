@@ -1,0 +1,1 @@
+impl_has_tokens_none ! (Arm , ExprField , FieldDef , GenericParam , Param , PatField , Variant , WherePredicate) ;

@@ -1,0 +1,1 @@
+decl_module ! (unimacro_derive_decls_unimacro_derive , unimacro_derive_decls_helper_function , unimacro_derive_decls_HelperStruct , unimacro_derive_decls_impl_for_HelperStruct , unimacro_derive_decls_HELPER_CONST) ;

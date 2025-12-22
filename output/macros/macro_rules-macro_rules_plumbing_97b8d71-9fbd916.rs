@@ -1,0 +1,4 @@
+macro_rules ! ensure_ok_result { ([]) => { ()}
+; ([(return_result_from_ensure_ok) $ ($ rest : tt) *]) => { Result < () , ErrorGuaranteed >}
+; ([$ other : tt $ ($ modifiers : tt) *]) => { ensure_ok_result ! ([$ ($ modifiers) *])}
+; }

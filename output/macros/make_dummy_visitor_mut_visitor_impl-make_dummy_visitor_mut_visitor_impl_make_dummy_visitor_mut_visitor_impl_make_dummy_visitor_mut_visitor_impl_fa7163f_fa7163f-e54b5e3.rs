@@ -1,0 +1,21 @@
+make_dummy_visitor_mut_visitor_impl ! { DummyVisitor , fn flat_map_item (& mut self , node : Box < ast :: Item >) -> SmallVec < Box < ast :: Item >, 1 > { unimplemented ! ()}
+fn flat_map_assoc_item (& mut self , node : Box < ast :: AssocItem >, ctxt : AssocCtxt) -> SmallVec < Box < ast :: AssocItem >, 1 > { unimplemented ! ()}
+fn flat_map_foreign_item (& mut self , node : Box < ast :: ForeignItem >) -> SmallVec < Box < ast :: ForeignItem >, 1 > { unimplemented ! ()}
+fn flat_map_variant (& mut self , node : ast :: Variant) -> SmallVec < ast :: Variant , 1 > { unimplemented ! ()}
+fn flat_map_where_predicate (& mut self , node : ast :: WherePredicate) -> SmallVec < ast :: WherePredicate , 1 > { unimplemented ! ()}
+fn flat_map_field_def (& mut self , node : ast :: FieldDef) -> SmallVec < ast :: FieldDef , 1 > { unimplemented ! ()}
+fn flat_map_pat_field (& mut self , node : ast :: PatField) -> SmallVec < ast :: PatField , 1 > { unimplemented ! ()}
+fn flat_map_expr_field (& mut self , node : ast :: ExprField) -> SmallVec < ast :: ExprField , 1 > { unimplemented ! ()}
+fn flat_map_param (& mut self , node : ast :: Param) -> SmallVec < ast :: Param , 1 > { unimplemented ! ()}
+fn flat_map_generic_param (& mut self , node : ast :: GenericParam) -> SmallVec < ast :: GenericParam , 1 > { unimplemented ! ()}
+fn flat_map_arm (& mut self , node : ast :: Arm) -> SmallVec < ast :: Arm , 1 > { unimplemented ! ()}
+fn flat_map_stmt (& mut self , node : ast :: Stmt) -> SmallVec < ast :: Stmt , 1 > { unimplemented ! ()}
+fn visit_crate (& mut self , node : & mut ast :: Crate) { unimplemented ! ()}
+fn visit_ty (& mut self , node : & mut ast :: Ty) { unimplemented ! ()}
+fn visit_pat (& mut self , node : & mut ast :: Pat) { unimplemented ! ()}
+fn visit_expr (& mut self , node : & mut ast :: Expr) { unimplemented ! ()}
+fn visit_method_receiver_expr (& mut self , node : & mut ast :: Expr) { unimplemented ! ()}
+fn filter_map_expr (& mut self , node : Box < ast :: Expr >) -> Option < Box < ast :: Expr >> { unimplemented ! ()}
+fn visit_block (& mut self , node : & mut ast :: Block) { unimplemented ! ()}
+fn visit_id (& mut self , id : & mut NodeId) { unimplemented ! ()}
+}

@@ -1,0 +1,4 @@
+macro_rules ! query_helper_param_ty { (DefId) => { impl IntoQueryParam < DefId >}
+; (LocalDefId) => { impl IntoQueryParam < LocalDefId >}
+; ($ K : ty) => { $ K}
+; }

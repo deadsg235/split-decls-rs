@@ -1,0 +1,4 @@
+macro_rules ! impl_read_signed_leb128 { ($ fn_name : ident , $ int_ty : ty) => { #[inline] pub fn $ fn_name (decoder : & mut MemDecoder <'_ >) -> $ int_ty { let mut result = 0 ; let mut shift = 0 ; let mut byte ; loop { byte = decoder . read_u8 () ; result |= <$ int_ty >:: from (byte & 0x7F) << shift ; shift = shift . debug_strict_add (7) ; if (byte & 0x80) == 0 { break ;}
+} if (shift < <$ int_ty >:: BITS) && ((byte & 0x40) != 0) { result |= (! 0 << shift) ;}
+result}
+} ; }

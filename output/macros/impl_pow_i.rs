@@ -1,1 +1,1 @@
-# [cfg (feature = "i128")] impl_pow_i ! (# [cfg_attr (docsrs , doc (cfg (feature = "i128")))] u128 , i128) ;
+#[cfg (feature = "i128")] impl_pow_i ! (#[cfg_attr (docsrs , doc (cfg (feature = "i128")))] u128 , i128) ;

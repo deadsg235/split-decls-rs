@@ -1,0 +1,4 @@
+ffi_fn ! { #[doc = " Sets the header with the provided name to the provided value."] #[doc = ""] #[doc = " This overwrites any previous value set for the header."] fn hyper_headers_set (headers : * mut hyper_headers , name : * const u8 , name_len : size_t , value : * const u8 , value_len : size_t) -> hyper_code { let headers = non_null ! (& mut * headers ?= hyper_code :: HYPERE_INVALID_ARG) ; match unsafe { raw_name_value (name , name_len , value , value_len)}
+{ Ok ((name , value , orig_name)) => { headers . headers . insert (& name , value) ; headers . orig_casing . insert (name . clone () , orig_name . clone ()) ; headers . orig_order . insert (name) ; hyper_code :: HYPERE_OK}
+Err (code) => code ,}
+} }

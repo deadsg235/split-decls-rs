@@ -1,0 +1,2 @@
+macro_rules ! already_sync { ($ ([$ ty : ty]) *) => { $ (unsafe impl DynSync for $ ty where Self : Sync { }) *}
+; }

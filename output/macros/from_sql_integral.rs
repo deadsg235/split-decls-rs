@@ -1,1 +1,1 @@
-# [cfg (feature = "fallible_uint")] from_sql_integral ! (non_zero std :: num :: NonZeroU64 , u64) ;
+#[cfg (feature = "fallible_uint")] from_sql_integral ! (non_zero std :: num :: NonZeroU64 , u64) ;

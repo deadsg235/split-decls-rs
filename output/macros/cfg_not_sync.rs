@@ -1,1 +1,3 @@
-cfg_not_sync ! { cfg_fs ! { pub (crate) mod batch_semaphore ; mod mutex ; pub (crate) use mutex :: Mutex ; } # [cfg (any (feature = "rt" , feature = "signal" , all (unix , feature = "process")))] pub (crate) mod notify ; # [cfg (any (feature = "rt" , all (windows , feature = "process")))] pub (crate) mod oneshot ; cfg_atomic_waker_impl ! { mod task ; pub (crate) use task :: AtomicWaker ; } # [cfg (any (feature = "signal" , all (unix , feature = "process")))] pub (crate) mod watch ; }
+cfg_not_sync ! { cfg_fs ! { pub (crate) mod batch_semaphore ; mod mutex ; pub (crate) use mutex :: Mutex ;}
+#[cfg (any (feature = "rt" , feature = "signal" , all (unix , feature = "process")))] pub (crate) mod notify ; #[cfg (any (feature = "rt" , all (windows , feature = "process")))] pub (crate) mod oneshot ; cfg_atomic_waker_impl ! { mod task ; pub (crate) use task :: AtomicWaker ;}
+#[cfg (any (feature = "signal" , all (unix , feature = "process")))] pub (crate) mod watch ; }

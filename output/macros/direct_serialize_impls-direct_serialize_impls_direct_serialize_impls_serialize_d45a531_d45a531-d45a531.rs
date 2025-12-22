@@ -1,0 +1,1 @@
+direct_serialize_impls ! { usize emit_usize read_usize , u8 emit_u8 read_u8 , u16 emit_u16 read_u16 , u32 emit_u32 read_u32 , u64 emit_u64 read_u64 , u128 emit_u128 read_u128 , isize emit_isize read_isize , i8 emit_i8 read_i8 , i16 emit_i16 read_i16 , i32 emit_i32 read_i32 , i64 emit_i64 read_i64 , i128 emit_i128 read_i128 , bool emit_bool read_bool , char emit_char read_char }

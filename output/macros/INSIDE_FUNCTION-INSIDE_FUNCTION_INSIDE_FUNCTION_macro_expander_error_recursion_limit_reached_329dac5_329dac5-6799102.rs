@@ -1,0 +1,3 @@
+INSIDE_FUNCTION ! { fn error_recursion_limit_reached (& mut self) -> ErrorGuaranteed { let expn_data = self . cx . current_expansion . id . expn_data () ; let suggested_limit = match self . cx . ecfg . recursion_limit { Limit (0) => Limit (2) , limit => limit * 2 ,}
+; let guar = self . cx . dcx () . emit_err (RecursionLimitReached { span : expn_data . call_site , descr : expn_data . kind . descr () , suggested_limit , crate_name : self . cx . ecfg . crate_name , }) ; self . cx . macro_error_and_trace_macros_diag () ; guar}
+}

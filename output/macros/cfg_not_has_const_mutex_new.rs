@@ -1,1 +1,1 @@
-cfg_not_has_const_mutex_new ! { # [path = "atomic_u64_static_once_cell.rs"] mod static_macro ; }
+cfg_not_has_const_mutex_new ! { #[path = "atomic_u64_static_once_cell.rs"] mod static_macro ; }

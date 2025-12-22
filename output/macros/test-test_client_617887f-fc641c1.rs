@@ -1,0 +1,2 @@
+test ! { name : client_h1_rejects_http2 , server : expected : "won't get here {addr}" , reply : "won't reply" , client : request : { method : GET , url : "http://{addr}/" , version : HTTP_2 ,}
+, error : | err | err . to_string () == "request has unsupported HTTP version" , }

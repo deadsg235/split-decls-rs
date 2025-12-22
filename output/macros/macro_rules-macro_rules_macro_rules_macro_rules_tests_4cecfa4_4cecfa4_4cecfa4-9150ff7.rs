@@ -1,0 +1,5 @@
+macro_rules ! impl_test_signed_leb128 { ($ test_name : ident , $ write_fn_name : ident , $ read_fn_name : ident , $ int_ty : ident) => { #[test] fn $ test_name () { let mut values = Vec :: new () ; let mut value = $ int_ty :: MIN ; let increment = (1 as $ int_ty) << ($ int_ty :: BITS - 8) ; for _ in 0 .. 256 { values . push (value) ; value = value . wrapping_add (increment) ;}
+values . push ($ int_ty :: MAX) ; values . extend ((- 500 .. 500) . map (| i | (i as $ int_ty) . wrapping_mul (0x12345789ABCDEFi64 as $ int_ty)) ,) ; let mut stream = Vec :: new () ; let mut buf = Default :: default () ; for & x in & values { let n = $ write_fn_name (& mut buf , x) ; stream . extend (& buf [.. n]) ;}
+let stream_end = stream . len () ; stream . extend (MAGIC_END_BYTES) ; let mut decoder = MemDecoder :: new (& stream , 0) . unwrap () ; for & expected in & values { let actual = $ read_fn_name (& mut decoder) ; assert_eq ! (expected , actual) ;}
+assert_eq ! (stream_end , decoder . position ()) ;}
+} ; }

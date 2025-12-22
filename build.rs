@@ -1,6 +1,3 @@
-use std::{env, fs, path::Path};
-use cargo_toml_parts::mkbuildrs;
-
 // Use mod with path to directly include code from build_src/
 #[path = "build_src/example_module.rs"]
 mod example_module;
@@ -38,5 +35,5 @@ fn main() {
     // Make sure build_helpers is accessible, possibly by moving it into build_src or using a relative path.
 extern crate cargo_toml_parts;
 // ...
-    let generated_cargo_toml: CargoToml = define_root_cargo_toml!();
+    let _generated_cargo_toml: CargoToml = define_root_cargo_toml!();
 }

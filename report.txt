@@ -1,0 +1,288 @@
+Analysis results written to output/macro_scores.toml
+--- Term Analysis Results ---
+
+Module Frequencies (Total terms: 110)
+  " ": 1
+
+  "_args": 1
+
+  "item_ts": 1
+
+  "doc": 8
+
+  "extend": 2
+
+  "cfg": 2
+
+  "token": 4
+
+  " only compiled when `is_sync` feature gate is not set.": 1
+
+  "TokenStream2": 1
+
+  "generate_item_hook_macro": 1
+
+  "input": 3
+
+  " mark sync implementation": 1
+
+  "convert_async": 1
+
+  "into": 4
+
+  "self_ty": 1
+
+  "segment": 2
+
+  "item": 2
+
+  "": 3
+
+  " only compiled when `is_sync` feature gate is set.": 1
+
+  "impl": 1
+
+  "_attr": 1
+
+  "Impl": 1
+
+  " When `is_sync` is set, marked code is removed.": 1
+
+  "Item": 1
+
+  "clone": 1
+
+  "last": 1
+
+  "mode": 2
+
+  "Type": 1
+
+  "ident": 1
+
+  "replace": 1
+
+  "to_compile_error": 1
+
+  "Ok": 1
+
+  "to_token_stream": 1
+
+  "ProcMacroTokenStream": 3
+
+  "output_tokens": 4
+
+  "path": 3
+
+  "as_str": 1
+
+  "item_ident_option": 2
+
+  "Err": 1
+
+  "_input": 1
+
+  "new": 1
+
+  "segments": 1
+
+  "m": 2
+
+  "args": 2
+
+  "ItemImpl": 1
+
+  " mark async implementation": 1
+
+  "proc_macro_attribute": 3
+
+  "TypePath": 1
+
+  " When `is_sync` is not set, marked code is removed.": 1
+
+  "hook_macro_def": 2
+
+  "async_mode": 1
+
+  "None": 1
+
+  "e": 2
+
+  "from": 1
+
+  "map": 1
+
+  "to_string": 1
+
+
+Global Frequencies (Total terms: 110)
+  "doc": 8
+
+  "token": 4
+
+  "into": 4
+
+  "output_tokens": 4
+
+  "ProcMacroTokenStream": 3
+
+  "path": 3
+
+  "proc_macro_attribute": 3
+
+  "input": 3
+
+  "": 3
+
+  "cfg": 2
+
+  "args": 2
+
+  "item_ident_option": 2
+
+  "segment": 2
+
+  "item": 2
+
+  "hook_macro_def": 2
+
+  "mode": 2
+
+  "e": 2
+
+  "extend": 2
+
+  "m": 2
+
+  "to_compile_error": 1
+
+  "map": 1
+
+  " mark sync implementation": 1
+
+  "last": 1
+
+  "segments": 1
+
+  "Err": 1
+
+  "from": 1
+
+  "as_str": 1
+
+  "generate_item_hook_macro": 1
+
+  " When `is_sync` is not set, marked code is removed.": 1
+
+  "_attr": 1
+
+  "new": 1
+
+  "item_ts": 1
+
+  " ": 1
+
+  "to_token_stream": 1
+
+  "_args": 1
+
+  "ItemImpl": 1
+
+  "_input": 1
+
+  "Item": 1
+
+  "replace": 1
+
+  "to_string": 1
+
+  "ident": 1
+
+  "Type": 1
+
+  "Ok": 1
+
+  "clone": 1
+
+  " When `is_sync` is set, marked code is removed.": 1
+
+  "TokenStream2": 1
+
+  "Impl": 1
+
+  "TypePath": 1
+
+  " only compiled when `is_sync` feature gate is not set.": 1
+
+  " only compiled when `is_sync` feature gate is set.": 1
+
+  "self_ty": 1
+
+  "async_mode": 1
+
+  " mark async implementation": 1
+
+  "None": 1
+
+  "impl": 1
+
+  "convert_async": 1
+
+
+Term Scores (Module, Global, and Local per macro):
+  " When `is_sync` is set, marked code is removed.": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  "last": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "extend": Module: 0.0189, Global: 0.0189, wrap_impl: 0.0435
+  "e": Module: 0.0189, Global: 0.0189, async_impl: 0.0435
+  "self_ty": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "segment": Module: 0.0189, Global: 0.0189, wrap_impl: 0.0435
+  "m": Module: 0.0189, Global: 0.0189, async_impl: 0.0435
+  "async_mode": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  "segments": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "to_string": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  " only compiled when `is_sync` feature gate is set.": Module: 0.0141, Global: 0.0141, sync_impl: 0.0435
+  "Ok": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  "path": Module: 0.0270, Global: 0.0270, wrap_impl: 0.0588
+  "ident": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "_args": Module: 0.0141, Global: 0.0141, sync_impl: 0.0435
+  "to_compile_error": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  "output_tokens": Module: 0.0345, Global: 0.0345, wrap_impl: 0.0909
+  "doc": Module: 0.0769, Global: 0.0769, async_impl: 0.0909, sync_impl: 0.2000
+  "Impl": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "generate_item_hook_macro": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  " mark async implementation": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  "Item": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "args": Module: 0.0189, Global: 0.0189, async_impl: 0.0435
+  "cfg": Module: 0.0189, Global: 0.0189, async_impl: 0.0233, sync_impl: 0.0435
+  "input": Module: 0.0270, Global: 0.0270, sync_impl: 0.1429
+  "into": Module: 0.0345, Global: 0.0345, async_impl: 0.0435, sync_impl: 0.0435, wrap_impl: 0.0213
+  "to_token_stream": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "ProcMacroTokenStream": Module: 0.0270, Global: 0.0270, wrap_impl: 0.0588
+  "_input": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  "from": Module: 0.0141, Global: 0.0141, sync_impl: 0.0435
+  "new": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "item_ts": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  " When `is_sync` is not set, marked code is removed.": Module: 0.0141, Global: 0.0141, sync_impl: 0.0435
+  "convert_async": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  "clone": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  " only compiled when `is_sync` feature gate is not set.": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  "ItemImpl": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "mode": Module: 0.0189, Global: 0.0189, async_impl: 0.0435
+  "TokenStream2": Module: 0.0141, Global: 0.0141, sync_impl: 0.0435
+  "hook_macro_def": Module: 0.0189, Global: 0.0189, wrap_impl: 0.0435
+  "Err": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  " mark sync implementation": Module: 0.0141, Global: 0.0141, sync_impl: 0.0435
+  "None": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "TypePath": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  " ": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  "proc_macro_attribute": Module: 0.0270, Global: 0.0270, async_impl: 0.0233, sync_impl: 0.0435, wrap_impl: 0.0213
+  "item": Module: 0.0189, Global: 0.0189, async_impl: 0.0435
+  "map": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "_attr": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "Type": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "impl": Module: 0.0141, Global: 0.0141, wrap_impl: 0.0213
+  "as_str": Module: 0.0141, Global: 0.0141, async_impl: 0.0233
+  "token": Module: 0.0345, Global: 0.0345, async_impl: 0.0435, sync_impl: 0.0909
+  "item_ident_option": Module: 0.0189, Global: 0.0189, wrap_impl: 0.0435
+  "": Module: 0.0270, Global: 0.0270, async_impl: 0.0435, sync_impl: 0.0435
+  "replace": Module: 0.0141, Global: 0.0141, async_impl: 0.0233

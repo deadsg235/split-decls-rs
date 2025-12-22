@@ -1,0 +1,1 @@
+use proc_macro :: TokenStream ; use quote :: quote ; use syn ::*; use proc_macro :: TokenStream ; use quote :: quote ; use syn :: { parse_macro_input , DeriveInput } ; prelude ! { } # [decl_ unimacro_derive_decls_impl_for_HelperStruct] impl HelperStruct { pub fn new (field : i32) -> Self { Self { field } } }

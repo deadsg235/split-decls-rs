@@ -3,11 +3,10 @@ use std::path::PathBuf;
 use split_decls_rs::patch_config::PatchConfig;
 use split_decls_types::SplitDeclsConfig;
 use split_decls_rs::generate_wrapped_workspace::generate_wrapped_workspace;
-use split_decls_rs::buildrs_generator::build_script_composer; // Import the new build_script_composer
+use split_decls_rs::buildrs_generator::build_script_composer;
 use toml;
-use std::collections::HashMap;
 use std::fs;
-use cargo_toml_generator_types::{CargoToml, Dependency}; // Import the new CargoToml and Dependency structs
+use cargo_toml_generator_types::{CargoToml, Dependency};
 
 /// Helper function to convert an iterator of (String, cargo_toml_generator_types::Dependency)
 /// to an iterator of (String, toml::Value).

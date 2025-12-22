@@ -78,7 +78,7 @@ pub fn generate_wrapped_workspace(
         
         // Call generate_wrapped_crate for each member
         // This will need a new generate_wrapped_crate signature or a temporary struct
-        let original_crate_path = project_root.join(&member.path); // THIS IS NOT CORRECT
+        let _original_crate_path = project_root.join(&member.path); // THIS IS NOT CORRECT
         // The member.path here is relative to the output_dir.
         // We need the original path of the crate relative to the *project_root*.
 

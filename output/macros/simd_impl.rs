@@ -1,1 +1,1 @@
-# [cfg (feature = "simd_support")] simd_impl ! (f64 , u64) ;
+#[cfg (feature = "simd_support")] simd_impl ! (f64 , u64) ;

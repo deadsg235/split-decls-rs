@@ -1,1 +1,1 @@
-cfg_loom ! { mod loom_blocking ; mod loom_current_thread ; mod loom_join_set ; mod loom_local ; mod loom_multi_thread ; mod loom_oneshot ; # [cfg (not (debug_assertions))] compile_error ! ("these tests require debug assertions to be enabled") ; }
+cfg_loom ! { mod loom_blocking ; mod loom_current_thread ; mod loom_join_set ; mod loom_local ; mod loom_multi_thread ; mod loom_oneshot ; #[cfg (not (debug_assertions))] compile_error ! ("these tests require debug assertions to be enabled") ; }

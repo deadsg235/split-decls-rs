@@ -2,15 +2,29 @@ use anyhow::{Context, Result};
 use syn::visit::Visit;
 use syn::{
     parse_file,
-    ItemFn, Token,
 };
 use std::{collections::HashMap, fs, path::Path};
 use crate::macro_analyzer_parts::terms::Term;
 use crate::macro_analyzer_parts::term_collector::TermCollector;
 
 pub fn analyze_file_macros(file_path: &Path) -> Result<HashMap<String, Vec<Term>>> {
-    let content = fs::read_to_string(file_path)
+    let mut content = fs::read_to_string(file_path)
         .with_context(|| format!("Failed to read file: {}", file_path.display()))?;
+
+    // Pre-processing steps to clean up malformed macro output
+    // 1. Remove ". sig" suffix if present
+    if content.trim_end().ends_with(". sig") {
+        let trimmed_len = content.trim_end().len();
+        content.truncate(trimmed_len - ". sig".len());
+        // Now, we *don't* return an empty HashMap; we attempt to parse the cleaned content.
+    }
+
+    // 2. Replace "# [" with "#["
+    content = content.replace("# [", "#[");
+
+    // 3. Add newlines after closing braces and brackets for better parsing chances (heuristic)
+    content = content.replace(" } ", "}\n");
+    content = content.replace(" ] ", "]\n");
     let ast = parse_file(&content)
         .with_context(|| format!("Failed to parse Rust file: {}", file_path.display()))?;
 

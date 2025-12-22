@@ -1,1 +1,1 @@
-# [proc_macro] pub fn quote_error (input : TokenStream) -> TokenStream { input } . sig
+#[proc_macro] pub fn quote_error (input : TokenStream) -> TokenStream { input } . sig

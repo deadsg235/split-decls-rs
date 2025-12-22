@@ -1,0 +1,2 @@
+bitflags :: bitflags ! { impl VariantFlags : u8 { const NO_VARIANT_FLAGS = 0 ; #[doc = " Indicates whether the field list of this variant is `#[non_exhaustive]`."] const IS_FIELD_LIST_NON_EXHAUSTIVE = 1 << 0 ;}
+}

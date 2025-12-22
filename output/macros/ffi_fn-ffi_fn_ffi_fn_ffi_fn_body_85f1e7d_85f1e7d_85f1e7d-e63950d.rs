@@ -1,0 +1,3 @@
+ffi_fn ! { #[doc = " Create a new `hyper_buf *` by copying the provided bytes."] #[doc = ""] #[doc = " This makes an owned copy of the bytes, so the `buf` argument can be"] #[doc = " freed (with `hyper_buf_free`) or changed afterwards."] #[doc = ""] #[doc = " To avoid a memory leak, the copy must eventually be consumed by"] #[doc = " `hyper_buf_free`."] #[doc = ""] #[doc = " This returns `NULL` if allocating a new buffer fails."] fn hyper_buf_copy (buf : * const u8 , len : size_t) -> * mut hyper_buf { let slice = unsafe { std :: slice :: from_raw_parts (buf , len)}
+; Box :: into_raw (Box :: new (hyper_buf (Bytes :: copy_from_slice (slice))))}
+?= ptr :: null_mut () }

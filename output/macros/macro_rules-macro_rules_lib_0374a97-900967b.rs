@@ -1,0 +1,2 @@
+#[macro_export] macro_rules ! mkbuildrs { () => { define_package_config ! ()}
+; }

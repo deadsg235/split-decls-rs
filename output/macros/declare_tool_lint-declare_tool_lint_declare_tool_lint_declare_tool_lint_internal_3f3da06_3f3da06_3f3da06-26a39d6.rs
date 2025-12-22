@@ -1,0 +1,1 @@
+declare_tool_lint ! { #[doc = " The `usage_of_type_ir_inherent` lint detects usage of `rustc_type_ir::inherent`."] #[doc = ""] #[doc = " This module should only be used within the trait solver."] pub rustc :: USAGE_OF_TYPE_IR_INHERENT , Allow , "usage `rustc_type_ir::inherent` outside of trait system" , report_in_external_macro : true }

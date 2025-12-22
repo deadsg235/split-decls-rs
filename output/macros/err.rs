@@ -1,1 +1,2 @@
-err ! (enum_struct : Enum :: Struct { key : "answer" , val : 42 } => Unsupported ("cannot serialize enum struct variant `Enum::Struct` as an attribute or text content value")) ;
+err ! (enum_struct : Enum :: Struct { key : "answer" , val : 42}
+=> Unsupported ("cannot serialize enum struct variant `Enum::Struct` as an attribute or text content value")) ;

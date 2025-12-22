@@ -1,0 +1,3 @@
+macro_rules ! generate_flat_map_visitor_fns { ($ ($ name : ident , $ Ty : ty , $ flat_map_fn : ident $ (, $ param : ident : $ ParamTy : ty) *;) +) => { $ (#[allow (unused_parens)] impl < V : MutVisitor > MutVisitable < V > for ThinVec <$ Ty > { type Extra = ($ ($ ParamTy) ,*) ; #[inline] fn visit_mut (& mut self , visitor : & mut V , ($ ($ param) ,*) : Self :: Extra ,) -> V :: Result { $ name (visitor , self $ (, $ param) *)}
+} fn $ name < V : MutVisitor > (vis : & mut V , values : & mut ThinVec <$ Ty >, $ ($ param : $ ParamTy ,) *) { values . flat_map_in_place (| value | vis .$ flat_map_fn (value $ (,$ param) *)) ; }) +}
+}

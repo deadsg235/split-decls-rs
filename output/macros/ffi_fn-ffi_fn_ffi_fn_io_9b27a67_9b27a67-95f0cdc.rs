@@ -1,0 +1,2 @@
+ffi_fn ! { #[doc = " Free an IO handle."] #[doc = ""] #[doc = " This should only be used if the request isn't consumed by"] #[doc = " `hyper_clientconn_handshake`."] fn hyper_io_free (io : * mut hyper_io) { drop (non_null ! (Box :: from_raw (io) ?= ())) ;}
+}

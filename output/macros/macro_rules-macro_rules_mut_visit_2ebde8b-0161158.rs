@@ -1,0 +1,2 @@
+macro_rules ! walk_walkable { ($ visitor : expr , $ expr : expr , mut) => { MutWalkable :: walk_mut ($ expr , $ visitor)}
+; }

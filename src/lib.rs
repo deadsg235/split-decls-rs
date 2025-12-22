@@ -1,21 +1,16 @@
-use std::{
-    fs,
-    path::{Path, PathBuf}, // For running git commands
-};
-pub mod macro_analyzer_parts; // Declare the new module
+use std::path::{Path, PathBuf};
+pub mod macro_analyzer_parts;
 pub mod special_print;
 use anyhow::{Context, Result};
-use quote::quote;
-use walkdir::WalkDir;
 
 use split_decls_types::SplitDeclsConfig;
 
 pub mod resolve_crate_path_in_submodule;
 pub mod buildrs_ast_utils;
 pub mod buildrs_generator;
-pub mod git_manager; // New module
-pub mod patch_config; // New module
-pub mod workspace_manager; // New module
+pub mod git_manager;
+pub mod patch_config;
+pub mod workspace_manager;
 pub mod eager_splitter;
 pub mod extracted_decl;
 pub mod generate_wrapped_workspace;
@@ -26,9 +21,14 @@ pub mod generate_new_build_rs;
 pub mod apply_patches_to_syntax_tree;
 pub mod get_item_name;
 pub mod get_item_kind;
+pub mod process_crate;
+pub mod process_crates_in_path;
 pub use extracted_decl::*;
 
-use std::collections::HashMap;
+// Re-export key functions for tests
+pub use process_crate::process_crate;
+pub use process_crates_in_path::process_crates_in_path;
+pub use generate_wrapped_workspace::generate_wrapped_workspace;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
     struct Package {

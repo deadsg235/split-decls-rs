@@ -1,0 +1,2 @@
+macro_rules ! generate_walk_flat_map_fns { ($ ($ fn_name : ident ($ Ty : ty $ (,$ extra_name : ident : $ ExtraTy : ty) *) => $ visit_fn_name : ident ;) +) => { $ (pub fn $ fn_name < V : MutVisitor > (vis : & mut V , mut value : $ Ty $ (,$ extra_name : $ ExtraTy) *) -> SmallVec <$ Ty , 1 > { vis .$ visit_fn_name (& mut value $ (,$ extra_name) *) ; smallvec ! [value] }) +}
+; }

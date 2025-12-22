@@ -1,0 +1,3 @@
+macro_rules ! warn_span { ($ ($ arg : tt) *) => { { #[cfg (feature = "tracing")] { let _span = tracing :: warn_span ! ($ ($ arg) +) ; _span . entered ()}
+}}
+}

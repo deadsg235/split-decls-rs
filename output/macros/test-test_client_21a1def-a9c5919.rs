@@ -1,0 +1,3 @@
+test ! { name : client_get_req_body_implicitly_empty , server : expected : "GET / HTTP/1.1\r\nhost: {addr}\r\n\r\n" , reply : REPLY_OK , client : request : { method : GET , url : "http://{addr}/" , body : "" ,}
+, response : status : OK , headers : {}
+, body : None , }

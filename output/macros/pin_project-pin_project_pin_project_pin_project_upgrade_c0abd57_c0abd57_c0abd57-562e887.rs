@@ -1,0 +1,2 @@
+pin_project ! { #[must_use = "futures do nothing unless polled"] pub struct UpgradedSendStreamTask < B > { #[pin] h2_tx : SendStream < SendBuf < B >>, #[pin] rx : mpsc :: Receiver < Cursor < Box < [u8] >>>, error_tx : Option < oneshot :: Sender < crate :: Error >>,}
+}

@@ -1,0 +1,1 @@
+declare_lint_pass ! (DerefNullPtr => [DEREF_NULLPTR]) ;

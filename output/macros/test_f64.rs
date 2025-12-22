@@ -1,1 +1,1 @@
-# [cfg (feature = "simd_support")] test_f64 ! { f64x8_edge_cases , f64x8 , f64x8 :: splat (0.0) , f64x8 :: splat (EPSILON64) }
+#[cfg (feature = "simd_support")] test_f64 ! { f64x8_edge_cases , f64x8 , f64x8 :: splat (0.0) , f64x8 :: splat (EPSILON64) }

@@ -1,0 +1,2 @@
+#[macro_export] macro_rules ! err_exhaust { ($ ($ tt : tt) *) => { $ crate :: mir :: interpret :: InterpErrorKind :: ResourceExhaustion ($ crate :: mir :: interpret :: ResourceExhaustionInfo ::$ ($ tt) *)}
+; }

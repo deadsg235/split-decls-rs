@@ -1,0 +1,2 @@
+macro_rules ! check_locate { ($ ([[$ s : literal]]) ,* $ (,) ?) => { $ ({ let lit = stringify ! ($ s) ; let with_trailer = format ! ("{} \t]]\n" , lit) ; assert_eq ! (locate_end (& with_trailer) , Some (lit . len ())) ; }) *}
+; }

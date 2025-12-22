@@ -1,0 +1,1 @@
+use proc_macro :: TokenStream ; use quote :: quote ; use syn ::*; use proc_macro :: TokenStream ; use quote :: quote ; use syn :: { parse_macro_input , DeriveInput } ; prelude ! { } # [decl_ unimacro_derive_decls_helper_function] pub fn helper_function () -> String { "helper" . to_string () }

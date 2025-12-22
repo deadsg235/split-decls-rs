@@ -1,0 +1,4 @@
+ffi_fn ! { #[doc = " Adds the provided value to the list of the provided name."] #[doc = ""] #[doc = " If there were already existing values for the name, this will append the"] #[doc = " new value to the internal list."] fn hyper_headers_add (headers : * mut hyper_headers , name : * const u8 , name_len : size_t , value : * const u8 , value_len : size_t) -> hyper_code { let headers = non_null ! (& mut * headers ?= hyper_code :: HYPERE_INVALID_ARG) ; match unsafe { raw_name_value (name , name_len , value , value_len)}
+{ Ok ((name , value , orig_name)) => { headers . headers . append (& name , value) ; headers . orig_casing . append (& name , orig_name . clone ()) ; headers . orig_order . append (name) ; hyper_code :: HYPERE_OK}
+Err (code) => code ,}
+} }

@@ -2,26 +2,42 @@ use anyhow::Context;
 use std::{collections::HashMap, fs, path::Path, path::PathBuf};
 use walkdir;
 use toml;
+use clap::Parser;
 
 
-use split_decls_rs::macro_analyzer_parts::terms::{Term, TermScores};
+use split_decls_rs::macro_analyzer_parts::terms::Term;
 use split_decls_rs::macro_analyzer_parts::analysis_data::TermAnalysis;
-use split_decls_rs::macro_analyzer_parts::term_collector::TermCollector;
 use split_decls_rs::macro_analyzer_parts::file_analyzer::analyze_file_macros;
 use split_decls_rs::macro_analyzer_parts::scoring::get_closest_prime_reciprocal;
 use split_decls_rs::macro_analyzer_parts::output_format::MacroAnalysisOutput;
 use split_decls_rs::special_print::specialprint;
 
 
+/// Command-line arguments for the macro analyzer.
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Cli {
+    /// Directory to analyze for module terms (e.g., current crate's src)
+    #[clap(short, long, value_parser)]
+    module_root_dir: PathBuf,
+
+    /// Directories to analyze for global terms (e.g., entire project). Can be specified multiple times.
+    #[clap(short, long, value_parser, num_args = 1..)]
+    global_root_dirs: Vec<PathBuf>,
+
+    /// Path to the output TOML file. Defaults to "output/macro_scores.toml".
+    #[clap(short, long, value_parser, default_value = "output/macro_scores.toml")]
+    output_file: PathBuf,
+}
+
+
 fn main() -> anyhow::Result<()> {
-    // Directory to analyze for module terms (e.g., current crate's src)
-    let module_root_dir = PathBuf::from("cargo-toml-generator-macros/src/");
-    // Directories to analyze for global terms (e.g., entire project)
-    let global_root_dirs = vec![
-        PathBuf::from("cargo-toml-generator-macros/src/"),
-        PathBuf::from("src/"), // Assuming this is part of the project's overall code
-        // Add other directories for global analysis here if needed
-    ];
+    let cli = Cli::parse();
+
+    let module_root_dir = cli.module_root_dir;
+    let _global_root_dirs = cli.global_root_dirs;
+
+    let mut errors: Vec<String> = Vec::new(); // To collect errors
 
 
     let mut analysis = TermAnalysis::default();
@@ -33,11 +49,17 @@ fn main() -> anyhow::Result<()> {
     for entry in walkdir::WalkDir::new(&module_root_dir) {
         let entry = entry.context("Failed to read directory entry")?;
         if entry.file_type().is_file() && entry.path().extension().map_or(false, |ext| ext == "rs") {
-            let file_macro_terms = analyze_file_macros(entry.path())?;
-            for (macro_name, terms) in file_macro_terms {
-                analysis.terms_per_macro.insert(macro_name.clone(), terms.clone());
-                all_global_terms_vec.extend(terms.clone()); // Add to global pool
-                module_terms_from_files.entry(entry.path().to_path_buf()).or_insert_with(Vec::new).extend(terms);
+            match analyze_file_macros(entry.path()) {
+                Ok(file_macro_terms) => {
+                    for (macro_name, terms) in file_macro_terms {
+                        analysis.terms_per_macro.insert(macro_name.clone(), terms.clone());
+                        all_global_terms_vec.extend(terms.clone()); // Add to global pool
+                        module_terms_from_files.entry(entry.path().to_path_buf()).or_insert_with(Vec::new).extend(terms);
+                    }
+                },
+                Err(e) => {
+                    errors.push(format!("Error processing file {}: {:?}", entry.path().display(), e));
+                }
             }
         }
     }
@@ -116,13 +138,15 @@ fn main() -> anyhow::Result<()> {
     let toml_string = toml::to_string_pretty(&output_data)
         .context("Failed to serialize analysis results to TOML")?;
 
+    // Get the output file path from CLI arguments
+    let output_file_path = cli.output_file;
+    let output_dir = output_file_path.parent().unwrap_or_else(|| Path::new(".")); // Get parent directory, or current directory if it's just a filename.
+
     // Create output directory if it doesn’t exist
-    let output_dir = PathBuf::from("output/");
     fs::create_dir_all(&output_dir)
         .with_context(|| format!("Failed to create output directory: {}", output_dir.display()))?;
 
     // Write to file
-    let output_file_path = output_dir.join("macro_scores.toml");
     fs::write(&output_file_path, toml_string)
         .with_context(|| format!("Failed to write analysis results to file: {}", output_file_path.display()))?;
 
@@ -152,6 +176,13 @@ fn main() -> anyhow::Result<()> {
             }
         }
         println!();
+    }
+
+    if !errors.is_empty() {
+        println!("\n--- Errors Encountered During Analysis ---");
+        for error in errors {
+            eprintln!("{}", error);
+        }
     }
 
 

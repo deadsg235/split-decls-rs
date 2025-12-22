@@ -1,0 +1,1 @@
+#[cfg (target_pointer_width = "64")] crate :: static_assert_size ! (Chunk , 16) ;

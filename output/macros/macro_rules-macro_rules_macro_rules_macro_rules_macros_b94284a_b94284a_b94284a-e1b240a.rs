@@ -1,0 +1,3 @@
+macro_rules ! TrivialTypeTraversalAndLiftImpls { ($ ($ t : tt) *) => { TrivialTypeTraversalImpls ! { $ ($ t) *}
+TrivialLiftImpls ! { $ ($ t) *}
+} }

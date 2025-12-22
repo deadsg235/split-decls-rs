@@ -127,8 +127,8 @@ mod tests {
         });
         assert!(!decl_module_call_exists, "Generated code should not contain `decl_module!` for an empty lib.rs.");
 
-        // Assert that fs::create_dir_all is called (by checking for "fs :: create_dir_all")
-        // This is still a string check, but less brittle as it's a specific, expected call.
-        assert!(code.contains("fs :: create_dir_all"), "Generated code should contain `fs::create_dir_all` call.");
+        // Assert that the generated code contains the expected rerun-if-changed directives
+        assert!(code.contains("cargo:rerun-if-changed=build.rs"), "Generated code should contain rerun-if-changed for build.rs");
+        assert!(code.contains("cargo:rerun-if-changed=.split-decls-config.toml"), "Generated code should contain rerun-if-changed for config file");
     }
 }

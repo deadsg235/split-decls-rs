@@ -1,6 +1,5 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
-use crate::macro_analyzer_parts::terms::Term;
 
 // Struct for the TOML output format
 #[derive(Serialize, Deserialize, Debug)]

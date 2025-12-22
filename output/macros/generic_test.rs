@@ -1,1 +1,1 @@
-# [cfg (not (miri))] generic_test ! (k_smallest_by_sort , u8 , u16 , u32 , u64 , i8 , i16 , i32 , i64) ;
+#[cfg (not (miri))] generic_test ! (k_smallest_by_sort , u8 , u16 , u32 , u64 , i8 , i16 , i32 , i64) ;

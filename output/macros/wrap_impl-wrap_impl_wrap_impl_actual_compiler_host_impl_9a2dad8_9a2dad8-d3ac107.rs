@@ -1,0 +1,3 @@
+macro_wrapper_lib :: wrap_impl ! { impl < C : rustc_driver :: Callbacks > CompilerHost < C > for ActualCompilerHost { macro_wrapper_lib :: wrap_fn ! { fn run_compiler_callbacks (& self , args : Vec < String >, _callbacks : & mut C) { gemini_compiler_host :: run_compiler_with_gemini_emitter (args) ;}
+}}
+}

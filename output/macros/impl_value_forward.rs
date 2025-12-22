@@ -1,1 +1,2 @@
-impl_value_forward ! ({ impl < T : Value + ? Sized > Value for Box < T > } => x => { ** x }) ;
+impl_value_forward ! ({ impl < T : Value + ? Sized > Value for Box < T >}
+=> x => { ** x }) ;

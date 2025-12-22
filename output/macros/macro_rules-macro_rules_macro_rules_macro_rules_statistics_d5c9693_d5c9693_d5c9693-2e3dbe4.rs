@@ -1,0 +1,8 @@
+macro_rules ! iterable_named_enum { ($ (#[$ m : meta]) * $ type_vis : vis enum $ typename : ident { $ ($ (#[$ variant_meta : meta]) * $ variant : ident ($ variant_str : literal) $ (= $ value : expr) ?,) + }) => { #[allow (clippy :: all)] $ (#[$ m]) * $ type_vis enum $ typename { $ ($ (#[$ variant_meta]) * $ variant $ (= $ value) ?,) +}
+impl $ typename { #[doc = "The corresponding rocksdb string identifier for this variant"] pub const fn name (& self) -> &'static str { match self { $ ($ typename ::$ variant => $ variant_str ,) +}
+} pub fn iter () -> :: core :: slice :: Iter <'static , $ typename > { static VARIANTS : &'static [$ typename] = & [$ ($ typename ::$ variant ,) +] ; VARIANTS . iter ()}
+} #[automatically_derived] impl :: core :: str :: FromStr for $ typename { type Err = NameParseError ; fn from_str (s : & str) -> Result < Self , Self :: Err > { match s { $ ($ variant_str => Ok ($ typename ::$ variant) ,) + _ => Err (NameParseError) ,}
+}}
+#[automatically_derived] impl :: core :: fmt :: Display for $ typename { fn fmt (& self , f : & mut :: core :: fmt :: Formatter <'_ >) -> :: core :: fmt :: Result { self . name () . fmt (f)}
+}}
+; }

@@ -1,0 +1,4 @@
+INSIDE_FUNCTION ! { pub fn ensure_complete_parse <'a > (parser : & Parser <'a >, macro_path : & ast :: Path , kind_name : & str , span : Span ,) { if parser . token != token :: Eof { let descr = token_descr (& parser . token) ; let def_site_span = parser . token . span . with_ctxt (SyntaxContext :: root ()) ; let semi_span = parser . psess . source_map () . next_point (span) ; let add_semicolon = match & parser . psess . source_map () . span_to_snippet (semi_span) { Ok (snippet) if & snippet [..] != ";" && kind_name == "expression" => { Some (span . shrink_to_hi ())}
+_ => None ,}
+; let expands_to_match_arm = kind_name == "pattern" && parser . token == token :: FatArrow ; parser . dcx () . emit_err (IncompleteParse { span : def_site_span , descr , label_span : span , macro_path , kind_name , expands_to_match_arm , add_semicolon , }) ;}
+} }

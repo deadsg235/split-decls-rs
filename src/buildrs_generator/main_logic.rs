@@ -7,7 +7,7 @@ use syn::LitStr;
 pub fn generate_main_logic_token_stream(
     old_lib_rs_path_lit: &LitStr, // Still needed for rerun-if-changed, though not parsed
     old_build_rs_path_lit: &LitStr, // Still needed for rerun-if-changed
-    decls_output_dir_lit: &LitStr, // Still needed for rerun-if-changed
+    _decls_output_dir_lit: &LitStr, // Still needed for rerun-if-changed
     crate_name_sanitized_lit: &LitStr,
 ) -> TokenStream {
     quote! {
@@ -46,7 +46,6 @@ mod tests {
     use super::*;
     use proc_macro2::Span;
     use syn::LitStr;
-    use std::path::{Path, PathBuf};
 
     #[test]
     fn test_generate_main_logic_token_stream_basic() {

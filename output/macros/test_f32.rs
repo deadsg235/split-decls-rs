@@ -1,1 +1,1 @@
-# [cfg (feature = "simd_support")] test_f32 ! { f32x16_edge_cases , f32x16 , f32x16 :: splat (0.0) , f32x16 :: splat (EPSILON32) }
+#[cfg (feature = "simd_support")] test_f32 ! { f32x16_edge_cases , f32x16 , f32x16 :: splat (0.0) , f32x16 :: splat (EPSILON32) }

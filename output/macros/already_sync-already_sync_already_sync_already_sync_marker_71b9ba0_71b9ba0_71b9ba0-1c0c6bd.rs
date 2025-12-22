@@ -1,0 +1,1 @@
+#[cfg (not (target_has_atomic = "64"))] already_sync ! ([portable_atomic :: AtomicU64]) ;

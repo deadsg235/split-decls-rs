@@ -1,0 +1,2 @@
+macro_rules ! tmod_push { ($ struct_name : ident , $ tmod_enum_name : ident , $ opt_name : ident , $ opt_expr : expr , $ init : expr , $ mods : expr , $ tmod_vals : expr) => { if *$ opt_expr != $ init { tmod_push_impl (OptionsTargetModifiers ::$ struct_name ($ tmod_enum_name ::$ opt_name) , $ tmod_vals , $ mods ,) ;}
+} ; }

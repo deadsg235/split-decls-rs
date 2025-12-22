@@ -1,0 +1,1 @@
+impl_lint_pass ! (IfLetRescope => [IF_LET_RESCOPE]) ;

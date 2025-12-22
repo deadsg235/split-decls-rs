@@ -1,0 +1,2 @@
+#[macro_export] macro_rules ! err_ub_custom { ($ msg : expr $ (, $ ($ name : ident = $ value : expr) ,* $ (,) ?) ?) => { { $ (let ($ ($ name ,) *) = ($ ($ value ,) *) ;) ? $ crate :: err_ub ! (Custom ($ crate :: error :: CustomSubdiagnostic { msg : || $ msg , add_args : Box :: new (move | mut set_arg | { $ ($ (set_arg (stringify ! ($ name) . into () , rustc_errors :: IntoDiagArg :: into_diag_arg ($ name , & mut None)) ;) *) ? }) }))}
+} ; }

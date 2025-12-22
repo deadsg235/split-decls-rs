@@ -1,1 +1,1 @@
-# [cfg (feature = "stable_graph")] impl_graph_traits ! (StableDiGraph) ;
+#[cfg (feature = "stable_graph")] impl_graph_traits ! (StableDiGraph) ;

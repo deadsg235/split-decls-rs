@@ -1,0 +1,3 @@
+make_dummy_visitor_has_node_id_impl ! { DummyVisitor , fn node_id (& self) -> NodeId { ast :: DUMMY_NODE_ID}
+fn node_id_mut (& mut self) -> & mut NodeId { panic ! ("DummyVisitor::node_id_mut called")}
+}

@@ -1,1 +1,1 @@
-# [proc_macro] pub fn define_root_cargo_toml (input : TokenStream) -> TokenStream { macros :: define_root_cargo_toml_impl (input) } . sig
+#[proc_macro] pub fn define_root_cargo_toml (input : TokenStream) -> TokenStream { macros :: define_root_cargo_toml_impl (input)}

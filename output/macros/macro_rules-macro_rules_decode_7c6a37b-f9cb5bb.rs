@@ -1,0 +1,2 @@
+macro_rules ! put_u8 { ($ trailers_buf : expr , $ byte : expr , $ limit : expr) => { $ trailers_buf . put_u8 ($ byte) ; if $ trailers_buf . len () >= $ limit { return Poll :: Ready (Err (io :: Error :: new (io :: ErrorKind :: InvalidData , "chunk trailers bytes over limit" ,))) ;}
+} ; }

@@ -1,1 +1,1 @@
-# [cfg (target_pointer_width = "64")] impl_IntoRepr ! (isize , u64) ;
+#[cfg (target_pointer_width = "64")] impl_IntoRepr ! (isize , u64) ;

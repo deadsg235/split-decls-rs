@@ -1,0 +1,3 @@
+ffi_fn ! { #[doc = " Set whether HTTP/1 connections accept obsolete line folding for header values."] #[doc = ""] #[doc = " Newline codepoints (\\r and \\n) will be transformed to spaces when parsing."] #[doc = ""] #[doc = " Pass `0` to disable, `1` to enable."] #[doc = ""] fn hyper_clientconn_options_http1_allow_multiline_headers (opts : * mut hyper_clientconn_options , enabled : c_int) -> hyper_code { let opts = non_null ! { & mut * opts ?= hyper_code :: HYPERE_INVALID_ARG}
+; opts . http1_allow_obsolete_multiline_headers_in_responses = enabled != 0 ; hyper_code :: HYPERE_OK}
+}

@@ -1,0 +1,6 @@
+ffi_fn ! { #[doc = " Creates a task to send a request on the client connection."] #[doc = ""] #[doc = " This consumes the request. You should not use or free the request"] #[doc = " afterwards."] #[doc = ""] #[doc = " Returns a task that needs to be polled until it is ready. When ready, the"] #[doc = " task yields a `hyper_response *`."] #[doc = ""] #[doc = " To avoid a memory leak, the task must eventually be consumed by"] #[doc = " `hyper_task_free`, or taken ownership of by `hyper_executor_push`"] #[doc = " without subsequently being given back by `hyper_executor_poll`."] fn hyper_clientconn_send (conn : * mut hyper_clientconn , req : * mut hyper_request) -> * mut hyper_task { let mut req = non_null ! { Box :: from_raw (req) ?= ptr :: null_mut ()}
+; req . finalize_request () ; let fut = match non_null ! { & mut * conn ?= ptr :: null_mut ()}
+. tx { Tx :: Http1 (ref mut tx) => futures_util :: future :: Either :: Left (tx . send_request (req . 0)) , Tx :: Http2 (ref mut tx) => futures_util :: future :: Either :: Right (tx . send_request (req . 0)) ,}
+; let fut = async move { fut . await . map (hyper_response :: wrap)}
+; Box :: into_raw (hyper_task :: boxed (fut))}
+?= std :: ptr :: null_mut () }

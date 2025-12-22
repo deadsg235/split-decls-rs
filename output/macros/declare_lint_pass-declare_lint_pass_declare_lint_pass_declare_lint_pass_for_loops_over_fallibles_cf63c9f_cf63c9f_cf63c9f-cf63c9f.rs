@@ -1,0 +1,1 @@
+declare_lint_pass ! (ForLoopsOverFallibles => [FOR_LOOPS_OVER_FALLIBLES]) ;

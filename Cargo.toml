@@ -68,5 +68,9 @@ path = "src/bin/testbuild.rs"
 name = "macro_analyzer"
 path = "src/bin/macro_analyzer.rs"
 
+[[bin]]
+name = "test_splitter"
+path = "src/bin/test_splitter.rs"
+
 [patch.'crates-io']
 proc-macro2 = { path = "../proc-macro2" }

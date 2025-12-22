@@ -1,0 +1,2 @@
+#[cfg (feature = "http2")] pin_project ! { pub struct SendWhen < B , E > where B : Body , B : 'static , { #[pin] pub (crate) when : ResponseFutMap < B , E >, #[pin] pub (crate) call_back : Option < Callback < Request < B >, Response < Incoming >>>,}
+}

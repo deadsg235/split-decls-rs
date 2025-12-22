@@ -6,9 +6,7 @@ use tempfile::tempdir;
 use split_decls_types::SplitDeclsConfig;
 
 // Import the main function from our crate
-use split_decls_rs::process_crates_in_path; // Assuming process_crates_in_path is public
-use split_decls_rs::process_crate; // Also import process_crate directly
-use split_decls_rs::generate_wrapped_workspace; // Import the new function
+use split_decls_rs::{process_crates_in_path, process_crate, generate_wrapped_workspace};
 
 // Test for the overall functionality:
 // 1. Create a temporary workspace.

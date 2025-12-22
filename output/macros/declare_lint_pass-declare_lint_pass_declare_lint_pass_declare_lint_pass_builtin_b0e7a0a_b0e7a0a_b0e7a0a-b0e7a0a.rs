@@ -1,0 +1,1 @@
+declare_lint_pass ! (ExplicitOutlivesRequirements => [EXPLICIT_OUTLIVES_REQUIREMENTS]) ;

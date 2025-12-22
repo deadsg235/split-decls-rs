@@ -1,0 +1,4 @@
+macro_rules ! handle_is_name_written { () => { { if is_name_written { debug_assert_ne ! (& dst [dst . len () - 2 ..] , b"\r\n" , "previous header wrote newline but set is_name_written") ; if must_write_chunked { extend (dst , b", chunked\r\n") ;}
+else { extend (dst , b"\r\n") ;}
+}}
+} ; }

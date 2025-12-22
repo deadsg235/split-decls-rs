@@ -1,0 +1,4 @@
+macro_rules ! redirect_field { ($ cg : ident . link_arg) => { $ cg . link_args}
+; ($ cg : ident . pre_link_arg) => { $ cg . pre_link_args}
+; ($ cg : ident .$ field : ident) => { $ cg .$ field}
+; }

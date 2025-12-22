@@ -1,0 +1,1 @@
+static_assert_size ! (Rvalue <'_ >, 40) ;

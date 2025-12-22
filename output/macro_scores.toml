@@ -1,249 +1,414 @@
-total_module_terms = 123
-total_global_terms = 123
+total_module_terms = 110
+total_global_terms = 110
 
 [module_frequencies]
-Some = 11
-new = 3
-value = 3
-vec = 3
-cargo_toml = 3
-parsed = 7
-expanded = 2
-"Expected dependency path LitStr" = 1
-"1.85.0" = 1
-first = 2
-"AGPL 3.0" = 1
-split-decls-rs = 1
-"Expected dependency name LitStr" = 2
-input = 5
+" " = 1
+_args = 1
+item_ts = 1
+doc = 8
+extend = 2
+cfg = 2
+token = 4
+" only compiled when `is_sync` feature gate is not set." = 1
+TokenStream2 = 1
+generate_item_hook_macro = 1
+input = 3
+" mark sync implementation" = 1
+convert_async = 1
+into = 4
+self_ty = 1
+segment = 2
+item = 2
 "" = 3
-to_string = 8
-"Expected dependency version LitStr" = 1
-clone = 4
-into = 5
-package = 15
-span = 3
-expect = 4
-false = 1
-"0.1.0" = 1
-output = 2
-default = 2
-2024 = 1
+" only compiled when `is_sync` feature gate is set." = 1
+impl = 1
+_attr = 1
+Impl = 1
+" When `is_sync` is set, marked code is removed." = 1
+Item = 1
+clone = 1
+last = 1
+mode = 2
+Type = 1
+ident = 1
+replace = 1
+to_compile_error = 1
+Ok = 1
 to_token_stream = 1
-WrappedCargoToml = 1
-last = 2
+ProcMacroTokenStream = 3
+output_tokens = 4
+path = 3
+as_str = 1
+item_ident_option = 2
+Err = 1
+_input = 1
+new = 1
+segments = 1
+m = 2
+args = 2
+ItemImpl = 1
+" mark async implementation" = 1
+proc_macro_attribute = 3
+TypePath = 1
+" When `is_sync` is not set, marked code is removed." = 1
+hook_macro_def = 2
+async_mode = 1
+None = 1
+e = 2
+from = 1
+map = 1
+to_string = 1
 
 [global_frequencies]
-expanded = 2
-last = 2
-span = 3
-value = 3
-parsed = 7
-"0.1.0" = 1
-new = 3
-output = 2
-false = 1
-expect = 4
-package = 15
-split-decls-rs = 1
-clone = 4
-WrappedCargoToml = 1
-"Expected dependency path LitStr" = 1
-into = 5
-input = 5
-vec = 3
-"Expected dependency name LitStr" = 2
-"" = 3
-2024 = 1
-cargo_toml = 3
-to_string = 8
+to_compile_error = 1
+token = 4
+doc = 8
+into = 4
+ProcMacroTokenStream = 3
+map = 1
+" mark sync implementation" = 1
+cfg = 2
+last = 1
+args = 2
+segments = 1
+Err = 1
+item_ident_option = 2
+from = 1
+as_str = 1
+generate_item_hook_macro = 1
+" When `is_sync` is not set, marked code is removed." = 1
+_attr = 1
+new = 1
+output_tokens = 4
+item_ts = 1
+path = 3
+" " = 1
 to_token_stream = 1
-first = 2
-"Expected dependency version LitStr" = 1
-"AGPL 3.0" = 1
-Some = 11
-"1.85.0" = 1
-default = 2
+_args = 1
+segment = 2
+ItemImpl = 1
+item = 2
+hook_macro_def = 2
+_input = 1
+Item = 1
+replace = 1
+to_string = 1
+ident = 1
+Type = 1
+Ok = 1
+clone = 1
+" When `is_sync` is set, marked code is removed." = 1
+mode = 2
+proc_macro_attribute = 3
+TokenStream2 = 1
+Impl = 1
+e = 2
+TypePath = 1
+input = 3
+"" = 3
+" only compiled when `is_sync` feature gate is not set." = 1
+" only compiled when `is_sync` feature gate is set." = 1
+extend = 2
+self_ty = 1
+m = 2
+async_mode = 1
+" mark async implementation" = 1
+None = 1
+impl = 1
+convert_async = 1
 
-[term_scores_by_macro.dep_version_impl]
-new = 0.05263157894736842
-"Expected dependency name LitStr" = 0.05263157894736842
-into = 0.05263157894736842
-"Expected dependency version LitStr" = 0.05263157894736842
-last = 0.05263157894736842
-expect = 0.09090909090909091
-first = 0.05263157894736842
-value = 0.05263157894736842
-input = 0.05263157894736842
-parsed = 0.14285714285714285
-clone = 0.09090909090909091
-span = 0.05263157894736842
-
-[term_scores_by_macro.dep_table_impl]
-value = 0.14285714285714285
-input = 0.14285714285714285
-into = 0.14285714285714285
-new = 0.14285714285714285
-span = 0.14285714285714285
-
-[term_scores_by_macro.dep_path_impl]
-last = 0.05263157894736842
-"Expected dependency path LitStr" = 0.05263157894736842
-into = 0.05263157894736842
-parsed = 0.14285714285714285
-first = 0.05263157894736842
-expect = 0.09090909090909091
-clone = 0.09090909090909091
-"Expected dependency name LitStr" = 0.05263157894736842
-value = 0.05263157894736842
-input = 0.05263157894736842
-span = 0.05263157894736842
-new = 0.05263157894736842
-
-[term_scores_by_macro.define_root_cargo_toml_impl]
-default = 0.02702702702702703
+[term_scores_by_macro.async_impl]
+to_string = 0.023255813953488372
+" only compiled when `is_sync` feature gate is not set." = 0.023255813953488372
+proc_macro_attribute = 0.023255813953488372
+into = 0.043478260869565216
+async_mode = 0.023255813953488372
+cfg = 0.023255813953488372
+Err = 0.023255813953488372
+mode = 0.043478260869565216
+args = 0.043478260869565216
+replace = 0.023255813953488372
+e = 0.043478260869565216
 "" = 0.043478260869565216
-"1.85.0" = 0.014084507042253521
-"AGPL 3.0" = 0.014084507042253521
-WrappedCargoToml = 0.014084507042253521
-"0.1.0" = 0.014084507042253521
-cargo_toml = 0.043478260869565216
-into = 0.014084507042253521
-output = 0.02702702702702703
-2024 = 0.014084507042253521
-vec = 0.043478260869565216
-Some = 0.14285714285714285
-false = 0.014084507042253521
-package = 0.2
-to_token_stream = 0.014084507042253521
-split-decls-rs = 0.014084507042253521
-to_string = 0.09090909090909091
-input = 0.014084507042253521
+m = 0.043478260869565216
+item = 0.043478260869565216
+" " = 0.023255813953488372
+_input = 0.023255813953488372
+convert_async = 0.023255813953488372
+doc = 0.09090909090909091
+token = 0.043478260869565216
+as_str = 0.023255813953488372
+Ok = 0.023255813953488372
+" mark async implementation" = 0.023255813953488372
+to_compile_error = 0.023255813953488372
+" When `is_sync` is set, marked code is removed." = 0.023255813953488372
 
-[term_scores_by_macro.workspace_members_list_impl]
-expanded = 0.3333333333333333
+[term_scores_by_macro.sync_impl]
+" When `is_sync` is not set, marked code is removed." = 0.043478260869565216
+cfg = 0.043478260869565216
+proc_macro_attribute = 0.043478260869565216
 input = 0.14285714285714285
-into = 0.14285714285714285
-parsed = 0.14285714285714285
+doc = 0.2
+" only compiled when `is_sync` feature gate is set." = 0.043478260869565216
+" mark sync implementation" = 0.043478260869565216
+"" = 0.043478260869565216
+from = 0.043478260869565216
+token = 0.09090909090909091
+into = 0.043478260869565216
+_args = 0.043478260869565216
+TokenStream2 = 0.043478260869565216
+
+[term_scores_by_macro.wrap_impl]
+map = 0.02127659574468085
+Item = 0.02127659574468085
+TypePath = 0.02127659574468085
+extend = 0.043478260869565216
+generate_item_hook_macro = 0.02127659574468085
+ProcMacroTokenStream = 0.058823529411764705
+new = 0.02127659574468085
+ident = 0.02127659574468085
+output_tokens = 0.09090909090909091
+path = 0.058823529411764705
+_attr = 0.02127659574468085
+hook_macro_def = 0.043478260869565216
+None = 0.02127659574468085
+impl = 0.02127659574468085
+proc_macro_attribute = 0.02127659574468085
+Impl = 0.02127659574468085
+segments = 0.02127659574468085
+self_ty = 0.02127659574468085
+last = 0.02127659574468085
+into = 0.02127659574468085
+Type = 0.02127659574468085
+to_token_stream = 0.02127659574468085
+clone = 0.02127659574468085
+ItemImpl = 0.02127659574468085
+segment = 0.043478260869565216
+item_ident_option = 0.043478260869565216
+item_ts = 0.02127659574468085
 
 [global_module_term_scores]
-package = [
-    0.14285714285714285,
-    0.14285714285714285,
-]
-new = [
-    0.024390243902439025,
-    0.024390243902439025,
+" When `is_sync` is set, marked code is removed." = [
+    0.014084507042253521,
+    0.014084507042253521,
 ]
 last = [
-    0.01639344262295082,
-    0.01639344262295082,
-]
-"0.1.0" = [
     0.014084507042253521,
     0.014084507042253521,
 ]
-value = [
-    0.024390243902439025,
-    0.024390243902439025,
+extend = [
+    0.018867924528301886,
+    0.018867924528301886,
 ]
-cargo_toml = [
-    0.024390243902439025,
-    0.024390243902439025,
+e = [
+    0.018867924528301886,
+    0.018867924528301886,
+]
+self_ty = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+segment = [
+    0.018867924528301886,
+    0.018867924528301886,
+]
+m = [
+    0.018867924528301886,
+    0.018867924528301886,
+]
+async_mode = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+segments = [
+    0.014084507042253521,
+    0.014084507042253521,
 ]
 to_string = [
-    0.058823529411764705,
-    0.058823529411764705,
-]
-"1.85.0" = [
     0.014084507042253521,
     0.014084507042253521,
 ]
-WrappedCargoToml = [
+" only compiled when `is_sync` feature gate is set." = [
     0.014084507042253521,
     0.014084507042253521,
 ]
-into = [
-    0.043478260869565216,
-    0.043478260869565216,
-]
-parsed = [
-    0.058823529411764705,
-    0.058823529411764705,
-]
-span = [
-    0.024390243902439025,
-    0.024390243902439025,
-]
-"Expected dependency name LitStr" = [
-    0.01639344262295082,
-    0.01639344262295082,
-]
-vec = [
-    0.024390243902439025,
-    0.024390243902439025,
-]
-split-decls-rs = [
+Ok = [
     0.014084507042253521,
     0.014084507042253521,
 ]
-first = [
-    0.01639344262295082,
-    0.01639344262295082,
+path = [
+    0.02702702702702703,
+    0.02702702702702703,
 ]
-Some = [
-    0.09090909090909091,
-    0.09090909090909091,
-]
-"AGPL 3.0" = [
+ident = [
     0.014084507042253521,
     0.014084507042253521,
 ]
-default = [
-    0.01639344262295082,
-    0.01639344262295082,
-]
-false = [
+_args = [
     0.014084507042253521,
     0.014084507042253521,
 ]
-"Expected dependency version LitStr" = [
+to_compile_error = [
     0.014084507042253521,
     0.014084507042253521,
+]
+output_tokens = [
+    0.034482758620689655,
+    0.034482758620689655,
+]
+doc = [
+    0.07692307692307693,
+    0.07692307692307693,
+]
+Impl = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+generate_item_hook_macro = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+" mark async implementation" = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+Item = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+args = [
+    0.018867924528301886,
+    0.018867924528301886,
+]
+cfg = [
+    0.018867924528301886,
+    0.018867924528301886,
 ]
 input = [
-    0.043478260869565216,
-    0.043478260869565216,
+    0.02702702702702703,
+    0.02702702702702703,
+]
+into = [
+    0.034482758620689655,
+    0.034482758620689655,
 ]
 to_token_stream = [
     0.014084507042253521,
     0.014084507042253521,
 ]
-output = [
-    0.01639344262295082,
-    0.01639344262295082,
+ProcMacroTokenStream = [
+    0.02702702702702703,
+    0.02702702702702703,
 ]
-expect = [
-    0.03225806451612903,
-    0.03225806451612903,
+_input = [
+    0.014084507042253521,
+    0.014084507042253521,
 ]
-expanded = [
-    0.01639344262295082,
-    0.01639344262295082,
+from = [
+    0.014084507042253521,
+    0.014084507042253521,
 ]
-2024 = [
+new = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+item_ts = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+" When `is_sync` is not set, marked code is removed." = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+convert_async = [
     0.014084507042253521,
     0.014084507042253521,
 ]
 clone = [
-    0.03225806451612903,
-    0.03225806451612903,
+    0.014084507042253521,
+    0.014084507042253521,
 ]
-"Expected dependency path LitStr" = [
+" only compiled when `is_sync` feature gate is not set." = [
     0.014084507042253521,
     0.014084507042253521,
+]
+ItemImpl = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+mode = [
+    0.018867924528301886,
+    0.018867924528301886,
+]
+TokenStream2 = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+hook_macro_def = [
+    0.018867924528301886,
+    0.018867924528301886,
+]
+Err = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+" mark sync implementation" = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+None = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+TypePath = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+" " = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+proc_macro_attribute = [
+    0.02702702702702703,
+    0.02702702702702703,
+]
+item = [
+    0.018867924528301886,
+    0.018867924528301886,
+]
+map = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+_attr = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+Type = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+impl = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+as_str = [
+    0.014084507042253521,
+    0.014084507042253521,
+]
+token = [
+    0.034482758620689655,
+    0.034482758620689655,
+]
+item_ident_option = [
+    0.018867924528301886,
+    0.018867924528301886,
 ]
 "" = [
-    0.024390243902439025,
-    0.024390243902439025,
+    0.02702702702702703,
+    0.02702702702702703,
+]
+replace = [
+    0.014084507042253521,
+    0.014084507042253521,
 ]

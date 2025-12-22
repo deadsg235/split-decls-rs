@@ -1,0 +1,5 @@
+macro_rules ! impl_arena_allocatable_decoder { ([] $ args : tt) => {}
+; ([decode $ (, $ attrs : ident) *] [$ name : ident : $ ty : ty]) => { impl <'tcx , D : TyDecoder <'tcx >> RefDecodable <'tcx , D > for $ ty { #[inline] fn decode (decoder : & mut D) -> &'tcx Self { decode_arena_allocable (decoder)}
+} impl <'tcx , D : TyDecoder <'tcx >> RefDecodable <'tcx , D > for [$ ty] { #[inline] fn decode (decoder : & mut D) -> &'tcx Self { decode_arena_allocable_slice (decoder)}
+}}
+; }

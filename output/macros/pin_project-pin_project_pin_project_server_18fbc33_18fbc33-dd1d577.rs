@@ -1,0 +1,4 @@
+pin_project ! { #[project = H2StreamStateProj] enum H2StreamState < F , B > where B : Body , { Service { #[pin] fut : F , connect_parts : Option < ConnectParts >,}
+, Body { #[pin] pipe : PipeToSendStream < B >,}
+,}
+}

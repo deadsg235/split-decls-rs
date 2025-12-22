@@ -1,0 +1,1 @@
+static_assert_size ! (ForeignItem <'_ >, 96) ;

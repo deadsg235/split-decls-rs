@@ -1,0 +1,2 @@
+macro_rules ! impl_visitable_direct { (< mut > $ ($ ty : ty ,) *) => { $ (impl_visitable ! (|& mut self : $ ty , visitor : & mut V , _extra : () | { MutWalkable :: walk_mut (self , visitor) }) ;) *}
+}

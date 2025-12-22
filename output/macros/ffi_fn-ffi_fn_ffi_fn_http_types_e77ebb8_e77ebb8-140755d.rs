@@ -1,0 +1,2 @@
+ffi_fn ! { #[doc = " Get a pointer to the reason-phrase of this response."] #[doc = ""] #[doc = " This buffer is not null-terminated."] #[doc = ""] #[doc = " This buffer is owned by the response, and should not be used after"] #[doc = " the response has been freed."] #[doc = ""] #[doc = " Use `hyper_response_reason_phrase_len()` to get the length of this"] #[doc = " buffer."] fn hyper_response_reason_phrase (resp : * const hyper_response) -> * const u8 { non_null ! (&* resp ?= std :: ptr :: null ()) . reason_phrase () . as_ptr ()}
+?= std :: ptr :: null () }

@@ -1,0 +1,2 @@
+DefineImplWithDRT ! { rustc_expand_base_lib :: cfg_false_reporter :: CfgFalseReporter , InvocationContextABDRT , { fn report_cfg_false < N : HasAttrs + HasNodeId > (& mut self , node : & mut N , attr_span : Span , attr_pos : usize) { self . buffer_lint_unused_attribute (attr_span , attr_pos) ;}
+} }

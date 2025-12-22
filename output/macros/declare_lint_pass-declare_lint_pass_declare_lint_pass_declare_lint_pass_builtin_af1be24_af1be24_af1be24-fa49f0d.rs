@@ -1,0 +1,1 @@
+declare_lint_pass ! (#[doc = " Checks for use of anonymous parameters (RFC 1685)."] AnonymousParameters => [ANONYMOUS_PARAMETERS]) ;

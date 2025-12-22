@@ -1,0 +1,3 @@
+macro_wrapper_lib :: wrap_impl ! { impl rustc_driver :: Callbacks for DiagnosticCollectingCallbacks { macro_wrapper_lib :: wrap_fn ! { fn after_analysis <'tcx > (& mut self , _compiler : & rustc_interface :: interface :: Compiler ,) -> rustc_driver :: Compilation { let diagnostics = get_diagnostics () ; let json_output = serde_json :: to_string_pretty (& diagnostics) . expect ("Failed to serialize diagnostics to JSON") ; std :: io :: stdout () . write_all (json_output . as_bytes ()) . expect ("Failed to write diagnostics JSON to stdout") ; rustc_driver :: Compilation :: Continue}
+}}
+}

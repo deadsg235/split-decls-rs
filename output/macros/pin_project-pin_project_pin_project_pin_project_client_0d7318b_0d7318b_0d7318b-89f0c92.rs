@@ -1,0 +1,2 @@
+pin_project ! { pub struct ConnTask < T , B > where B : Body , T : Read , T : Write , T : Unpin , { #[pin] drop_rx : Receiver < Infallible >, #[pin] cancel_tx : Option < oneshot :: Sender < Infallible >>, #[pin] conn : ConnMapErr < T , B >,}
+}

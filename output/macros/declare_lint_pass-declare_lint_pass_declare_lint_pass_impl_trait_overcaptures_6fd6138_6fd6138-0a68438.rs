@@ -1,0 +1,1 @@
+declare_lint_pass ! (#[doc = " Lint for opaque types that will begin capturing in-scope but unmentioned lifetimes"] #[doc = " in edition 2024."] ImplTraitOvercaptures => [IMPL_TRAIT_OVERCAPTURES , IMPL_TRAIT_REDUNDANT_CAPTURES]) ;

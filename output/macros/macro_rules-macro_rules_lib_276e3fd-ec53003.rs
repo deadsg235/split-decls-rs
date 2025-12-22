@@ -1,0 +1,8 @@
+macro_rules ! impl_pos { ($ ($ (#[$ attr : meta]) * $ vis : vis struct $ ident : ident ($ inner_vis : vis $ inner_ty : ty) ;) *) => { $ ($ (#[$ attr]) * $ vis struct $ ident ($ inner_vis $ inner_ty) ; impl Pos for $ ident { #[inline (always)] fn from_usize (n : usize) -> $ ident { $ ident (n as $ inner_ty)}
+#[inline (always)] fn to_usize (& self) -> usize { self . 0 as usize}
+#[inline (always)] fn from_u32 (n : u32) -> $ ident { $ ident (n as $ inner_ty)}
+#[inline (always)] fn to_u32 (& self) -> u32 { self . 0 as u32}
+} impl Add for $ ident { type Output = $ ident ; #[inline (always)] fn add (self , rhs : $ ident) -> $ ident { $ ident (self . 0 + rhs . 0)}
+} impl Sub for $ ident { type Output = $ ident ; #[inline (always)] fn sub (self , rhs : $ ident) -> $ ident { $ ident (self . 0 - rhs . 0)}
+}) *}
+; }

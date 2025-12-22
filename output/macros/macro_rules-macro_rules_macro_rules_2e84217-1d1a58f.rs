@@ -1,0 +1,1 @@
+#[macro_export] macro_rules ! macro_test_arg_nested { ($ func : ident) => (macro_test_arg ! ($ func ())) ; }

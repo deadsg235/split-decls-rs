@@ -1,0 +1,32 @@
+macro_rules ! visit_place_fns { (mut) => { fn tcx <'a > (&'a self) -> TyCtxt <'tcx >; fn super_place (& mut self , place : & mut Place <'tcx >, context : PlaceContext , location : Location ,) { self . visit_local (& mut place . local , context , location) ; if let Some (new_projection) = self . process_projection (& place . projection , location) { place . projection = self . tcx () . mk_place_elems (& new_projection) ;}
+} fn process_projection <'a > (& mut self , projection : &'a [PlaceElem <'tcx >] , location : Location ,) -> Option < Vec < PlaceElem <'tcx >>> { let mut projection = Cow :: Borrowed (projection) ; for i in 0 .. projection . len () { if let Some (& elem) = projection . get (i) { if let Some (elem) = self . process_projection_elem (elem , location) { let vec = projection . to_mut () ; vec [i] = elem ;}
+}}
+match projection { Cow :: Borrowed (_) => None , Cow :: Owned (vec) => Some (vec) ,}
+} fn process_projection_elem (& mut self , elem : PlaceElem <'tcx >, location : Location ,) -> Option < PlaceElem <'tcx >> { match elem { PlaceElem :: Index (local) => { let mut new_local = local ; self . visit_local (& mut new_local , PlaceContext :: NonMutatingUse (NonMutatingUseContext :: Copy) , location ,) ; if new_local == local { None}
+else { Some (PlaceElem :: Index (new_local))}
+} PlaceElem :: Field (field , ty) => { let mut new_ty = ty ; self . visit_ty (& mut new_ty , TyContext :: Location (location)) ; if ty != new_ty { Some (PlaceElem :: Field (field , new_ty))}
+else { None}
+} PlaceElem :: OpaqueCast (ty) => { let mut new_ty = ty ; self . visit_ty (& mut new_ty , TyContext :: Location (location)) ; if ty != new_ty { Some (PlaceElem :: OpaqueCast (new_ty))}
+else { None}
+} PlaceElem :: UnwrapUnsafeBinder (ty) => { let mut new_ty = ty ; self . visit_ty (& mut new_ty , TyContext :: Location (location)) ; if ty != new_ty { Some (PlaceElem :: UnwrapUnsafeBinder (new_ty))}
+else { None}
+} PlaceElem :: Deref | PlaceElem :: ConstantIndex { ..}
+| PlaceElem :: Subslice { ..}
+| PlaceElem :: Downcast (..) => None ,}
+}}
+; () => { fn visit_projection (& mut self , place_ref : PlaceRef <'tcx >, context : PlaceContext , location : Location ,) { self . super_projection (place_ref , context , location) ;}
+fn visit_projection_elem (& mut self , place_ref : PlaceRef <'tcx >, elem : PlaceElem <'tcx >, context : PlaceContext , location : Location ,) { self . super_projection_elem (place_ref , elem , context , location) ;}
+fn super_place (& mut self , place : & Place <'tcx >, mut context : PlaceContext , location : Location ,) { if ! place . projection . is_empty () && context . is_use () { context = if context . is_mutating_use () { PlaceContext :: MutatingUse (MutatingUseContext :: Projection)}
+else { PlaceContext :: NonMutatingUse (NonMutatingUseContext :: Projection)}
+;}
+self . visit_local (place . local , context , location) ; self . visit_projection (place . as_ref () , context , location) ;}
+fn super_projection (& mut self , place_ref : PlaceRef <'tcx >, context : PlaceContext , location : Location ,) { for (base , elem) in place_ref . iter_projections () . rev () { self . visit_projection_elem (base , elem , context , location) ;}
+} fn super_projection_elem (& mut self , _place_ref : PlaceRef <'tcx >, elem : PlaceElem <'tcx >, context : PlaceContext , location : Location ,) { match elem { ProjectionElem :: OpaqueCast (ty) | ProjectionElem :: Field (_ , ty) | ProjectionElem :: UnwrapUnsafeBinder (ty) => { self . visit_ty (ty , TyContext :: Location (location)) ;}
+ProjectionElem :: Index (local) => { self . visit_local (local , if context . is_use () { PlaceContext :: NonMutatingUse (NonMutatingUseContext :: Copy)}
+else { context}
+, location ,) ;}
+ProjectionElem :: Deref | ProjectionElem :: Subslice { from : _ , to : _ , from_end : _}
+| ProjectionElem :: ConstantIndex { offset : _ , min_length : _ , from_end : _}
+| ProjectionElem :: Downcast (_ , _) => {}
+}}
+} ; }

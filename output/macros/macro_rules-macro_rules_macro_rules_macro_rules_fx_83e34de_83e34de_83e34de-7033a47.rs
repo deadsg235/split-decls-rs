@@ -1,0 +1,2 @@
+#[macro_export] macro_rules ! define_stable_id_collections { ($ map_name : ident , $ set_name : ident , $ entry_name : ident , $ key : ty) => { pub type $ map_name < T > = $ crate :: fx :: FxIndexMap <$ key , T >; pub type $ set_name = $ crate :: fx :: FxIndexSet <$ key >; pub type $ entry_name <'a , T > = $ crate :: fx :: IndexEntry <'a , $ key , T >;}
+; }

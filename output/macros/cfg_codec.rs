@@ -1,1 +1,1 @@
-cfg_codec ! { # [macro_use] mod tracing ; pub mod codec ; }
+cfg_codec ! { #[macro_use] mod tracing ; pub mod codec ; }

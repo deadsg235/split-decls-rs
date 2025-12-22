@@ -1,0 +1,2 @@
+#[macro_export] macro_rules ! err_machine_stop { ($ ($ tt : tt) *) => { $ crate :: mir :: interpret :: InterpErrorKind :: MachineStop (Box :: new ($ ($ tt) *))}
+; }

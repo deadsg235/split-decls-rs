@@ -1,0 +1,2 @@
+macro_rules ! define_package_config { () => { name = "split-decls-rs" , version = "0.1.0" , edition = "2024" , authors = [] , description = "" , homepage = "" , include = [] , keywords = [] , license = "AGPL 3.0" , publish = false , repository = "" , rust_version = "1.85.0" ,}
+; }

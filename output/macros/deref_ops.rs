@@ -1,1 +1,11 @@
-deref_ops ! { impl < T , const N : usize > Add for Simd < T , N > { fn add } impl < T , const N : usize > Mul for Simd < T , N > { fn mul } impl < T , const N : usize > Sub for Simd < T , N > { fn sub } impl < T , const N : usize > Div for Simd < T , N > { fn div } impl < T , const N : usize > Rem for Simd < T , N > { fn rem } impl < T , const N : usize > BitAnd for Simd < T , N > { fn bitand } impl < T , const N : usize > BitOr for Simd < T , N > { fn bitor } impl < T , const N : usize > BitXor for Simd < T , N > { fn bitxor } impl < T , const N : usize > Shl for Simd < T , N > { fn shl } impl < T , const N : usize > Shr for Simd < T , N > { fn shr } }
+deref_ops ! { impl < T , const N : usize > Add for Simd < T , N > { fn add}
+impl < T , const N : usize > Mul for Simd < T , N > { fn mul}
+impl < T , const N : usize > Sub for Simd < T , N > { fn sub}
+impl < T , const N : usize > Div for Simd < T , N > { fn div}
+impl < T , const N : usize > Rem for Simd < T , N > { fn rem}
+impl < T , const N : usize > BitAnd for Simd < T , N > { fn bitand}
+impl < T , const N : usize > BitOr for Simd < T , N > { fn bitor}
+impl < T , const N : usize > BitXor for Simd < T , N > { fn bitxor}
+impl < T , const N : usize > Shl for Simd < T , N > { fn shl}
+impl < T , const N : usize > Shr for Simd < T , N > { fn shr}
+}

@@ -1,0 +1,2 @@
+ffi_fn ! { #[doc = " Frees a `hyper_error`."] #[doc = ""] #[doc = " This should be used for any error once it is no longer needed."] fn hyper_error_free (err : * mut hyper_error) { drop (non_null ! (Box :: from_raw (err) ?= ())) ;}
+}

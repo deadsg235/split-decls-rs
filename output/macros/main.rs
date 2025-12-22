@@ -1,1 +1,1 @@
-# [cfg (iai)] iai :: main ! (compact_str_new_0 , compact_str_new_16 , compact_str_new_24 , compact_str_new_59 , std_str_new_0 , std_str_new_59 ,) ;
+#[cfg (iai)] iai :: main ! (compact_str_new_0 , compact_str_new_16 , compact_str_new_24 , compact_str_new_59 , std_str_new_0 , std_str_new_59 ,) ;

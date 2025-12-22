@@ -1,1 +1,1 @@
-define_delimiters ! { Brace pub struct Brace # [doc = " `{`&hellip;`}`"] Bracket pub struct Bracket # [doc = " `[`&hellip;`]`"] Parenthesis pub struct Paren # [doc = " `(`&hellip;`)`"] }
+define_delimiters ! { Brace pub struct Brace #[doc = " `{`&hellip;`}`"] Bracket pub struct Bracket #[doc = " `[`&hellip;`]`"] Parenthesis pub struct Paren #[doc = " `(`&hellip;`)`"] }

@@ -1,0 +1,1 @@
+declare_lint_pass ! (SymbolInternStringLiteral => [SYMBOL_INTERN_STRING_LITERAL]) ;

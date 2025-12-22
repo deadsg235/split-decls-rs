@@ -1,0 +1,169 @@
+macro_rules ! make_mir_visitor { ($ visitor_trait_name : ident , $ ($ mutability : ident) ?) => { pub trait $ visitor_trait_name <'tcx > { fn visit_body (& mut self , body : &$ ($ mutability) ? Body <'tcx >,) { self . super_body (body) ;}
+extra_body_methods ! ($ ($ mutability) ?) ; fn visit_basic_block_data (& mut self , block : BasicBlock , data : & $ ($ mutability) ? BasicBlockData <'tcx >,) { self . super_basic_block_data (block , data) ;}
+fn visit_source_scope_data (& mut self , scope_data : & $ ($ mutability) ? SourceScopeData <'tcx >,) { self . super_source_scope_data (scope_data) ;}
+fn visit_statement_debuginfo (& mut self , stmt_debuginfo : & $ ($ mutability) ? StmtDebugInfo <'tcx >, location : Location) { self . super_statement_debuginfo (stmt_debuginfo , location) ;}
+fn visit_statement (& mut self , statement : & $ ($ mutability) ? Statement <'tcx >, location : Location ,) { self . super_statement (statement , location) ;}
+fn visit_assign (& mut self , place : & $ ($ mutability) ? Place <'tcx >, rvalue : & $ ($ mutability) ? Rvalue <'tcx >, location : Location ,) { self . super_assign (place , rvalue , location) ;}
+fn visit_terminator (& mut self , terminator : & $ ($ mutability) ? Terminator <'tcx >, location : Location ,) { self . super_terminator (terminator , location) ;}
+fn visit_assert_message (& mut self , msg : & $ ($ mutability) ? AssertMessage <'tcx >, location : Location ,) { self . super_assert_message (msg , location) ;}
+fn visit_rvalue (& mut self , rvalue : & $ ($ mutability) ? Rvalue <'tcx >, location : Location ,) { self . super_rvalue (rvalue , location) ;}
+fn visit_operand (& mut self , operand : & $ ($ mutability) ? Operand <'tcx >, location : Location ,) { self . super_operand (operand , location) ;}
+fn visit_ascribe_user_ty (& mut self , place : & $ ($ mutability) ? Place <'tcx >, variance : $ (& $ mutability) ? ty :: Variance , user_ty : & $ ($ mutability) ? UserTypeProjection , location : Location ,) { self . super_ascribe_user_ty (place , variance , user_ty , location) ;}
+fn visit_coverage (& mut self , kind : & $ ($ mutability) ? coverage :: CoverageKind , location : Location ,) { self . super_coverage (kind , location) ;}
+fn visit_retag (& mut self , kind : $ (& $ mutability) ? RetagKind , place : & $ ($ mutability) ? Place <'tcx >, location : Location ,) { self . super_retag (kind , place , location) ;}
+fn visit_place (& mut self , place : & $ ($ mutability) ? Place <'tcx >, context : PlaceContext , location : Location ,) { self . super_place (place , context , location) ;}
+visit_place_fns ! ($ ($ mutability) ?) ; #[doc = " This is called for every constant in the MIR body and every `required_consts`"] #[doc = " (i.e., including consts that have been dead-code-eliminated)."] fn visit_const_operand (& mut self , constant : & $ ($ mutability) ? ConstOperand <'tcx >, location : Location ,) { self . super_const_operand (constant , location) ;}
+fn visit_ty_const (& mut self , ct : $ (& $ mutability) ? ty :: Const <'tcx >, location : Location ,) { self . super_ty_const (ct , location) ;}
+fn visit_span (& mut self , span : $ (& $ mutability) ? Span ,) { self . super_span (span) ;}
+fn visit_source_info (& mut self , source_info : & $ ($ mutability) ? SourceInfo ,) { self . super_source_info (source_info) ;}
+fn visit_ty (& mut self , ty : $ (& $ mutability) ? Ty <'tcx >, _ : TyContext ,) { self . super_ty (ty) ;}
+fn visit_user_type_projection (& mut self , ty : & $ ($ mutability) ? UserTypeProjection ,) { self . super_user_type_projection (ty) ;}
+fn visit_user_type_annotation (& mut self , index : UserTypeAnnotationIndex , ty : & $ ($ mutability) ? CanonicalUserTypeAnnotation <'tcx >,) { self . super_user_type_annotation (index , ty) ;}
+fn visit_region (& mut self , region : $ (& $ mutability) ? ty :: Region <'tcx >, _ : Location ,) { self . super_region (region) ;}
+fn visit_args (& mut self , args : & $ ($ mutability) ? GenericArgsRef <'tcx >, _ : Location ,) { self . super_args (args) ;}
+fn visit_local_decl (& mut self , local : Local , local_decl : & $ ($ mutability) ? LocalDecl <'tcx >,) { self . super_local_decl (local , local_decl) ;}
+fn visit_var_debug_info (& mut self , var_debug_info : & $ ($ mutability) * VarDebugInfo <'tcx >,) { self . super_var_debug_info (var_debug_info) ;}
+fn visit_local (& mut self , local : $ (& $ mutability) ? Local , context : PlaceContext , location : Location ,) { self . super_local (local , context , location)}
+fn visit_source_scope (& mut self , scope : $ (& $ mutability) ? SourceScope ,) { self . super_source_scope (scope) ;}
+fn super_body (& mut self , body : &$ ($ mutability) ? Body <'tcx >,) { super_body ! (self , body , $ ($ mutability , true) ?) ;}
+fn super_basic_block_data (& mut self , block : BasicBlock , data : & $ ($ mutability) ? BasicBlockData <'tcx >) { let BasicBlockData { statements , after_last_stmt_debuginfos , terminator , is_cleanup : _}
+= data ; let mut index = 0 ; for statement in statements { let location = Location { block , statement_index : index}
+; self . visit_statement (statement , location) ; index += 1 ;}
+let location = Location { block , statement_index : index}
+; for debuginfo in after_last_stmt_debuginfos as & $ ($ mutability) ? [_] { self . visit_statement_debuginfo (debuginfo , location) ;}
+if let Some (terminator) = terminator { self . visit_terminator (terminator , location) ;}
+} fn super_source_scope_data (& mut self , scope_data : & $ ($ mutability) ? SourceScopeData <'tcx >,) { let SourceScopeData { span , parent_scope , inlined , inlined_parent_scope , local_data : _ ,}
+= scope_data ; self . visit_span ($ (& $ mutability) ? * span) ; if let Some (parent_scope) = parent_scope { self . visit_source_scope ($ (& $ mutability) ? * parent_scope) ;}
+if let Some ((callee , callsite_span)) = inlined { let location = Location :: START ; self . visit_span ($ (& $ mutability) ? * callsite_span) ; let ty :: Instance { def : callee_def , args : callee_args}
+= callee ; match callee_def { ty :: InstanceKind :: Item (_def_id) => {}
+ty :: InstanceKind :: Intrinsic (_def_id) | ty :: InstanceKind :: VTableShim (_def_id) | ty :: InstanceKind :: ReifyShim (_def_id , _) | ty :: InstanceKind :: Virtual (_def_id , _) | ty :: InstanceKind :: ThreadLocalShim (_def_id) | ty :: InstanceKind :: ClosureOnceShim { call_once : _def_id , track_caller : _}
+| ty :: InstanceKind :: ConstructCoroutineInClosureShim { coroutine_closure_def_id : _def_id , receiver_by_ref : _ ,}
+| ty :: InstanceKind :: DropGlue (_def_id , None) => {}
+ty :: InstanceKind :: FnPtrShim (_def_id , ty) | ty :: InstanceKind :: DropGlue (_def_id , Some (ty)) | ty :: InstanceKind :: CloneShim (_def_id , ty) | ty :: InstanceKind :: FnPtrAddrShim (_def_id , ty) | ty :: InstanceKind :: AsyncDropGlue (_def_id , ty) | ty :: InstanceKind :: AsyncDropGlueCtorShim (_def_id , ty) => { self . visit_ty ($ (& $ mutability) ? * ty , TyContext :: Location (location)) ;}
+ty :: InstanceKind :: FutureDropPollShim (_def_id , proxy_ty , impl_ty) => { self . visit_ty ($ (& $ mutability) ? * proxy_ty , TyContext :: Location (location)) ; self . visit_ty ($ (& $ mutability) ? * impl_ty , TyContext :: Location (location)) ;}
+} self . visit_args (callee_args , location) ;}
+if let Some (inlined_parent_scope) = inlined_parent_scope { self . visit_source_scope ($ (& $ mutability) ? * inlined_parent_scope) ;}
+} fn super_statement_debuginfo (& mut self , stmt_debuginfo : & $ ($ mutability) ? StmtDebugInfo <'tcx >, location : Location) { match stmt_debuginfo { StmtDebugInfo :: AssignRef (local , place) => { self . visit_local ($ (& $ mutability) ? * local , PlaceContext :: NonUse (NonUseContext :: VarDebugInfo) , location) ; self . visit_place (place , PlaceContext :: NonUse (NonUseContext :: VarDebugInfo) , location) ;}
+, StmtDebugInfo :: InvalidAssign (local) => { self . visit_local ($ (& $ mutability) ? * local , PlaceContext :: NonUse (NonUseContext :: VarDebugInfo) , location) ;}
+}}
+fn super_statement (& mut self , statement : & $ ($ mutability) ? Statement <'tcx >, location : Location) { let Statement { source_info , kind , debuginfos}
+= statement ; self . visit_source_info (source_info) ; for debuginfo in debuginfos as & $ ($ mutability) ? [_] { self . visit_statement_debuginfo (debuginfo , location) ;}
+match kind { StatementKind :: Assign (box (place , rvalue)) => { self . visit_assign (place , rvalue , location) ;}
+StatementKind :: FakeRead (box (_ , place)) => { self . visit_place (place , PlaceContext :: NonMutatingUse (NonMutatingUseContext :: Inspect) , location) ;}
+StatementKind :: SetDiscriminant { place , ..}
+=> { self . visit_place (place , PlaceContext :: MutatingUse (MutatingUseContext :: SetDiscriminant) , location) ;}
+StatementKind :: StorageLive (local) => { self . visit_local ($ (& $ mutability) ? * local , PlaceContext :: NonUse (NonUseContext :: StorageLive) , location) ;}
+StatementKind :: StorageDead (local) => { self . visit_local ($ (& $ mutability) ? * local , PlaceContext :: NonUse (NonUseContext :: StorageDead) , location) ;}
+StatementKind :: Retag (kind , place) => { self . visit_retag ($ (& $ mutability) ? * kind , place , location) ;}
+StatementKind :: PlaceMention (place) => { self . visit_place (place , PlaceContext :: NonMutatingUse (NonMutatingUseContext :: PlaceMention) , location) ;}
+StatementKind :: AscribeUserType (box (place , user_ty) , variance) => { self . visit_ascribe_user_ty (place , $ (& $ mutability) ? * variance , user_ty , location) ;}
+StatementKind :: Coverage (coverage) => { self . visit_coverage (coverage , location)}
+StatementKind :: Intrinsic (box intrinsic) => { match intrinsic { NonDivergingIntrinsic :: Assume (op) => self . visit_operand (op , location) , NonDivergingIntrinsic :: CopyNonOverlapping (CopyNonOverlapping { src , dst , count }) => { self . visit_operand (src , location) ; self . visit_operand (dst , location) ; self . visit_operand (count , location) ;}
+}}
+StatementKind :: BackwardIncompatibleDropHint { place , ..}
+=> { self . visit_place (place , PlaceContext :: NonUse (NonUseContext :: BackwardIncompatibleDropHint) , location) ;}
+StatementKind :: ConstEvalCounter => {}
+StatementKind :: Nop => {}
+}}
+fn super_assign (& mut self , place : &$ ($ mutability) ? Place <'tcx >, rvalue : &$ ($ mutability) ? Rvalue <'tcx >, location : Location) { self . visit_place (place , PlaceContext :: MutatingUse (MutatingUseContext :: Store) , location) ; self . visit_rvalue (rvalue , location) ;}
+fn super_terminator (& mut self , terminator : &$ ($ mutability) ? Terminator <'tcx >, location : Location) { let Terminator { source_info , kind}
+= terminator ; self . visit_source_info (source_info) ; match kind { TerminatorKind :: Goto { ..}
+| TerminatorKind :: UnwindResume | TerminatorKind :: UnwindTerminate (_) | TerminatorKind :: CoroutineDrop | TerminatorKind :: Unreachable | TerminatorKind :: FalseEdge { ..}
+| TerminatorKind :: FalseUnwind { ..}
+=> {}
+TerminatorKind :: Return => { let $ ($ mutability) ? local = RETURN_PLACE ; self . visit_local ($ (& $ mutability) ? local , PlaceContext :: NonMutatingUse (NonMutatingUseContext :: Move) , location ,) ; assert_eq ! (local , RETURN_PLACE , "`MutVisitor` tried to mutate return place of `return` terminator") ;}
+TerminatorKind :: SwitchInt { discr , targets : _}
+=> { self . visit_operand (discr , location) ;}
+TerminatorKind :: Drop { place , target : _ , unwind : _ , replace : _ , drop : _ , async_fut ,}
+=> { self . visit_place (place , PlaceContext :: MutatingUse (MutatingUseContext :: Drop) , location) ; if let Some (async_fut) = async_fut { self . visit_local ($ (&$ mutability) ? * async_fut , PlaceContext :: MutatingUse (MutatingUseContext :: Borrow) , location) ;}
+} TerminatorKind :: Call { func , args , destination , target : _ , unwind : _ , call_source : _ , fn_span ,}
+=> { self . visit_span ($ (& $ mutability) ? * fn_span) ; self . visit_operand (func , location) ; for arg in args { self . visit_operand (&$ ($ mutability) ? arg . node , location) ;}
+self . visit_place (destination , PlaceContext :: MutatingUse (MutatingUseContext :: Call) , location) ;}
+TerminatorKind :: TailCall { func , args , fn_span}
+=> { self . visit_span ($ (& $ mutability) ? * fn_span) ; self . visit_operand (func , location) ; for arg in args { self . visit_operand (&$ ($ mutability) ? arg . node , location) ;}
+} , TerminatorKind :: Assert { cond , expected : _ , msg , target : _ , unwind : _}
+=> { self . visit_operand (cond , location) ; self . visit_assert_message (msg , location) ;}
+TerminatorKind :: Yield { value , resume : _ , resume_arg , drop : _}
+=> { self . visit_operand (value , location) ; self . visit_place (resume_arg , PlaceContext :: MutatingUse (MutatingUseContext :: Yield) , location ,) ;}
+TerminatorKind :: InlineAsm { asm_macro : _ , template : _ , operands , options : _ , line_spans : _ , targets : _ , unwind : _ ,}
+=> { for op in operands { match op { InlineAsmOperand :: In { value , ..}
+=> { self . visit_operand (value , location) ;}
+InlineAsmOperand :: Out { place : Some (place) , ..}
+=> { self . visit_place (place , PlaceContext :: MutatingUse (MutatingUseContext :: AsmOutput) , location ,) ;}
+InlineAsmOperand :: InOut { in_value , out_place , ..}
+=> { self . visit_operand (in_value , location) ; if let Some (out_place) = out_place { self . visit_place (out_place , PlaceContext :: MutatingUse (MutatingUseContext :: AsmOutput) , location ,) ;}
+} InlineAsmOperand :: Const { value}
+| InlineAsmOperand :: SymFn { value}
+=> { self . visit_const_operand (value , location) ;}
+InlineAsmOperand :: Out { place : None , ..}
+| InlineAsmOperand :: SymStatic { def_id : _}
+| InlineAsmOperand :: Label { target_index : _}
+=> {}
+}}
+}}
+} fn super_assert_message (& mut self , msg : & $ ($ mutability) ? AssertMessage <'tcx >, location : Location) { use crate :: mir :: AssertKind ::*; match msg { BoundsCheck { len , index}
+=> { self . visit_operand (len , location) ; self . visit_operand (index , location) ;}
+Overflow (_ , l , r) => { self . visit_operand (l , location) ; self . visit_operand (r , location) ;}
+OverflowNeg (op) | DivisionByZero (op) | RemainderByZero (op) | InvalidEnumConstruction (op) => { self . visit_operand (op , location) ;}
+ResumedAfterReturn (_) | ResumedAfterPanic (_) | NullPointerDereference | ResumedAfterDrop (_) => {}
+MisalignedPointerDereference { required , found}
+=> { self . visit_operand (required , location) ; self . visit_operand (found , location) ;}
+}}
+fn super_rvalue (& mut self , rvalue : & $ ($ mutability) ? Rvalue <'tcx >, location : Location) { match rvalue { Rvalue :: Use (operand) => { self . visit_operand (operand , location) ;}
+Rvalue :: Repeat (value , ct) => { self . visit_operand (value , location) ; self . visit_ty_const ($ (&$ mutability) ? * ct , location) ;}
+Rvalue :: ThreadLocalRef (_) => {}
+Rvalue :: Ref (r , bk , path) => { self . visit_region ($ (& $ mutability) ? * r , location) ; let ctx = match bk { BorrowKind :: Shared => PlaceContext :: NonMutatingUse (NonMutatingUseContext :: SharedBorrow) , BorrowKind :: Fake (_) => PlaceContext :: NonMutatingUse (NonMutatingUseContext :: FakeBorrow) , BorrowKind :: Mut { ..}
+=> PlaceContext :: MutatingUse (MutatingUseContext :: Borrow) ,}
+; self . visit_place (path , ctx , location) ;}
+Rvalue :: CopyForDeref (place) => { self . visit_place (place , PlaceContext :: NonMutatingUse (NonMutatingUseContext :: Inspect) , location) ;}
+Rvalue :: RawPtr (m , path) => { let ctx = match m { RawPtrKind :: Mut => PlaceContext :: MutatingUse (MutatingUseContext :: RawBorrow) , RawPtrKind :: Const => PlaceContext :: NonMutatingUse (NonMutatingUseContext :: RawBorrow) , RawPtrKind :: FakeForPtrMetadata => PlaceContext :: NonMutatingUse (NonMutatingUseContext :: Inspect) ,}
+; self . visit_place (path , ctx , location) ;}
+Rvalue :: Cast (_cast_kind , operand , ty) => { self . visit_operand (operand , location) ; self . visit_ty ($ (& $ mutability) ? * ty , TyContext :: Location (location)) ;}
+Rvalue :: BinaryOp (_bin_op , box (lhs , rhs)) => { self . visit_operand (lhs , location) ; self . visit_operand (rhs , location) ;}
+Rvalue :: UnaryOp (_un_op , op) => { self . visit_operand (op , location) ;}
+Rvalue :: Discriminant (place) => { self . visit_place (place , PlaceContext :: NonMutatingUse (NonMutatingUseContext :: Inspect) , location) ;}
+Rvalue :: NullaryOp (_op) => {}
+Rvalue :: Aggregate (kind , operands) => { let kind = &$ ($ mutability) ? ** kind ; match kind { AggregateKind :: Array (ty) => { self . visit_ty ($ (& $ mutability) ? * ty , TyContext :: Location (location)) ;}
+AggregateKind :: Tuple => {}
+AggregateKind :: Adt (_adt_def , _variant_index , args , _user_args , _active_field_index) => { self . visit_args (args , location) ;}
+AggregateKind :: Closure (_ , closure_args) => { self . visit_args (closure_args , location) ;}
+AggregateKind :: Coroutine (_ , coroutine_args) => { self . visit_args (coroutine_args , location) ;}
+AggregateKind :: CoroutineClosure (_ , coroutine_closure_args) => { self . visit_args (coroutine_closure_args , location) ;}
+AggregateKind :: RawPtr (ty , _) => { self . visit_ty ($ (& $ mutability) ? * ty , TyContext :: Location (location)) ;}
+} for operand in operands { self . visit_operand (operand , location) ;}
+} Rvalue :: ShallowInitBox (operand , ty) => { self . visit_operand (operand , location) ; self . visit_ty ($ (& $ mutability) ? * ty , TyContext :: Location (location)) ;}
+Rvalue :: WrapUnsafeBinder (op , ty) => { self . visit_operand (op , location) ; self . visit_ty ($ (& $ mutability) ? * ty , TyContext :: Location (location)) ;}
+}}
+fn super_operand (& mut self , operand : & $ ($ mutability) ? Operand <'tcx >, location : Location) { match operand { Operand :: Copy (place) => { self . visit_place (place , PlaceContext :: NonMutatingUse (NonMutatingUseContext :: Copy) , location) ;}
+Operand :: Move (place) => { self . visit_place (place , PlaceContext :: NonMutatingUse (NonMutatingUseContext :: Move) , location) ;}
+Operand :: Constant (constant) => { self . visit_const_operand (constant , location) ;}
+}}
+fn super_ascribe_user_ty (& mut self , place : & $ ($ mutability) ? Place <'tcx >, variance : $ (& $ mutability) ? ty :: Variance , user_ty : & $ ($ mutability) ? UserTypeProjection , location : Location) { self . visit_place (place , PlaceContext :: NonUse (NonUseContext :: AscribeUserTy ($ (* &$ mutability *) ? variance)) , location) ; self . visit_user_type_projection (user_ty) ;}
+fn super_coverage (& mut self , _kind : & $ ($ mutability) ? coverage :: CoverageKind , _location : Location) {}
+fn super_retag (& mut self , _kind : $ (& $ mutability) ? RetagKind , place : & $ ($ mutability) ? Place <'tcx >, location : Location) { self . visit_place (place , PlaceContext :: MutatingUse (MutatingUseContext :: Retag) , location ,) ;}
+fn super_local_decl (& mut self , local : Local , local_decl : & $ ($ mutability) ? LocalDecl <'tcx >) { let LocalDecl { mutability : _ , ty , user_ty , source_info , local_info : _ ,}
+= local_decl ; self . visit_source_info (source_info) ; self . visit_ty ($ (& $ mutability) ? * ty , TyContext :: LocalDecl { local , source_info : * source_info , }) ; if let Some (user_ty) = user_ty { for user_ty in & $ ($ mutability) ? user_ty . contents { self . visit_user_type_projection (user_ty) ;}
+}}
+fn super_local (& mut self , _local : $ (& $ mutability) ? Local , _context : PlaceContext , _location : Location ,) {}
+fn super_var_debug_info (& mut self , var_debug_info : & $ ($ mutability) ? VarDebugInfo <'tcx >) { let VarDebugInfo { name : _ , source_info , composite , value , argument_index : _ ,}
+= var_debug_info ; self . visit_source_info (source_info) ; let location = Location :: START ; if let Some (box VarDebugInfoFragment { ty , projection }) = composite { self . visit_ty ($ (& $ mutability) ? * ty , TyContext :: Location (location)) ; for elem in projection { let ProjectionElem :: Field (_ , ty) = elem else { bug ! ()}
+; self . visit_ty ($ (& $ mutability) ? * ty , TyContext :: Location (location)) ;}
+} match value { VarDebugInfoContents :: Const (c) => self . visit_const_operand (c , location) , VarDebugInfoContents :: Place (place) => self . visit_place (place , PlaceContext :: NonUse (NonUseContext :: VarDebugInfo) , location) ,}
+} fn super_source_scope (& mut self , _scope : $ (& $ mutability) ? SourceScope) {}
+fn super_const_operand (& mut self , constant : & $ ($ mutability) ? ConstOperand <'tcx >, location : Location) { let ConstOperand { span , user_ty : _ , const_ ,}
+= constant ; self . visit_span ($ (& $ mutability) ? * span) ; match const_ { Const :: Ty (_ , ct) => self . visit_ty_const ($ (&$ mutability) ? * ct , location) , Const :: Val (_ , ty) => { self . visit_ty ($ (& $ mutability) ? * ty , TyContext :: Location (location)) ;}
+Const :: Unevaluated (_ , ty) => { self . visit_ty ($ (& $ mutability) ? * ty , TyContext :: Location (location)) ;}
+}}
+fn super_ty_const (& mut self , _ct : $ (& $ mutability) ? ty :: Const <'tcx >, _location : Location ,) {}
+fn super_span (& mut self , _span : $ (& $ mutability) ? Span) {}
+fn super_source_info (& mut self , source_info : & $ ($ mutability) ? SourceInfo) { let SourceInfo { span , scope}
+= source_info ; self . visit_span ($ (& $ mutability) ? * span) ; self . visit_source_scope ($ (& $ mutability) ? * scope) ;}
+fn super_user_type_projection (& mut self , _ty : & $ ($ mutability) ? UserTypeProjection) {}
+fn super_user_type_annotation (& mut self , _index : UserTypeAnnotationIndex , ty : & $ ($ mutability) ? CanonicalUserTypeAnnotation <'tcx >,) { self . visit_span ($ (& $ mutability) ? ty . span) ; self . visit_ty ($ (& $ mutability) ? ty . inferred_ty , TyContext :: UserTy (ty . span)) ;}
+fn super_ty (& mut self , _ty : $ (& $ mutability) ? Ty <'tcx >) {}
+fn super_region (& mut self , _region : $ (& $ mutability) ? ty :: Region <'tcx >) {}
+fn super_args (& mut self , _args : & $ ($ mutability) ? GenericArgsRef <'tcx >) {}
+fn visit_location (& mut self , body : &$ ($ mutability) ? Body <'tcx >, location : Location) { let basic_block = & $ ($ mutability) ? basic_blocks ! (body , $ ($ mutability , true) ?) [location . block] ; if basic_block . statements . len () == location . statement_index { if let Some (ref $ ($ mutability) ? terminator) = basic_block . terminator { self . visit_terminator (terminator , location)}
+} else { let statement = & $ ($ mutability) ? basic_block . statements [location . statement_index] ; self . visit_statement (statement , location)}
+}}
+} }

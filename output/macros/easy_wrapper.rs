@@ -1,1 +1,1 @@
-easy_wrapper ! { # [doc = " The future returned by [`RwLockUpgradableReadGuardArc::upgrade`]."] pub struct UpgradeArc < T : ? Sized > (UpgradeArcInner < T > => RwLockWriteGuardArc < T >) ; # [cfg (all (feature = "std" , not (target_family = "wasm")))] pub (crate) wait () ; }
+easy_wrapper ! { #[doc = " The future returned by [`RwLockUpgradableReadGuardArc::upgrade`]."] pub struct UpgradeArc < T : ? Sized > (UpgradeArcInner < T > => RwLockWriteGuardArc < T >) ; #[cfg (all (feature = "std" , not (target_family = "wasm")))] pub (crate) wait () ; }

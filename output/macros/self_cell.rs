@@ -1,1 +1,1 @@
-self_cell ! (struct OwningStatement { owner : MutBorrow < Connection >, # [covariant] dependent : CachedStatementRef , }) ;
+self_cell ! (struct OwningStatement { owner : MutBorrow < Connection >, #[covariant] dependent : CachedStatementRef , }) ;

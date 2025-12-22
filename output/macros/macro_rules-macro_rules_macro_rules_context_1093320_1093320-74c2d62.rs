@@ -1,0 +1,18 @@
+#[macro_export] macro_rules ! define_expansion_context_types { ($ DRT : ident) => { DeriveResolutionGeneric ! ($ DRT) { pub path : ast :: Path , pub item : Annotatable , pub exts : crate :: t_define_expansion_context_types_exts :: TDefineExpansionContextTypesExts ! ($ DRT) , pub is_const : bool ,}
+pub type ExpandContext <'b , DRT > = ExtCtxtGeneric ! ('b' , DRT) ; pub type RefAMutExpandContext_B_DRT <'a , 'b , DRT > = &'a mut ExpandContext <'b , DRT >; ExpanderStruct ! () ; impl <'a , DRT : OpaqueDeriveResolution + 'static > BaseExpansionContext < DRT > for ExtCtxt <'a , DRT > { fn dcx (& self) -> DiagCtxtHandle { self . sess . dcx ()}
+fn current_expansion (& self) -> & ExpansionData { & self . current_expansion}
+fn current_expansion_mut (& mut self) -> & mut ExpansionData { & mut self . current_expansion}
+fn ecfg (& self) -> & ExpansionConfig { & self . ecfg}
+fn resolver (& mut self) -> & mut (dyn ResolverExpand < DRT > + 'static) { self . resolver}
+fn features (& self) -> & Features { self . ecfg . features}
+fn emit_recursion_limit_reached (& mut self , span : Span , descr : & str , suggested_limit : Limit , crate_name : Symbol) -> ErrorGuaranteed { let guar = self . dcx () . emit_err (format ! ("recursion limit reached while expanding `{}` in `{}`" , descr , crate_name)) ; self . macro_error_and_trace_macros_diag () ; guar}
+fn emit_wrong_fragment_kind (& mut self , span : Span , kind : & str , name_path : & ast :: Path) -> ErrorGuaranteed { let guar = self . dcx () . emit_err (format ! ("macro can only expand to {} fragments, not `{}`" , kind , name_path . segments [0] . ident)) ; self . macro_error_and_trace_macros_diag () ; guar}
+fn macro_error_and_trace_macros_diag (& mut self) { self . nb_macro_errors += 1 ; self . trace_macros_diag () ;}
+fn next_node_id (& mut self) -> NodeId { self . resolver . next_node_id ()}
+fn insert_impl_trait_name (& mut self , id : NodeId , name : Symbol) { self . resolver . insert_impl_trait_name (id , name)}
+fn resolve_dollar_crates (& mut self) { self . resolver . resolve_dollar_crates ()}
+fn register_glob_delegation (& mut self , invoc_id : LocalExpnId) { self . resolver . register_glob_delegation (invoc_id)}
+fn invocation_parent (& self , id : LocalExpnId) -> LocalDefId { self . resolver . invocation_parent (id)}
+fn expansion_cause (& self) -> Option < Span > { self . current_expansion . id . expansion_cause ()}
+}}
+; }

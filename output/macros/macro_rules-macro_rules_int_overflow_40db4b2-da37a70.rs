@@ -1,0 +1,4 @@
+macro_rules ! impl_debug_strict_add { ($ ($ ty : ty) *) => { $ (impl DebugStrictAdd for $ ty { #[inline] fn debug_strict_add (self , other : Self) -> Self { if cfg ! (debug_assertions) { self + other}
+else { self . wrapping_add (other)}
+} }) *}
+; }

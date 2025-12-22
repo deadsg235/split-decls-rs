@@ -1,0 +1,1 @@
+impl_lint_pass ! (MissingDoc => [MISSING_DOCS]) ;

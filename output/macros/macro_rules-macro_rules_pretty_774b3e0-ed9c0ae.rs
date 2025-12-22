@@ -1,0 +1,3 @@
+macro_rules ! forward_display_to_print { ($ ($ ty : ty) ,+) => { $ (#[allow (unused_lifetimes)] impl <'tcx > fmt :: Display for $ ty { fn fmt (& self , f : & mut fmt :: Formatter <'_ >) -> fmt :: Result { ty :: tls :: with (| tcx | { let mut p = FmtPrinter :: new (tcx , Namespace :: TypeNS) ; tcx . lift (* self) . expect ("could not lift for printing") . print (& mut p) ?; f . write_str (& p . into_buffer ()) ?; Ok (()) })}
+}) +}
+; }

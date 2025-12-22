@@ -1,0 +1,20 @@
+INSIDE_FUNCTION ! { #[doc = " Recursively expand all macro invocations in this AST fragment."] pub fn fully_expand_fragment (& mut self , input_fragment : AstFragment) -> AstFragment { let orig_expansion_data = self . cx . current_expansion . clone () ; let orig_force_mode = self . cx . force_mode ; let (mut fragment_with_placeholders , mut invocations) = self . collect_invocations (input_fragment , & []) ; self . resolve_imports () ; invocations . reverse () ; let mut expanded_fragments = Vec :: new () ; let mut undetermined_invocations : Vec < (Invocation , Option < Arc < dyn SyntaxExtensionTrait >>) > = Vec :: new () ; let (mut progress , mut force) = (false , ! self . monotonic) ; loop { let Some ((invoc , ext)) = invocations . pop () else { self . resolve_imports () ; if undetermined_invocations . is_empty () { break ;}
+invocations = mem :: take (& mut undetermined_invocations) ; force = ! progress ; progress = false ; if force && self . monotonic { self . cx . dcx () . span_delayed_bug (invocations . last () . unwrap () . 0 . span () , "expansion entered force mode without producing any errors" ,) ;}
+continue ;}
+; let ext = match ext { Some (ext) => ext , None => { let eager_expansion_root = if self . monotonic { invoc . expansion_data . id}
+else { orig_expansion_data . id}
+; match self . cx . resolver . resolve_macro_invocation (& invoc , eager_expansion_root , force ,) { Ok (ext) => ext , Err (Indeterminate) => { undetermined_invocations . push ((invoc , None)) ; continue ;}
+}}
+} ; let ExpansionData { depth , id : expn_id , ..}
+= invoc . expansion_data ; let depth = depth - orig_expansion_data . depth ; self . cx . current_expansion = invoc . expansion_data . clone () ; self . cx . force_mode = force ; let ext_arc : Arc < dyn SyntaxExtensionTrait > = ext . downcast_arc () . expect ("`ext` should be `Arc<dyn SyntaxExtensionTrait>`") ; let ext_trait = & ext_arc ; let fragment_kind = invoc . fragment_kind ; match self . expand_invoc (invoc , ext_trait) { ExpandResult :: Ready (fragment) => { let mut derive_invocations = Vec :: new () ; let derive_placeholders = self . cx . resolver . take_derive_resolutions (expn_id) . map (| derives | { derive_invocations . reserve (derives . len ()) ; derives . into_iter () . map (| DeriveResolution { path , item , exts : _ , is_const}
+| { let expn_id = LocalExpnId :: fresh_empty () ; derive_invocations . push ((Invocation { kind : InvocationKind :: Derive { path , item , is_const}
+, fragment_kind , expansion_data : ExpansionData { id : expn_id , .. self . cx . current_expansion . clone ()}
+,}
+, None ,)) ; NodeId :: placeholder_from_expn_id (expn_id) }) . collect ::< Vec < _ >> () }) . unwrap_or_default () ; let (expanded_fragment , collected_invocations) = self . collect_invocations (fragment , & derive_placeholders) ; derive_invocations . extend (collected_invocations) ; progress = true ; if expanded_fragments . len () < depth { expanded_fragments . push (Vec :: new ()) ;}
+expanded_fragments [depth - 1] . push ((expn_id , expanded_fragment)) ; invocations . extend (derive_invocations . into_iter () . rev ()) ;}
+ExpandResult :: Retry (invoc) => { if force { self . cx . dcx () . span_bug (invoc . span () , "expansion entered force mode but is still stuck" ,) ;}
+else { undetermined_invocations . push ((invoc , Some (ext))) ;}
+}}
+} self . cx . current_expansion = orig_expansion_data ; self . cx . force_mode = orig_force_mode ; let mut placeholder_expander = PlaceholderExpander :: default () ; while let Some (expanded_fragments) = expanded_fragments . pop () { for (expn_id , expanded_fragment) in expanded_fragments . into_iter () . rev () { placeholder_expander . add (NodeId :: placeholder_from_expn_id (expn_id) , expanded_fragment) ;}
+} fragment_with_placeholders . mut_visit_with (& mut placeholder_expander) ; fragment_with_placeholders}
+}

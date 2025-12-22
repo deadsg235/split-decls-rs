@@ -1,0 +1,2 @@
+macro_rules ! impl_dyn_sync { ($ ($ ($ attr : meta) * [$ ty : ty where $ ($ generics2 : tt) *]) *) => { $ (unsafe impl <$ ($ generics2) *> DynSync for $ ty { }) *}
+; }

@@ -1,0 +1,2 @@
+macro_rules ! tracked_no_crate_hash { ($ name : ident , $ non_default_value : expr) => { opts = reference . clone () ; assert_ne ! (opts . unstable_opts .$ name , $ non_default_value) ; opts . unstable_opts .$ name = $ non_default_value ; assert_non_crate_hash_different (& reference , & opts) ;}
+; }

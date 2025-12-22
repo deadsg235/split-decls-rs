@@ -1,1 +1,10 @@
-define_rust_targets ! { Nightly => { vectorcall_abi : # 124485 , ptr_metadata : # 81513 , layout_for_ptr : # 69835 , } , Stable_1_82 (82) => { unsafe_extern_blocks : # 127921 , } , Stable_1_77 (77) => { offset_of : # 106655 , literal_cstr (2021) | (2024) : # 117472 , } , Stable_1_73 (73) => { thiscall_abi : # 42202 } , Stable_1_71 (71) => { c_unwind_abi : # 106075 } , Stable_1_68 (68) => { abi_efiapi : # 105795 } , Stable_1_64 (64) => { core_ffi_c : # 94503 } , Stable_1_59 (59) => { const_cstr : # 54745 } , Stable_1_51 (51) => { } , }
+define_rust_targets ! { Nightly => { vectorcall_abi : # 124485 , ptr_metadata : # 81513 , layout_for_ptr : # 69835 ,}
+, Stable_1_82 (82) => { unsafe_extern_blocks : # 127921 ,}
+, Stable_1_77 (77) => { offset_of : # 106655 , literal_cstr (2021) | (2024) : # 117472 ,}
+, Stable_1_73 (73) => { thiscall_abi : # 42202}
+, Stable_1_71 (71) => { c_unwind_abi : # 106075}
+, Stable_1_68 (68) => { abi_efiapi : # 105795}
+, Stable_1_64 (64) => { core_ffi_c : # 94503}
+, Stable_1_59 (59) => { const_cstr : # 54745}
+, Stable_1_51 (51) => {}
+, }

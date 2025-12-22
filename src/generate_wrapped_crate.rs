@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use crate::patch_config;
 use split_decls_types::SplitDeclsConfig;

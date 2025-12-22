@@ -1,0 +1,2 @@
+macro_rules ! define_named_walk { ($ Visitor : ident <$ lt : lifetime > $ (pub fn $ method : ident ($ ty : ty) ;) *) => { $ (pub fn $ method <$ lt , V : $ Visitor <$ lt >> (visitor : & mut V , node : &$ lt $ ty) -> V :: Result { walk_walkable ! (visitor , node ,) }) *}
+; }

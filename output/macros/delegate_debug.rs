@@ -1,1 +1,1 @@
-# [cfg (feature = "std")] delegate_debug ! (String) ;
+#[cfg (feature = "std")] delegate_debug ! (String) ;

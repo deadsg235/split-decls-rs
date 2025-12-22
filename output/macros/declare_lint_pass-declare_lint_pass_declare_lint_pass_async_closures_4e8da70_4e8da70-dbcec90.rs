@@ -1,0 +1,1 @@
+declare_lint_pass ! (#[doc = " Lint for potential usages of async closures and async fn trait bounds."] AsyncClosureUsage => [CLOSURE_RETURNING_ASYNC_BLOCK]) ;

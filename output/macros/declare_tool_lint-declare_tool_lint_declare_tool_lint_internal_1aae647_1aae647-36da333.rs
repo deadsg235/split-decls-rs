@@ -1,0 +1,1 @@
+declare_tool_lint ! { #[doc = " The `lint_pass_impl_without_macro` detects manual implementations of a lint"] #[doc = " pass, without using [`declare_lint_pass`] or [`impl_lint_pass`]."] pub rustc :: LINT_PASS_IMPL_WITHOUT_MACRO , Allow , "`impl LintPass` without the `declare_lint_pass!` or `impl_lint_pass!` macros" }

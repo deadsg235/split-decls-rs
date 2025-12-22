@@ -1,1 +1,3 @@
-test_helpers :: test_lanes ! { fn cast_const < const LANES : usize > () { test_helpers :: test_unary_elementwise (& Simd ::<* mut u32 , LANES >:: cast_const , &<* mut u32 >:: cast_const , &| _ | true ,) ; } fn with_exposed_provenance < const LANES : usize > () { test_helpers :: test_unary_elementwise (& Simd ::<* mut u32 , LANES >:: with_exposed_provenance , & core :: ptr :: with_exposed_provenance_mut ::< u32 >, &| _ | true ,) ; } }
+test_helpers :: test_lanes ! { fn cast_const < const LANES : usize > () { test_helpers :: test_unary_elementwise (& Simd ::<* mut u32 , LANES >:: cast_const , &<* mut u32 >:: cast_const , &| _ | true ,) ;}
+fn with_exposed_provenance < const LANES : usize > () { test_helpers :: test_unary_elementwise (& Simd ::<* mut u32 , LANES >:: with_exposed_provenance , & core :: ptr :: with_exposed_provenance_mut ::< u32 >, &| _ | true ,) ;}
+}

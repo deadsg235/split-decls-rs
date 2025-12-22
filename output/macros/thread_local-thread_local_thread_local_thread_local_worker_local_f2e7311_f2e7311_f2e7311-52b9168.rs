@@ -1,0 +1,2 @@
+thread_local ! { #[doc = " The registry associated with the thread."] #[doc = " This allows the `WorkerLocal` type to clone the registry in its constructor."] static REGISTRY : OnceCell < Registry > = const { OnceCell :: new ()}
+; }

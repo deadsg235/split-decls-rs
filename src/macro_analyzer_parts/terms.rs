@@ -1,5 +1,4 @@
 use serde::{Serialize, Deserialize};
-use std::collections::HashMap;
 use std::fmt;
 
 // Define a struct to hold extracted terms

@@ -1,0 +1,3 @@
+macro_rules ! impl_late_lint_pass { ([] , [$ ($ (#[$ attr : meta]) * fn $ f : ident ($ ($ param : ident : $ arg : ty) ,*) ;) *]) => { impl <'tcx > LateLintPass <'tcx > for RuntimeCombinedLateLintPass <'_ , 'tcx > { $ (fn $ f (& mut self , context : & LateContext <'tcx >, $ ($ param : $ arg) ,*) { for pass in self . passes . iter_mut () { pass .$ f (context , $ ($ param) ,*) ;}
+}) *}
+} ; }

@@ -1,0 +1,1 @@
+declare_lint_pass ! (InvalidReferenceCasting => [INVALID_REFERENCE_CASTING]) ;

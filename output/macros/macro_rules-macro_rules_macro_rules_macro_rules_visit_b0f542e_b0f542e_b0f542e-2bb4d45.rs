@@ -1,0 +1,3 @@
+macro_rules ! impl_visitable { (|&$ lt : lifetime $ self : ident : $ self_ty : ty , $ vis : ident : & mut $ vis_ty : ident , $ extra : ident : $ extra_ty : ty | $ block : block) => { #[allow (unused_parens , non_local_definitions)] impl <$ lt , $ vis_ty : Visitor <$ lt >> Visitable <$ lt , $ vis_ty > for $ self_ty { type Extra = $ extra_ty ; fn visit (&$ lt $ self , $ vis : & mut $ vis_ty , $ extra : Self :: Extra) -> V :: Result { $ block}
+}}
+; }

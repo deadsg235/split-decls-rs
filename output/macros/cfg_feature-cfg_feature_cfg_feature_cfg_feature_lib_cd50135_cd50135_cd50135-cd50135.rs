@@ -1,0 +1,1 @@
+cfg_feature ! { #! [feature = "client"] pub mod client ; }

@@ -1,0 +1,1 @@
+declare_lint_pass ! (Precedence => [AMBIGUOUS_NEGATIVE_LITERALS]) ;
