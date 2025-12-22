@@ -1,0 +1,1 @@
+macro_wrapper_lib :: wrap_use ! { use rustc_driver ; use rustc_interface ; use rustc_errors ; use gemini_rustc_data_structures :: { get_diagnostics , clear_diagnostics } ; use std :: io :: Write ; use serde_json ; }

@@ -1,0 +1,1 @@
+DefineImplWithDRT ! { rustc_expand_base_lib :: ast_traits :: CfgFalseReporterContext , InvocationContextABDRT , { fn buffer_lint_unused_attribute <'c > (& mut self , attr_span : Span , attr_pos : usize ,) { let cx = self . cx ; cx . buffer_lint_unused_attribute (attr_span , attr_pos) ; } } }

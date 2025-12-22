@@ -1,0 +1,1 @@
+# [macro_export] # [cfg (feature = "rustc_randomized_layouts")] macro_rules ! static_assert_size { ($ ty : ty , $ size : expr) => { const _ : (usize , usize) = ($ size , :: std :: mem :: size_of ::<$ ty > ()) ; } ; }

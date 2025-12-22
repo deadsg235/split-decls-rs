@@ -181,6 +181,16 @@ enum Commands {
     },
 }
 
+struct StringLiteralVisitor {
+    strings: Vec<String>,
+}
+
+impl<'ast> Visit<'ast> for StringLiteralVisitor {
+    fn visit_lit_str(&mut self, lit_str: &'ast LitStr) {
+        self.strings.push(lit_str.value());
+    }
+}
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
@@ -194,28 +204,53 @@ fn main() -> Result<()> {
             let mut scanned_paths: HashSet<PathBuf> = HashSet::new();
 
             if workspace {
-                println!("Scanning workspace dependencies...");
-                let cargo_toml: toml::Value = toml::from_str(&fs::read_to_string("Cargo.toml")?)
-                    .context("Failed to parse Cargo.toml")?;
-                let dep_sections = ["dependencies", "dev-dependencies", "build-dependencies"];
-                for section in &dep_sections {
-                    if let Some(deps) = cargo_toml.get(*section).and_then(|d| d.as_table()) {
-                        for (_name, dep_info) in deps {
-                            if let Some(dep_table) = dep_info.as_table() {
-                                if let Some(path) = dep_table.get("path").and_then(|p| p.as_str()) {
-                                    let dep_path = PathBuf::from(path);
-                                    if dep_path.exists() {
-                                        paths_to_scan.push(dep_path);
+                println!("Scanning workspace...");
+
+                // Find workspace root
+                let mut current_dir = std::env::current_dir()?;
+                let mut workspace_root = None;
+                loop {
+                    let cargo_toml_path = current_dir.join("Cargo.toml");
+                    if cargo_toml_path.exists() {
+                        let content = fs::read_to_string(&cargo_toml_path)?;
+                        let toml_val: toml::Value = toml::from_str(&content)?;
+                        if toml_val.get("workspace").is_some() {
+                            workspace_root = Some(current_dir);
+                            break;
+                        }
+                    }
+                    if !current_dir.pop() {
+                        break;
+                    }
+                }
+
+                if let Some(root) = workspace_root {
+                    println!("Found workspace root at: {}", root.display());
+                    let cargo_toml: toml::Value = toml::from_str(&fs::read_to_string(root.join("Cargo.toml"))?)?;
+
+                    if let Some(workspace_table) = cargo_toml.get("workspace").and_then(|w| w.as_table()) {
+                        if let Some(members) = workspace_table.get("members").and_then(|m| m.as_array()) {
+                            for member in members {
+                                if let Some(member_str) = member.as_str() {
+                                    let member_path = root.join(member_str);
+                                    if member_path.exists() {
+                                        paths_to_scan.push(member_path);
                                     } else {
-                                        println!("Warning: dependency path does not exist: {}", path);
+                                        println!("Warning: workspace member path does not exist: {}", member_path.display());
                                     }
                                 }
                             }
                         }
                     }
+                } else {
+                    println!("Warning: Could not find workspace root. Scanning current directory only.");
+                    paths_to_scan.push(PathBuf::from("."));
                 }
+
             } else if let Some(path) = path {
                 paths_to_scan.push(path);
+            } else {
+                paths_to_scan.push(PathBuf::from("."));
             }
 
             let mut all_files_metadata: Vec<FileMetadata> = Vec::new();

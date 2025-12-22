@@ -1,0 +1,1 @@
+macro_rules ! __client_req_header { ($ req_builder : ident , { $ ($ name : expr => $ val : expr ,) * }) => { { $ ($ req_builder = $ req_builder . header ($ name , $ val) ;) * } } }

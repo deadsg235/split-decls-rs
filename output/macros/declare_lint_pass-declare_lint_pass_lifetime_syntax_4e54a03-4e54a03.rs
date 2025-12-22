@@ -1,0 +1,1 @@
+declare_lint_pass ! (LifetimeSyntax => [MISMATCHED_LIFETIME_SYNTAXES]) ;

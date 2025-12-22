@@ -1,0 +1,1 @@
+cfg_proto ! { macro_rules ! cfg_client { ($ ($ item : item) *) => { cfg_feature ! { #! [feature = "client"] $ ($ item) * } } } macro_rules ! cfg_server { ($ ($ item : item) *) => { cfg_feature ! { #! [feature = "server"] $ ($ item) * } } } }

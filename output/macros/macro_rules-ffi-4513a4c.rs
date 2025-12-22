@@ -1,0 +1,1 @@
+macro_rules ! err_println { ($ ($ arg : tt) *) => (writeln ! (& mut :: std :: io :: stderr () , $ ($ arg) *) . expect ("failed printing to stderr")) ; }

@@ -1,0 +1,1 @@
+INSIDE_FUNCTION ! { pub fn new (cx : CtxSpecial !, monotonic : bool) -> Self { MacroExpander { cx , monotonic } } }

@@ -1,0 +1,1 @@
+cfg_server ! { pub (crate) type ServerTransaction = role :: Server ; }

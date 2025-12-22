@@ -1,0 +1,1 @@
+impl_lint_pass ! (DanglingPointers => [DANGLING_POINTERS_FROM_TEMPORARIES , DANGLING_POINTERS_FROM_LOCALS]) ;

@@ -1,0 +1,1 @@
+macro_rules ! basic_blocks { ($ body : ident , mut , true) => { $ body . basic_blocks . as_mut () } ; ($ body : ident , mut , false) => { $ body . basic_blocks . as_mut_preserves_cfg () } ; ($ body : ident ,) => { $ body . basic_blocks } ; }

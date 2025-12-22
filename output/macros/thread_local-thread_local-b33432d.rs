@@ -1,0 +1,1 @@
+thread_local ! (static FOO : Foo = Foo :: init ()) ;

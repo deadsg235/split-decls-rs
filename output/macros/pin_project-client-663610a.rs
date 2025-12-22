@@ -1,0 +1,1 @@
+pin_project ! { pub (crate) struct ResponseFutMap < B , E > where B : Body , B : 'static , { # [pin] fut : ResponseFuture , ping : Option < Recorder >, # [pin] send_stream : Option < Option < SendStream < SendBuf << B as Body >:: Data >>>>, exec : E , } }

@@ -1,0 +1,1 @@
+# [macro_export] macro_rules ! err_ub_format { ($ ($ tt : tt) *) => { $ crate :: err_ub ! (Ub (format ! ($ ($ tt) *))) } ; }

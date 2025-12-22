@@ -1,0 +1,1 @@
+declare_lint_pass ! (TypeAliasBounds => [TYPE_ALIAS_BOUNDS]) ;

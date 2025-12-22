@@ -1,0 +1,1 @@
+rustc_data_structures :: static_assert_size ! (ScopeData , 4) ;

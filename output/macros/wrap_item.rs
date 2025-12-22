@@ -1,0 +1,1 @@
+# [proc_macro_attribute] pub fn wrap_item (_attr : ProcMacroTokenStream , item_ts : ProcMacroTokenStream) -> ProcMacroTokenStream { let original_item : Item = parse_macro_input ! (item_ts as Item) ; original_item . to_token_stream () . into () } . sig

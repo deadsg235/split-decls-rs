@@ -1,0 +1,1 @@
+pin_project ! { # [allow (missing_debug_implementations)] pub struct H2Stream < F , B , E > where B : Body , { reply : SendResponse < SendBuf < B :: Data >>, # [pin] state : H2StreamState < F , B >, date_header : bool , exec : E , } }

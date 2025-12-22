@@ -1,0 +1,1 @@
+impl_lint_pass ! (EllipsisInclusiveRangePatterns => [ELLIPSIS_INCLUSIVE_RANGE_PATTERNS]) ;

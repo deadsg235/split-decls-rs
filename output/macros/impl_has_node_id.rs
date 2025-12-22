@@ -1,0 +1,1 @@
+impl_has_node_id ! (Arm , AssocItem , Crate , Expr , ExprField , FieldDef , ForeignItem , GenericParam , Item , Param , Pat , PatField , Stmt , Ty , Variant , WherePredicate ,) ;

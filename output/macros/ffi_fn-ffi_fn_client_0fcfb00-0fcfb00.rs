@@ -1,0 +1,1 @@
+ffi_fn ! { # [doc = " Free a set of HTTP clientconn options."] # [doc = ""] # [doc = " This should only be used if the options aren't consumed by"] # [doc = " `hyper_clientconn_handshake`."] fn hyper_clientconn_options_free (opts : * mut hyper_clientconn_options) { drop (non_null ! { Box :: from_raw (opts) ?= () }) ; } }

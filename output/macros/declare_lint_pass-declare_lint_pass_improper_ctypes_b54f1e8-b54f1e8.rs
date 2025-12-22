@@ -1,0 +1,1 @@
+declare_lint_pass ! (ImproperCTypesLint => [IMPROPER_CTYPES , IMPROPER_CTYPES_DEFINITIONS , USES_POWER_ALIGNMENT]) ;

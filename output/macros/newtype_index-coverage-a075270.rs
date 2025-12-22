@@ -1,0 +1,1 @@
+rustc_index :: newtype_index ! { # [doc = " Used by [`CoverageKind::BlockMarker`] to mark blocks during THIR-to-MIR"] # [doc = " lowering, so that those blocks can be identified later."] # [derive (HashStable)] # [encodable] # [debug_format = "BlockMarkerId({})"] pub struct BlockMarkerId { } }

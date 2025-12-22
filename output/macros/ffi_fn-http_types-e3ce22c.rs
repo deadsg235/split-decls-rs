@@ -1,0 +1,1 @@
+ffi_fn ! { # [doc = " Free an HTTP request."] # [doc = ""] # [doc = " This should only be used if the request isn't consumed by"] # [doc = " `hyper_clientconn_send`."] fn hyper_request_free (req : * mut hyper_request) { drop (non_null ! (Box :: from_raw (req) ?= ())) ; } }

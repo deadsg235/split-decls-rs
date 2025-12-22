@@ -1,0 +1,1 @@
+test ! { name : client_always_rejects_http09 , server : expected : "won't get here {addr}" , reply : "won't reply" , client : request : { method : GET , url : "http://{addr}/" , version : HTTP_09 , } , error : | err | err . to_string () == "request has unsupported HTTP version" , }

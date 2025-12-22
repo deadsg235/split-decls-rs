@@ -1,0 +1,1 @@
+declare_lint_pass ! (MutableTransmutes => [MUTABLE_TRANSMUTES]) ;

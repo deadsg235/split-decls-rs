@@ -1,0 +1,1 @@
+static_assert_size ! (ty :: WithCachedTypeInfo < RegionKind <'_ >>, 48) ;

@@ -1,0 +1,1 @@
+make_invocation_collector_struct ! { pub cx : CtxSpecial ! ('a , 'b , DRT) , pub invocations : Vec < (Invocation , Option < Arc < dyn SyntaxExtensionTrait < DRT >>>) >, pub monotonic : bool , }

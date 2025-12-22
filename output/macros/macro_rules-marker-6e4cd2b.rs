@@ -1,0 +1,1 @@
+macro_rules ! already_send { ($ ([$ ty : ty]) *) => { $ (unsafe impl DynSend for $ ty where Self : Send { }) * } ; }

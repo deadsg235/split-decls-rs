@@ -1,0 +1,1 @@
+impl_has_attrs ! (const SUPPORTS_CUSTOM_INNER_ATTRS : bool = true , AssocItem , ForeignItem , Item ,) ;

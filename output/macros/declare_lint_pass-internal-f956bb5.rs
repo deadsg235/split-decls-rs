@@ -1,0 +1,1 @@
+declare_lint_pass ! (SpanUseEqCtxt => [SPAN_USE_EQ_CTXT]) ;

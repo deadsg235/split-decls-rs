@@ -1,0 +1,1 @@
+declare_lint_pass ! (UnqualifiedLocalImports => [UNQUALIFIED_LOCAL_IMPORTS]) ;

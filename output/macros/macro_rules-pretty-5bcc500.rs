@@ -1,0 +1,1 @@
+macro_rules ! define_print_and_forward_display { (($ self : ident , $ p : ident) : $ ($ ty : ty $ print : block) +) => { define_print ! (($ self , $ p) : $ ($ ty $ print) *) ; forward_display_to_print ! ($ ($ ty) ,+) ; } ; }

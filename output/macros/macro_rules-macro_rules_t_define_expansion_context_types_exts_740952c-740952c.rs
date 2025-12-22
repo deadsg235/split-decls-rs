@@ -1,0 +1,1 @@
+# [macro_export] macro_rules ! TDefineExpansionContextTypesExts { ($ DRT : ident) => { Option < Arc < dyn crate :: syntax_extension_trait :: SyntaxExtensionTrait <$ DRT >>> } ; }

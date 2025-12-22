@@ -1,0 +1,1 @@
+# [macro_export] macro_rules ! ExpandContext_Type_Def { ($ b : lifetime , $ DRT : ident) => { pub type ExpandContext <$ b , $ DRT > = ExtCtxtGeneric ! ($ b , $ DRT) ; } ; }

@@ -1,0 +1,1 @@
+declare_lint_pass ! (MultipleSupertraitUpcastable => [MULTIPLE_SUPERTRAIT_UPCASTABLE]) ;

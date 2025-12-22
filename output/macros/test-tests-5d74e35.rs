@@ -1,0 +1,1 @@
+test ! (case : output_offset_all , text : "01\t345\n789abcΔf01234567\u{07}9\nbcΔf" , lines : vec ! [0 , 7 , 27] , multi_byte_chars : vec ! [(13 , 2) , (29 , 2)] ,) ;

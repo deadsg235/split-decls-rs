@@ -1,0 +1,1 @@
+static_assert_size ! (TerminatorKind <'_ >, 80) ;

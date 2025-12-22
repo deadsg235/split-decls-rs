@@ -1,0 +1,1 @@
+test ! (case : empty_text , text : "" , lines : vec ! [] , multi_byte_chars : vec ! [] ,) ;

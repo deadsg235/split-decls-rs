@@ -1,0 +1,1 @@
+make_dummy_visitor_has_attrs_impl ! { DummyVisitor , const SUPPORTS_CUSTOM_INNER_ATTRS : bool = false ; fn attrs (& self) -> & [Attribute] { & [] } fn visit_attrs (& mut self , _f : impl FnOnce (& mut AttrVec)) { } }

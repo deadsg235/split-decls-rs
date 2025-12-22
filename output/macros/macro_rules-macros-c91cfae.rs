@@ -1,0 +1,1 @@
+# [macro_export] macro_rules ! AllVariantsDerive { derive () ($ (# [$ meta : meta]) * $ vis : vis enum $ Type : ident { $ ($ (# [$ varmeta : meta]) * $ Variant : ident $ (= $ value : literal) ?) , *$ (,) ? }) => { impl $ crate :: macros :: AllVariants for $ Type { const ALL_VARIANTS : & [$ Type] = & [$ ($ Type ::$ Variant ,) *] ; } } ; }

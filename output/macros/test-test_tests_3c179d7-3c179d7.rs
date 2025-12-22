@@ -1,0 +1,1 @@
+test ! (case : non_narrow_long , text : "01\t3456789abcdef01234567\u{07}9" , lines : vec ! [0] , multi_byte_chars : vec ! [] ,) ;

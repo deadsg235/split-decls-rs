@@ -1,0 +1,1 @@
+macro_rules ! insert { ($ opt_name : ident , $ opt_expr : expr , $ sub_hashes : expr) => { if $ sub_hashes . insert (stringify ! ($ opt_name) , $ opt_expr as & dyn dep_tracking :: DepTrackingHash) . is_some () { panic ! ("duplicate key in CLI DepTrackingHash: {}" , stringify ! ($ opt_name)) } } ; }

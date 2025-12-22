@@ -1,0 +1,1 @@
+test ! { name : client_requires_absolute_uri , server : expected : "won't get here {addr}" , reply : "won't reply" , client : request : { method : GET , url : "/relative-{addr}" , } , error : | err | err . to_string () == "client requires absolute-form URIs" , }

@@ -1,0 +1,1 @@
+impl_lint_pass ! (ShadowedIntoIter => [ARRAY_INTO_ITER , BOXED_SLICE_INTO_ITER]) ;

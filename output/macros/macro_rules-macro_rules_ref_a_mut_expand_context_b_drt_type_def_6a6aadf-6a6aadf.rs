@@ -1,0 +1,1 @@
+# [macro_export] macro_rules ! RefAMutExpandContext_B_DRT_Type_Def { ($ a : lifetime , $ b : lifetime , $ DRT : ident) => { pub type RefAMutExpandContext_B_DRT <$ a , $ b , $ DRT > = &'a mut ExpandContextGeneric ! ($ b , $ DRT) ; } ; }

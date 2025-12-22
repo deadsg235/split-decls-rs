@@ -1,0 +1,1 @@
+declare_lint_pass ! (QueryStability => [POTENTIAL_QUERY_INSTABILITY , UNTRACKED_QUERY_INFORMATION]) ;

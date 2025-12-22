@@ -1,0 +1,1 @@
+declare_lint_pass ! (LetUnderscore => [LET_UNDERSCORE_DROP , LET_UNDERSCORE_LOCK]) ;

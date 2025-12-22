@@ -1,0 +1,1 @@
+macro_wrapper_lib :: MODULE_FOOTER ! () ;

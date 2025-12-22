@@ -1,0 +1,1 @@
+test ! (case : newlines_short , text : "a\nc" , lines : vec ! [0 , 2] , multi_byte_chars : vec ! [] ,) ;

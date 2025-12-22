@@ -1,0 +1,1 @@
+rustc_with_all_queries ! { define_callbacks ! }

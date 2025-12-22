@@ -1,0 +1,1 @@
+macro_rules ! impl_early_lint_pass { ([] , [$ ($ (# [$ attr : meta]) * fn $ f : ident ($ ($ param : ident : $ arg : ty) ,*) ;) *]) => (impl EarlyLintPass for RuntimeCombinedEarlyLintPass <'_ > { $ (fn $ f (& mut self , context : & EarlyContext <'_ >, $ ($ param : $ arg) ,*) { for pass in self . passes . iter_mut () { pass .$ f (context , $ ($ param) ,*) ; } }) * }) }

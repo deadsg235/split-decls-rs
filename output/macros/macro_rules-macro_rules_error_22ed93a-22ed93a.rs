@@ -1,0 +1,1 @@
+# [macro_export] macro_rules ! err_ub { ($ ($ tt : tt) *) => { $ crate :: mir :: interpret :: InterpErrorKind :: UndefinedBehavior ($ crate :: mir :: interpret :: UndefinedBehaviorInfo ::$ ($ tt) *) } ; }

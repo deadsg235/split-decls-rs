@@ -1,0 +1,1 @@
+declare_lint_pass ! (UnsafeCode => [UNSAFE_CODE]) ;

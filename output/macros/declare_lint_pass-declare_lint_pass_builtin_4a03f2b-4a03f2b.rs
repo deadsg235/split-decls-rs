@@ -1,0 +1,1 @@
+declare_lint_pass ! (NonShorthandFieldPatterns => [NON_SHORTHAND_FIELD_PATTERNS]) ;

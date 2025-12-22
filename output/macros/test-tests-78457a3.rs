@@ -1,0 +1,1 @@
+test ! (case : multi_byte_char_across_chunk_boundary_tail , text : "0123456789abcdeΔ...." , lines : vec ! [0] , multi_byte_chars : vec ! [(15 , 2)] ,) ;

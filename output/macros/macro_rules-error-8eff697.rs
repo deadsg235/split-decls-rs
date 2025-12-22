@@ -1,0 +1,1 @@
+# [macro_export] macro_rules ! throw_machine_stop { ($ ($ tt : tt) *) => { do yeet $ crate :: err_machine_stop ! ($ ($ tt) *) } ; }
