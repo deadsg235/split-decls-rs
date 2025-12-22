@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use syn::{
     parse_file,
     visit::Visit,
@@ -7,10 +7,12 @@ use syn::{
 };
 use std::{collections::HashMap, fs, path::Path, path::PathBuf};
 use walkdir;
-use serde::{Serialize, Deserialize}; // Import Serialize and Deserialize
+use serde::{Serialize, Deserialize};
+use toml; // Import toml crate
+
 
 // Define a struct to hold extracted terms
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)] // Added Serialize, Deserialize
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 enum Term {
     StringLiteral(String),
     NumericLiteral(String), // Store as string to handle different numeric types
@@ -23,7 +25,7 @@ enum Term {
 }
 
 // Stores the calculated scores for a term at different levels
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)] // Added Serialize, Deserialize
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 struct TermScores {
     local_score: f64,
     module_score: f64,
@@ -88,7 +90,7 @@ impl<'ast> Visit<'ast> for TermCollector {
         // A more conservative filter for identifiers that are likely "terms"
         // Avoid common keywords, macro internal idents, and `syn` boilerplate
         if !name.starts_with("__") && // internal syn/proc-macro2 idents
-           !name.starts_with("visit_") && // visitor methods (fixed starts_back to starts_with)
+           !name.starts_with("visit_") && // visitor methods
            ![
                 "self", "super", "crate", "pub", "fn", "use", "mod", "impl", "for", "in", "let",
                 "mut", "if", "else", "where", "macro_rules", "async", "await", "break", "continue",
@@ -135,8 +137,10 @@ impl<'ast> Visit<'ast> for TermCollector {
 }
 
 fn analyze_file_macros(file_path: &Path) -> Result<HashMap<String, Vec<Term>>> {
-    let content = fs::read_to_string(file_path)?;
-    let ast = parse_file(&content)?;
+    let content = fs::read_to_string(file_path)
+        .with_context(|| format!("Failed to read file: {}", file_path.display()))?;
+    let ast = parse_file(&content)
+        .with_context(|| format!("Failed to parse Rust file: {}", file_path.display()))?;
 
     let mut macro_terms: HashMap<String, Vec<Term>> = HashMap::new();
 
@@ -209,8 +213,9 @@ fn main() -> Result<()> {
 
     // --- Module-level analysis (e.g., terms from cargo-toml-generator-macros/src/) ---
     let mut module_terms_from_files = HashMap::new(); // File path -> Vec<Term>
-    for entry in walkdir::WalkDir::new(&module_root_dir) {
-        let entry = entry?;
+    for entry in walkdir::WalkDir::new(&module_root_dir)
+        .context(format!("Failed to walk directory: {}", module_root_dir.display()))? {
+        let entry = entry.context("Failed to read directory entry")?;
         if entry.file_type().is_file() && entry.path().extension().map_or(false, |ext| ext == "rs") {
             let file_macro_terms = analyze_file_macros(entry.path())?;
             for (macro_name, terms) in file_macro_terms {
@@ -296,18 +301,25 @@ fn main() -> Result<()> {
     };
 
     // Serialize to TOML
-    let toml_string = toml::to_string_pretty(&output_data)?;
+    let toml_string = toml::to_string_pretty(&output_data)
+        .context("Failed to serialize analysis results to TOML")?;
+
+    // Create output directory if it doesn't exist
+    let output_dir = PathBuf::from("output/");
+    fs::create_dir_all(&output_dir)
+        .with_context(|| format!("Failed to create output directory: {}", output_dir.display()))?;
 
     // Write to file
-    let output_file_path = "output/macro_scores.toml";
-    fs::write(output_file_path, toml_string)?;
+    let output_file_path = output_dir.join("macro_scores.toml");
+    fs::write(&output_file_path, toml_string)
+        .with_context(|| format!("Failed to write analysis results to file: {}", output_file_path.display()))?;
 
-    println!("Analysis results written to {}", output_file_path);
+    println!("Analysis results written to {}", output_file_path.display());
 
 
     // Print frequencies and scores for verification
     println!("--- Term Analysis Results ---");
-    println!("\nModule Frequencies (Total terms: {})", output_data.total_module_terms);
+    println!("\nModule Frequencies (Total terms: {})", analysis.total_module_terms);
     for (term, count) in &output_data.module_frequencies {
         println!("  {:?}: {}\n", term, count);
     }
