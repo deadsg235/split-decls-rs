@@ -1,9 +1,9 @@
 [package]
 name = "split-decls-types"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
-serde = { workspace = true, features = ["derive"] }
-toml = { workspace = true }
-anyhow = { workspace = true }
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8"
+anyhow = "1.0"

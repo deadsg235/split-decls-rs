@@ -1,59 +1,34 @@
 [package]
 name = "split-decls-rs"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 authors = []
 build = "build.rs"
 
-# [workspace]
-# members = [
-#     ".", # This crate itself
-#     "cargo-toml-generator-macros",
-#     "cargo-toml-generator-types",
-#     "split-decls-types",
-#     "src/bin/rustmacrodoc", # The new binary target
-# ]
-
-# [workspace.dependencies]
-# anyhow = "1.0"
-# toml = "0.8"
-# serde = { version = "1.0", features = ["derive"] }
-# serde_json = "1.0"
-# url = "2.0"
-# quote = "1.0"
-# syn = { version = "2.0", features = ["full", "visit", "visit-mut", "extra-traits"] }
-# walkdir = "2.3"
-# proc-macro2 = "1.0"
-# tempfile = "3.0"
-
 [dependencies]
-anyhow = { workspace = true }
-toml = { workspace = true }
-serde = { workspace = true }
-serde_derive = { workspace = true }
-serde_json = { workspace = true } # Added for build.rs serialization
-url = { workspace = true }
-quote = { workspace = true }
-syn = { workspace = true, features= ["full","visit", "visit-mut", "extra-traits"] } # Added extra-traits
-walkdir = { workspace = true }
-split-decls-types = { workspace = true } # Use workspace dependency
-proc-macro2 = { workspace = true }
-tempfile = { workspace = true }
-cargo-toml-generator-types = { workspace = true } # Use workspace dependency
+anyhow = "1.0"
+toml = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+url = "2.0"
+quote = "1.0"
+syn = { version = "2.0", features = ["full", "visit", "visit-mut", "extra-traits"] }
+walkdir = "2.5"
+split-decls-types = { path = "split-decls-types" }
+proc-macro2 = "1.0"
+tempfile = "3.0"
+cargo-toml-generator-types = { path = "cargo-toml-generator-types" }
 sha2 = "0.10"
-clap = { workspace = true, features = ["derive"] }
-cargo-toml-generator-macros = { workspace = true }
+clap = { version = "4.0", features = ["derive"] }
+cargo-toml-generator-macros = { path = "cargo-toml-generator-macros" }
 cargo-toml-parts = { path = "build_helpers/cargo_toml_parts" }
-pagerank_rs = { path = "submodules/pagerank_rs" }
-
-
 
 [build-dependencies]
-cargo-toml-generator-macros = { workspace = true }
-cargo-toml-generator-types = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-toml = { workspace = true }
+cargo-toml-generator-macros = { path = "cargo-toml-generator-macros" }
+cargo-toml-generator-types = { path = "cargo-toml-generator-types" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
 cargo-toml-parts = { path = "build_helpers/cargo_toml_parts" }
 
 [[bin]]
@@ -67,6 +42,3 @@ path = "src/bin/testbuild.rs"
 [[bin]]
 name = "macro_analyzer"
 path = "src/bin/macro_analyzer.rs"
-
-[patch.'crates-io']
-proc-macro2 = { path = "../proc-macro2" }

@@ -1,1 +1,1 @@
-# [proc_macro_attribute] # [allow (non_snake_case)] pub fn Scalar (args : TokenStream , input : TokenStream) -> TokenStream { let scalar_args = parse_nested_meta ! (args :: Scalar , args) ; let mut item_impl = parse_macro_input ! (input as ItemImpl) ; match scalar :: generate (& scalar_args , & mut item_impl) { Ok (expanded) => expanded , Err (err) => err . write_errors () . into () , } } . sig
+async_graphql :: scalar ! (AssetId) ;

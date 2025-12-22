@@ -1,9 +1,9 @@
 [package]
 name = "cargo-toml-parts"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
-cargo-toml-generator-macros = { workspace = true }
-cargo-toml-generator-types = { workspace = true }
-toml = { workspace = true }
+cargo-toml-generator-macros = { path = "../../cargo-toml-generator-macros" }
+cargo-toml-generator-types = { path = "../../cargo-toml-generator-types" }
+toml = "0.8"

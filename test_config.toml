@@ -1,0 +1,8 @@
+# Test configuration for split-decls-rs
+[patches]
+# Empty for now
+
+[string_replacements]
+# Empty for now
+
+custom_prelude_overlay = ""
