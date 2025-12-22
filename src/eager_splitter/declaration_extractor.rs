@@ -39,7 +39,19 @@ pub fn extract_single_declaration(item: &Item, item_count: usize) -> Option<Extr
         }),
         Item::Impl(item_impl) => {
             let name = if let Some((_, path, _)) = &item_impl.trait_ {
-                format!("impl_for_{}", path.to_token_stream().to_string().replace("::", "_"))
+                let trait_name = path.to_token_stream().to_string()
+                    .replace("::", "_")
+                    .replace(" ", "")
+                    .replace("<", "_")
+                    .replace(">", "_")
+                    .replace("(", "_")
+                    .replace(")", "_")
+                    .replace(",", "_")
+                    .replace("'", "_")
+                    .chars()
+                    .filter(|c| c.is_alphanumeric() || *c == '_')
+                    .collect::<String>();
+                format!("impl_for_{}", trait_name)
             } else if let syn::Type::Path(type_path) = &*item_impl.self_ty {
                 if let Some(segment) = type_path.path.segments.last() {
                     format!("impl_for_{}", segment.ident.to_string())

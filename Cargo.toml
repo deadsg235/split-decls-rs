@@ -72,5 +72,9 @@ path = "src/bin/macro_analyzer.rs"
 name = "test_splitter"
 path = "src/bin/test_splitter.rs"
 
+[[bin]]
+name = "submodule_decl_report"
+path = "src/bin/submodule_decl_report.rs"
+
 [patch.'crates-io']
 proc-macro2 = { path = "../proc-macro2" }
