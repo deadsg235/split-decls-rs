@@ -1,0 +1,1 @@
+arena_types ! (rustc_arena :: declare_arena) ;

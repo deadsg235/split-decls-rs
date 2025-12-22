@@ -1,0 +1,1 @@
+make_invocation_collector_cfg_ext_trait ! { fn cfg (& self) -> StripUnconfigured <'_ >; }

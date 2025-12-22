@@ -1,0 +1,1 @@
+TrivialLiftImpls ! { () , bool , usize , u64 , crate :: mir :: Promoted , crate :: mir :: interpret :: AllocId , crate :: mir :: interpret :: Scalar , crate :: ty :: ParamConst , rustc_abi :: ExternAbi , rustc_abi :: Size , rustc_hir :: Safety , rustc_middle :: mir :: ConstValue , rustc_type_ir :: BoundConstness , rustc_type_ir :: PredicatePolarity , }

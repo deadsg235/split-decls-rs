@@ -1,0 +1,1 @@
+macro_rules ! __internal_headers_map { ($ headers : ident , { $ ($ name : expr => $ val : expr ,) * }) => { $ ($ headers . insert ($ name , $ val . to_string () . parse () . expect ("header value")) ;) * } }

@@ -1,0 +1,1 @@
+macro_rules ! ffi_try { ($ ($ function : ident) ::* ()) => { ffi_try_impl ! ($ ($ function) ::* ()) } ; ($ ($ function : ident) ::* ($ arg1 : expr $ (, $ arg : expr) * $ (,) ?)) => { ffi_try_impl ! ($ ($ function) ::* ($ arg1 $ (, $ arg) * ,)) } ; }

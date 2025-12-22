@@ -1,0 +1,1 @@
+from_x_for_scalar_int ! (u8 , u16 , u32 , u64 , u128 , bool) ;

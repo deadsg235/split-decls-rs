@@ -1,0 +1,1 @@
+macro_rules ! ins { ($ name : expr , $ values : expr) => { { self . well_known_names . insert ($ name) ; self . expecteds . entry ($ name) . or_insert_with ($ values) } } ; }

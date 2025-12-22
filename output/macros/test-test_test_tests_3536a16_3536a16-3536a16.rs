@@ -1,0 +1,1 @@
+test ! (case : multi_byte_char_long , text : "0123456789abcΔf012345β" , lines : vec ! [0] , multi_byte_chars : vec ! [(13 , 2) , (22 , 2)] ,) ;

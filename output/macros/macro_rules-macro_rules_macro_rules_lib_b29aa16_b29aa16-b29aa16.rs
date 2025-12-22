@@ -1,0 +1,1 @@
+macro_rules ! add_lint_group { ($ name : expr , $ ($ lint : ident) ,*) => (store . register_group (false , $ name , None , vec ! [$ (LintId :: of ($ lint)) ,*]) ;) }

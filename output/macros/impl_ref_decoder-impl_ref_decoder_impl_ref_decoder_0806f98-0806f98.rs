@@ -1,0 +1,1 @@
+impl_ref_decoder ! { <'tcx > Span , rustc_hir :: Attribute , rustc_span :: Ident , ty :: Variance , rustc_span :: def_id :: DefId , rustc_span :: def_id :: LocalDefId , (rustc_middle :: middle :: exported_symbols :: ExportedSymbol <'tcx >, rustc_middle :: middle :: exported_symbols :: SymbolExportInfo) , rustc_middle :: middle :: deduced_param_attrs :: DeducedParamAttrs , }

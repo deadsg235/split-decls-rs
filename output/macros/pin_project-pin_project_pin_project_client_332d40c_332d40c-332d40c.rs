@@ -1,0 +1,1 @@
+pin_project ! { # [project = H2ClientFutureProject] pub enum H2ClientFuture < B , T , E > where B : http_body :: Body , B : 'static , B :: Error : Into < Box < dyn std :: error :: Error + Send + Sync >>, T : Read , T : Write , T : Unpin , { Pipe { # [pin] pipe : PipeMap < B >, } , Send { # [pin] send_when : SendWhen < B , E >, } , Task { # [pin] task : ConnTask < T , B >, } , } }

@@ -1,0 +1,1 @@
+make_invocation_collector_cfg_ext_impl ! { InvocationCollector , fn cfg (& self) -> StripUnconfigured <'_ > { StripUnconfigured { sess : self . cx . sess , features : Some (self . cx . ecfg . features) , config_tokens : false , lint_node_id : self . cx . current_expansion . lint_node_id , keep_mode : KeepCfg :: No , } } }

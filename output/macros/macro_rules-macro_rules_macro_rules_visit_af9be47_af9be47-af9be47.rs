@@ -1,0 +1,1 @@
+macro_rules ! impl_visitable_noop { (<$ lt : lifetime > $ ($ ty : ty ,) *) => { $ (impl_visitable ! (|&$ lt self : $ ty , _vis : & mut V , _extra : () | { V :: Result :: output () }) ;) * } ; }

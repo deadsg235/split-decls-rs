@@ -1,0 +1,1 @@
+ffi_fn ! { # [doc = " Set userdata on this body, which will be passed to callback functions."] fn hyper_body_set_userdata (body : * mut hyper_body , userdata : * mut c_void) { let b = non_null ! (& mut * body ?= ()) ; b . 0 . as_ffi_mut () . userdata = userdata ; } }

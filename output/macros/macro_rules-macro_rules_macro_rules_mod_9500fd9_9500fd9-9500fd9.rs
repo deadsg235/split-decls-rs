@@ -1,0 +1,1 @@
+macro_rules ! __internal_eq_prop { (headers : $ map : tt) => { { # [allow (unused_mut)] { let mut headers = Vec ::< std :: sync :: Arc < dyn Fn (& hyper :: HeaderMap) + Send + Sync >>:: new () ; __internal_headers_eq ! (headers , $ map) ; headers } } } ; ($ name : tt : $ val : tt) => { { __internal_req_res_prop ! ($ name : $ val) } } ; }

@@ -1,0 +1,1 @@
+macro_rules ! make_stmts_default { ($ me : expr , $ TypeParam : ty) => { < dyn MacResult <$ TypeParam >>:: make_expr ($ me) . map (| e | { smallvec ! [ast :: Stmt { id : ast :: DUMMY_NODE_ID , span : e . span , kind : StmtKind :: Expr (e) , }] }) } ; }

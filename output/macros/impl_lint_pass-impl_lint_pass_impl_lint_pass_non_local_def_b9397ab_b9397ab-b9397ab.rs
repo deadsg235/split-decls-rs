@@ -1,0 +1,1 @@
+impl_lint_pass ! (NonLocalDefinitions => [NON_LOCAL_DEFINITIONS]) ;

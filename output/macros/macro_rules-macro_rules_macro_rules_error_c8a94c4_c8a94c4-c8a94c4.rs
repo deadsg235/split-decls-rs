@@ -1,0 +1,1 @@
+# [macro_export] macro_rules ! err_unsup { ($ ($ tt : tt) *) => { $ crate :: mir :: interpret :: InterpErrorKind :: Unsupported ($ crate :: mir :: interpret :: UnsupportedOpInfo ::$ ($ tt) *) } ; }

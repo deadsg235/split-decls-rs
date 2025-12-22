@@ -1,0 +1,1 @@
+test ! (case : multi_byte_char_short , text : "aβc" , lines : vec ! [0] , multi_byte_chars : vec ! [(1 , 2)] ,) ;

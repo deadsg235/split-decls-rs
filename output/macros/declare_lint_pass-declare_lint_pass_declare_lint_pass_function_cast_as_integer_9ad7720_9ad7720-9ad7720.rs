@@ -1,0 +1,1 @@
+declare_lint_pass ! (# [doc = " Lint for casts of functions into integers."] FunctionCastsAsInteger => [FUNCTION_CASTS_AS_INTEGER]) ;

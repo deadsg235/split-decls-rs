@@ -1,0 +1,1 @@
+cfg_client ! { pub (crate) type ClientTransaction = role :: Client ; }

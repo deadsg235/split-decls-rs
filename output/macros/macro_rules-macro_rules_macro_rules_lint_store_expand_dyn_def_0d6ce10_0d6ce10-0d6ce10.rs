@@ -1,0 +1,1 @@
+# [macro_export] macro_rules ! LintStoreExpandDyn_Def { () => { type LintStoreExpandDyn <'a > = Option <&'a (dyn LintStoreExpand + 'a) >; } ; }

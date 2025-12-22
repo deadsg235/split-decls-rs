@@ -1,0 +1,1 @@
+macro_rules ! impl_decodable_via_ref { ($ ($ t : ty ,) +) => { $ (impl <'tcx , D : TyDecoder <'tcx >> Decodable < D > for $ t { fn decode (decoder : & mut D) -> Self { RefDecodable :: decode (decoder) } }) * } }
