@@ -1,0 +1,1 @@
+use proc_macro :: TokenStream ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_parsers_impl_for_Parse] impl Parse for InlineTable { fn parse (input : ParseStream) -> Result < Self > { let content ; braced ! (content in input) ; Ok (InlineTable { items : Punctuated :: parse_terminated (& content) ? , }) } }

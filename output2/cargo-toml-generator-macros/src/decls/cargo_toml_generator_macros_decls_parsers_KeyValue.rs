@@ -1,0 +1,1 @@
+use proc_macro :: TokenStream ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_parsers_KeyValue] # [derive (Debug)] pub enum KeyValue { Simple (Ident , LitStr) , Block (Ident , proc_macro2 :: TokenStream) , List (Ident , proc_macro2 :: TokenStream) , InlineTable (Ident , proc_macro2 :: TokenStream) , }

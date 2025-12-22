@@ -1,0 +1,240 @@
+   Compiling cargo-toml-generator-types v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/cargo-toml-generator-types)
+   Compiling cargo-toml-generator-macros v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/cargo-toml-generator-macros)
+   Compiling cargo-toml-parts v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/build_helpers/cargo_toml_parts)
+   Compiling pagerank_rs v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/submodules/pagerank_rs)
+   Compiling split-decls-types v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/split-decls-types)
+warning: unused imports: `Dependency`, `PatchSection`, and `Workspace`
+ --> cargo-toml-generator-macros/src/macros.rs:2:16
+  |
+2 |     CargoToml, Dependency, Package, PatchSection, Workspace,
+  |                ^^^^^^^^^^           ^^^^^^^^^^^^  ^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `RootInput`, `TomlSection`, `parse_dependencies_map`, and `parse_string_list`
+  --> cargo-toml-generator-macros/src/macros.rs:11:5
+   |
+11 |     parse_dependencies_map, parse_string_list, RootInput, TomlSection,
+   |     ^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^  ^^^^^^^^^  ^^^^^^^^^^^
+
+warning: unused variable: `input`
+  --> cargo-toml-generator-macros/src/macros.rs:94:36
+   |
+94 | pub fn define_root_cargo_toml_impl(input: TokenStream) -> TokenStream {
+   |                                    ^^^^^ help: if this is intentional, prefix it with an underscore: `_input`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: enum `KeyValue` is never used
+  --> cargo-toml-generator-macros/src/parsers.rs:11:10
+   |
+11 | pub enum KeyValue {
+   |          ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `get_ident_for_err` is never used
+  --> cargo-toml-generator-macros/src/parsers.rs:60:12
+   |
+59 | impl KeyValue {
+   | ------------- method in this implementation
+60 |     pub fn get_ident_for_err(&self) -> &Ident {
+   |            ^^^^^^^^^^^^^^^^^
+
+warning: enum `RootItem` is never used
+  --> cargo-toml-generator-macros/src/parsers.rs:71:10
+   |
+71 | pub enum RootItem {
+   |          ^^^^^^^^
+
+warning: struct `RootInput` is never constructed
+   --> cargo-toml-generator-macros/src/parsers.rs:116:12
+    |
+116 | pub struct RootInput {
+    |            ^^^^^^^^^
+
+warning: struct `TomlSection` is never constructed
+   --> cargo-toml-generator-macros/src/parsers.rs:128:12
+    |
+128 | pub struct TomlSection {
+    |            ^^^^^^^^^^^
+
+warning: struct `BracketedStringList` is never constructed
+   --> cargo-toml-generator-macros/src/parsers.rs:140:12
+    |
+140 | pub struct BracketedStringList {
+    |            ^^^^^^^^^^^^^^^^^^^
+
+warning: function `parse_string_list` is never used
+   --> cargo-toml-generator-macros/src/parsers.rs:154:8
+    |
+154 | pub fn parse_string_list(input: proc_macro2::TokenStream) -> Result<Vec<String>> {
+    |        ^^^^^^^^^^^^^^^^^
+
+warning: struct `InlineTable` is never constructed
+   --> cargo-toml-generator-macros/src/parsers.rs:159:12
+    |
+159 | pub struct InlineTable {
+    |            ^^^^^^^^^^^
+
+warning: function `parse_inline_table` is never used
+   --> cargo-toml-generator-macros/src/parsers.rs:173:8
+    |
+173 | pub fn parse_inline_table(input: proc_macro2::TokenStream) -> Result<HashMap<String, String>> {
+    |        ^^^^^^^^^^^^^^^^^^
+
+warning: function `parse_dependency_table` is never used
+   --> cargo-toml-generator-macros/src/parsers.rs:189:8
+    |
+189 | pub fn parse_dependency_table(input: proc_macro2::TokenStream) -> Result<DependencyTable> {
+    |        ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `parse_dependencies_map` is never used
+   --> cargo-toml-generator-macros/src/parsers.rs:248:8
+    |
+248 | pub fn parse_dependencies_map(
+    |        ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `cargo-toml-generator-macros` (lib) generated 14 warnings (run `cargo fix --lib -p cargo-toml-generator-macros` to apply 2 suggestions)
+warning: unused macro definition: `define_package_config`
+ --> build_helpers/cargo_toml_parts/src/lib.rs:3:14
+  |
+3 | macro_rules! define_package_config {
+  |              ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_macros)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused macro definition: `define_workspace_members_part1`
+  --> build_helpers/cargo_toml_parts/src/lib.rs:20:14
+   |
+20 | macro_rules! define_workspace_members_part1 {
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused macro definition: `define_workspace_members_part2`
+  --> build_helpers/cargo_toml_parts/src/lib.rs:81:14
+   |
+81 | macro_rules! define_workspace_members_part2 {
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused macro definition: `define_workspace_dependencies_part1`
+   --> build_helpers/cargo_toml_parts/src/lib.rs:121:14
+    |
+121 | macro_rules! define_workspace_dependencies_part1 {
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused macro definition: `define_workspace_dependencies_part2`
+   --> build_helpers/cargo_toml_parts/src/lib.rs:189:14
+    |
+189 | macro_rules! define_workspace_dependencies_part2 {
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused macro definition: `define_workspace_dependencies_part3`
+   --> build_helpers/cargo_toml_parts/src/lib.rs:255:14
+    |
+255 | macro_rules! define_workspace_dependencies_part3 {
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused macro definition: `define_workspace_dependencies_part4`
+   --> build_helpers/cargo_toml_parts/src/lib.rs:322:14
+    |
+322 | macro_rules! define_workspace_dependencies_part4 {
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused macro definition: `define_workspace_dependencies_part5`
+   --> build_helpers/cargo_toml_parts/src/lib.rs:386:14
+    |
+386 | macro_rules! define_workspace_dependencies_part5 {
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `cargo-toml-parts` (lib) generated 8 warnings
+warning: `cargo-toml-parts` (lib) generated 8 warnings (8 duplicates)
+   Compiling split-decls-rs v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs)
+warning: split-decls-rs@0.1.0: Running build logic from example_module!
+warning: split-decls-rs@0.1.0: Running OS-specific build logic wrapper.
+warning: split-decls-rs@0.1.0: Running build logic for Linux!
+warning: unused imports: `Context` and `Result`
+ --> src/buildrs_ast_utils.rs:1:14
+  |
+1 | use anyhow::{Context, Result};
+  |              ^^^^^^^  ^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `std::path::PathBuf`
+ --> src/buildrs_ast_utils.rs:2:5
+  |
+2 | use std::path::PathBuf;
+  |     ^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `tempfile::tempdir`
+ --> src/workspace_manager.rs:5:5
+  |
+5 | use tempfile::tempdir;
+  |     ^^^^^^^^^^^^^^^^^
+
+warning: unused import: `std::io::Write`
+ --> src/eager_splitter.rs:5:5
+  |
+5 | use std::io::Write;
+  |     ^^^^^^^^^^^^^^
+
+warning: unused import: `PathBuf`
+ --> src/generate_new_cargotoml.rs:2:23
+  |
+2 | use std::path::{Path, PathBuf};
+  |                       ^^^^^^^
+
+warning: unused import: `Context`
+ --> src/process_crate.rs:1:14
+  |
+1 | use anyhow::{Context, Result};
+  |              ^^^^^^^
+
+warning: unused import: `std::fs`
+ --> src/process_crate.rs:3:5
+  |
+3 | use std::fs;
+  |     ^^^^^^^
+
+warning: unused import: `Context`
+ --> src/process_crates_in_path.rs:1:14
+  |
+1 | use anyhow::{Context, Result};
+  |              ^^^^^^^
+
+warning: `split-decls-rs` (lib) generated 8 warnings (run `cargo fix --lib -p split-decls-rs` to apply 8 suggestions)
+warning: variable `recursive_override` is assigned to, but never used
+  --> src/main.rs:46:13
+   |
+46 |     let mut recursive_override: Option<bool> = None;
+   |             ^^^^^^^^^^^^^^^^^^
+   |
+   = note: consider using `_recursive_override` instead
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: value assigned to `recursive_override` is never read
+  --> src/main.rs:60:30
+   |
+60 |             "--recursive" => recursive_override = Some(true),
+   |                              ^^^^^^^^^^^^^^^^^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: `split-decls-rs` (bin "split-decls-rs") generated 2 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.49s
+     Running `target/debug/split-decls-rs ../../submodules/rust`
+Starting split-decls-rs tool...
+Parsed args: ["target/debug/split-decls-rs", "../../submodules/rust"]
+dry_run flag: false
+verbose flag: false
+Global config loaded: SplitDeclsConfig { active_overlay_modules: Some([]), custom_prelude_overlay: None, rustc_source_path: None, patches: Some({}), string_replacements: None, crates_io_patches: Some({}), github_org: None, default_branches_to_patch: ["main", "dev"], repo_fork_mapping: {}, workspace_dependencies: {} }
+Error: Failed to parse generated Cargo.toml from ./output2/Cargo.toml
+
+Caused by:
+    TOML parse error at line 8, column 1
+      |
+    8 | \n
+      | ^
+    invalid key
+    

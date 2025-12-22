@@ -1,0 +1,1 @@
+use proc_macro :: TokenStream ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_oldlib_dep_table] # [proc_macro] pub fn dep_table (input : TokenStream) -> TokenStream { macros :: dep_table_impl (input) }

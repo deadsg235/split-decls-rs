@@ -1,0 +1,1 @@
+use proc_macro :: TokenStream ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_parsers_impl_for_KeyValue] impl KeyValue { pub fn get_ident_for_err (& self) -> & Ident { match self { KeyValue :: Simple (key , _) => key , KeyValue :: Block (key , _) => key , KeyValue :: List (key , _) => key , KeyValue :: InlineTable (key , _) => key , } } }

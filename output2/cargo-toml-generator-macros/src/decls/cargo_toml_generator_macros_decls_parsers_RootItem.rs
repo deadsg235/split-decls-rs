@@ -1,0 +1,1 @@
+use proc_macro :: TokenStream ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_parsers_RootItem] # [derive (Debug)] pub enum RootItem { Section (Ident , proc_macro2 :: TokenStream) , KeyValue (KeyValue) , }
