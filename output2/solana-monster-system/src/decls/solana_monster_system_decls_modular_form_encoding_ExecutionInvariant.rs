@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_modular_form_encoding_ExecutionInvariant] # [derive (Debug , Clone)] pub struct ExecutionInvariant { pub invariant_type : InvariantType , pub value : i64 , pub constraint : R1CSConstraint , }

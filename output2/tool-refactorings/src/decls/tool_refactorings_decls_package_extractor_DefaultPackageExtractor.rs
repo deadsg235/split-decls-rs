@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ tool_refactorings_decls_package_extractor_DefaultPackageExtractor] # [doc = " Dummy implementation of `PackageExtractor` for testing and simulation."] pub struct DefaultPackageExtractor { pub file_system : HashMap < PathBuf , String > , }

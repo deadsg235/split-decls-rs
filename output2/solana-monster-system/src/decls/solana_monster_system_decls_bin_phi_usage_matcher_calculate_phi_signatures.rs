@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_phi_usage_matcher_calculate_phi_signatures] fn calculate_phi_signatures (usages : & mut [CrateUsage]) { for usage in usages { usage . phi_signature = calculate_usage_phi (& usage . usage_pattern) ; } }

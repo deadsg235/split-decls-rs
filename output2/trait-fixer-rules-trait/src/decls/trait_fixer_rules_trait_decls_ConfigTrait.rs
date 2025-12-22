@@ -1,1 +1,0 @@
-use serde :: Deserialize ; prelude ! { } # [decl_ trait_fixer_rules_trait_decls_ConfigTrait] pub trait ConfigTrait { fn load () -> Self ; fn get_rules (& self) -> & Vec < Rule > ; }

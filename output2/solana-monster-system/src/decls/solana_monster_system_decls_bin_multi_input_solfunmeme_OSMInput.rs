@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_multi_input_solfunmeme_OSMInput] # [derive (Debug)] struct OSMInput { node_id : String , geo_coordinates : (f64 , f64) , spatial_influence : f64 , network_density : f64 , }

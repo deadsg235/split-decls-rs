@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_binary_power_system_BinaryPowerSystem] # [derive (Debug , Clone)] pub struct BinaryPowerSystem { pub power_of_two : u32 , pub binary_constraints : Vec < R1CSConstraint > , pub bit_decomposition : Vec < bool > , }

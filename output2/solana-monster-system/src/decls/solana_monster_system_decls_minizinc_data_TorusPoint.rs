@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_minizinc_data_TorusPoint] # [derive (Debug , Clone , Serialize , Deserialize)] pub struct TorusPoint { pub x : i32 , pub y : i32 , pub resonance_level : i32 , }

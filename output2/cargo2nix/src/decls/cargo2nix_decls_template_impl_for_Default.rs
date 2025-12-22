@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ cargo2nix_decls_template_impl_for_Default] impl < 'a > Default for Optionality < 'a > { fn default () -> Self { Optionality :: Optional { activated_by_features : Default :: default () , } } }

@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_monster_if_analysis_is_monster_generator] fn is_monster_generator (phi_val : u64 , usage : u64) -> bool { let combined = phi_val . wrapping_mul (usage) ; combined % 2 == 0 && combined % 3 == 0 && combined % 5 == 0 }

@@ -1,1 +1,0 @@
-use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_impl_for_MockPredicateObligation] impl MockPredicateObligation { pub fn new (_tcx : TyCtxt , _cause : MockObligationCause , _param_env : MockParamEnv , _predicate : MockPredicate ,) -> Self { MockPredicateObligation } }

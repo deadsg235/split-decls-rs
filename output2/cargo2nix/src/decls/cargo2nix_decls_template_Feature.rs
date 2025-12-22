@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ cargo2nix_decls_template_Feature] # [derive (Debug , Serialize)] pub struct Feature { pub name : String , pub activated_by : Option < String > , }

@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_git_graphql_cache_GitObject] # [derive (Debug)] struct GitObject { hash : String , object_type : String , content : String , cached : bool , }

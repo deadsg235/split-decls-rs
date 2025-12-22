@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_source_concept_impl_for_SourceConcept] impl SourceConcept { pub fn new (id : String , value : i64) -> Self { Self { id , value } } pub fn encode (& self) -> i64 { self . value } }

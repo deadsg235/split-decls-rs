@@ -1013,6 +1013,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "introspector_decl2_macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.111",
+]
+
+[[package]]
 name = "ipnet"
 version = "2.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

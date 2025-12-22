@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_dual_integrity_framework_CryptographicTrack] pub struct CryptographicTrack { merkle_root : [u8 ; 32] , signature_chain : Vec < [u8 ; 32] > , integrity_proofs : Vec < IntegrityProof > , }

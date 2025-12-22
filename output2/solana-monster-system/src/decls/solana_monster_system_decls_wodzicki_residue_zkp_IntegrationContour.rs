@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_wodzicki_residue_zkp_IntegrationContour] # [derive (Debug)] pub struct IntegrationContour { # [doc = " Contour radius"] radius : f64 , # [doc = " Contour center"] center : Complex , }

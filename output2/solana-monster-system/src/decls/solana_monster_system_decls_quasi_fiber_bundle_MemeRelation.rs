@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_quasi_fiber_bundle_MemeRelation] # [derive (Debug , Clone)] pub struct MemeRelation { pub relation_id : String , pub source_meme : String , pub target_meme : String , pub relation_type : RelationType , }

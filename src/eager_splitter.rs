@@ -58,6 +58,11 @@ fn process_all_rust_files(
             }
         }
         
+        // Skip files in decls directories (generated output)
+        if rust_file.to_string_lossy().contains("/decls/") {
+            continue;
+        }
+        
         println!("Processing file: {}", rust_file.display());
         
         let file_content = fs::read_to_string(&rust_file)?;
@@ -236,7 +241,7 @@ pub mod decls {{
 pub use decls::*;
 
 // Re-export prelude macros if available
-#[cfg(feature = "introspector_decl2_macros")]
+
 pub use introspector_decl2_macros::*;
 "#);
     
@@ -262,7 +267,7 @@ pub mod decls {{
 pub use decls::*;
 
 // Re-export prelude macros if available
-#[cfg(feature = "introspector_decl2_macros")]
+
 pub use introspector_decl2_macros::*;
 "#);
     

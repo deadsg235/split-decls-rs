@@ -1,1 +1,0 @@
-decl_module ! (declaration_aggregator_decls_decls , declaration_aggregator_decls_oldlib_decls) ;

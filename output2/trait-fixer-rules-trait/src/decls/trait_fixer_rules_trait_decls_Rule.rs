@@ -1,1 +1,0 @@
-use serde :: Deserialize ; prelude ! { } # [decl_ trait_fixer_rules_trait_decls_Rule] # [derive (Debug , Deserialize)] pub struct Rule { pub kind : RuleKind , pub trait_name : Vec < String > , # [serde (default)] pub apply_to : Vec < String > , pub condition : String , }

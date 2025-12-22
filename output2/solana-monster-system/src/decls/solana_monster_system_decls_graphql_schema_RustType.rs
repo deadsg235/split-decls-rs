@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_graphql_schema_RustType] # [derive (SimpleObject , Serialize , Deserialize)] pub struct RustType { pub id : ID , pub name : String , pub kind : TypeKind , pub monster_factor : u64 , pub dependencies : Vec < ID > , }

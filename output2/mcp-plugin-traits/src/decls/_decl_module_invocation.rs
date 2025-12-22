@@ -1,1 +1,0 @@
-decl_module ! (mcp_plugin_traits_decls_decls , mcp_plugin_traits_decls_oldlib_decls) ;

@@ -1,1 +1,0 @@
-decl_module ! (rust_nix_bootstrap_decls_decls , rust_nix_bootstrap_decls_oldlib_decls) ;

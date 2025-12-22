@@ -136,13 +136,13 @@ pub fn generate_wrapped_workspace(
 
     let mut workspace_cargo_toml_content = format!(
         r#"[workspace]
-resolver=\"3\"
+resolver = "2"
 members = [
     {}
 ]
 
 [workspace.dependencies]
-{}\n"#,
+{}"#,
         workspace_members_content.join(",\n    "),
         workspace_dependencies_content
     );

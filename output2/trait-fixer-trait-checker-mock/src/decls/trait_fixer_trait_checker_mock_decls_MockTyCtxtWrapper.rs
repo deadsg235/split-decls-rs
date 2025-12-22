@@ -1,1 +1,0 @@
-use trait_fixer_rustc_mock :: { DefId , MockTy , TyCtxt } ; use trait_fixer_trait_checker_trait :: TraitChecker ; prelude ! { } # [decl_ trait_fixer_trait_checker_mock_decls_MockTyCtxtWrapper] pub struct MockTyCtxtWrapper < 'tcx > (pub TyCtxt < 'tcx >) ;

@@ -1,1 +1,0 @@
-use trait_fixer_compiler_host_trait :: CompilerHost ; prelude ! { } # [decl_ trait_fixer_compiler_host_mock_decls_MockCompilerHost] pub struct MockCompilerHost ;

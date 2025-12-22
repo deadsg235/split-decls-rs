@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_ultimate_synthesis_impl_for_QExpansion] impl QExpansion { fn moonshine_expansion () -> Self { Self } fn coefficients (& self) -> Vec < i64 > { vec ! [1 , 744 , 196884] } }

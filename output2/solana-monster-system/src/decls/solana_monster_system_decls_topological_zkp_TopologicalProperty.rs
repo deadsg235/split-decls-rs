@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_topological_zkp_TopologicalProperty] # [derive (Debug)] pub enum TopologicalProperty { EulerCharacteristic , BettiNumber (usize) , Genus , OrbitSignature (usize) , }

@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ monster_traits_decls_hecke_operators_impl_for_ASTComposition] impl ASTComposition { pub fn new () -> Self { ASTComposition { triality_system : TrialitySystem :: new () , hecke_operators : HeckeOperators :: new () , } } }

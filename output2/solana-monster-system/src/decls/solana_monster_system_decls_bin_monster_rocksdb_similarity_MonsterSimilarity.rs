@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_monster_rocksdb_similarity_MonsterSimilarity] # [derive (Debug)] struct MonsterSimilarity { decl1_monster : u64 , decl2_monster : u64 , monster_distance : f64 , phi_ratio : f64 , }

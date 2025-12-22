@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_highest_weight_galois_impl_for_HighestWeight] impl HighestWeight { pub fn new (weight : i64) -> Self { Self { weight } } }

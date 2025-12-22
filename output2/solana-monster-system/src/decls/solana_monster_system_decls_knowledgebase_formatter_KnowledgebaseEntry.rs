@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_knowledgebase_formatter_KnowledgebaseEntry] # [derive (Debug , Clone , Serialize , Deserialize)] pub struct KnowledgebaseEntry { pub id : String , pub weight : f64 , pub dependencies : Vec < String > , }

@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_voevodsky_univalence_HigherType] # [derive (Debug , Clone)] pub struct HigherType { id : TypeId , fiber_dimension : usize , base_space : TypeId , }

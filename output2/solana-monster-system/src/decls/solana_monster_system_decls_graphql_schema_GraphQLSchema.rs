@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_graphql_schema_GraphQLSchema] pub type GraphQLSchema = Schema < Query , async_graphql :: EmptyMutation , async_graphql :: EmptySubscription > ;

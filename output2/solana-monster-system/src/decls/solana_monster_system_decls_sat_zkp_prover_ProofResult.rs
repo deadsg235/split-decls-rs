@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_sat_zkp_prover_ProofResult] # [derive (Debug)] pub struct ProofResult { pub proof_valid : bool , pub mathematical_properties : MathematicalStructures , pub sat_solution : SATSolution , pub zk_proof : ZKProofData , }

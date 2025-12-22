@@ -1,1 +1,0 @@
-decl_module ! (trait_fixer_hir_info_mock_decls_decls , trait_fixer_hir_info_mock_decls_oldlib_decls) ;

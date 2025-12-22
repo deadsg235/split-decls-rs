@@ -1,1 +1,0 @@
-use serde :: { Deserialize , Serialize } ; use std :: collections :: HashSet ; use std :: path :: { Path , PathBuf } ; use std :: sync :: Arc ; prelude ! { } # [decl_ monster_math_traits_decls_DummyMonsterConformityChecker] # [doc = " A dummy implementation of `MonsterConformityChecker` for testing."] # [derive (Debug , Default)] pub struct DummyMonsterConformityChecker ;

@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_dual_integrity_framework_IntegrityProof] # [derive (Clone)] struct IntegrityProof { geometric_hash : [u8 ; 32] , crypto_hash : [u8 ; 32] , cross_validation : bool , }

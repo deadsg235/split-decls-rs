@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_voevodsky_univalence_TypeId] # [derive (Debug , Clone , Hash , PartialEq , Eq)] pub struct TypeId (pub String) ;

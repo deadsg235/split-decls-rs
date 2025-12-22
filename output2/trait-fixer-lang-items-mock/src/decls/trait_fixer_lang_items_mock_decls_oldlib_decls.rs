@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ trait_fixer_lang_items_mock_decls_oldlib_decls] pub mod decls { include ! ("decls/_decl_module_invocation.rs") ; }

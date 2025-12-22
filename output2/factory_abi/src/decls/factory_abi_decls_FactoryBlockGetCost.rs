@@ -1,1 +1,0 @@
-use std :: ffi :: { CStr , CString } ; use std :: os :: raw :: { c_char , c_void } ; prelude ! { } # [decl_ factory_abi_decls_FactoryBlockGetCost] pub type FactoryBlockGetCost = extern "C" fn (block_ptr : * mut c_void) -> u32 ;

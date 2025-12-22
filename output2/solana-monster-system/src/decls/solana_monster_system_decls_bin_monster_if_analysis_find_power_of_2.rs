@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_monster_if_analysis_find_power_of_2] fn find_power_of_2 (n : u64) -> u8 { let mut power = 0 ; let mut num = n ; while num % 2 == 0 && power < 64 { num /= 2 ; power += 1 ; } power }

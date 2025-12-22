@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_architectural_journey_MonsterGroupRepresentation] # [derive (Debug , Clone)] pub struct MonsterGroupRepresentation { order : i64 , generators : Vec < i64 > , structure_constants : Vec < i64 > , }

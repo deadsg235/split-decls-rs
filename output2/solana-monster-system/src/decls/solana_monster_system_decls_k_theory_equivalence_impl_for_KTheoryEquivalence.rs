@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_k_theory_equivalence_impl_for_KTheoryEquivalence] impl KTheoryEquivalence { pub fn new (x : i64) -> Self { Self { x , ko_x : x } } pub fn is_equivalent (& self) -> bool { self . x == self . ko_x } }

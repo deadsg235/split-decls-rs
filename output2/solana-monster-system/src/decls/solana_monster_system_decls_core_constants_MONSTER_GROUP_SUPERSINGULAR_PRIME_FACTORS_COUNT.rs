@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_core_constants_MONSTER_GROUP_SUPERSINGULAR_PRIME_FACTORS_COUNT] pub const MONSTER_GROUP_SUPERSINGULAR_PRIME_FACTORS_COUNT : u32 = 108 ;

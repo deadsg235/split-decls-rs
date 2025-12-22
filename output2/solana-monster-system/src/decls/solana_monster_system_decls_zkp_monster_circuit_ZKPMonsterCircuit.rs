@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_zkp_monster_circuit_ZKPMonsterCircuit] pub struct ZKPMonsterCircuit { pub r1cs : MonsterR1CS , pub rustc_blocks : Vec < RustcBlock > , }

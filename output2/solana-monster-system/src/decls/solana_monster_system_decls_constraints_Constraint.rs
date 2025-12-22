@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_constraints_Constraint] # [derive (Debug , Clone)] pub struct Constraint { pub id : usize , pub a : i64 , pub b : i64 , pub c : i64 , }

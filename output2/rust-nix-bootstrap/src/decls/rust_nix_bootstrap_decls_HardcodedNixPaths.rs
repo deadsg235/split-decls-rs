@@ -1,1 +1,0 @@
-prelude ! { } # [decl_ rust_nix_bootstrap_decls_HardcodedNixPaths] pub struct HardcodedNixPaths ;

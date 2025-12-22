@@ -77,6 +77,11 @@ pub fn generate_new_cargotoml(
         build_deps_table.insert(dep_name.to_string(), toml::Value::Table(dep_table_value));
     }
 
+    // Add introspector macro crate as regular dependency
+    let mut macro_dep = toml::Table::new();
+    macro_dep.insert("path".to_string(), toml::Value::String("../../introspector_decl2_macros".to_string()));
+    cargo_toml.dependencies.insert("introspector_decl2_macros".to_string(), toml::Value::Table(macro_dep));
+
     // Dynamically add/update dependencies from patch_config.generated_crate_dependency
     for dep_entry in &patch_config.generated_crate_dependency {
         // Only process dependencies relevant to this specific crate

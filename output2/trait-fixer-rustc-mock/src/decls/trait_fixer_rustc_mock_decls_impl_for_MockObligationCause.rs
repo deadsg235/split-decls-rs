@@ -1,1 +1,0 @@
-use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ trait_fixer_rustc_mock_decls_impl_for_MockObligationCause] impl MockObligationCause { pub fn new (_span : Span , _body_id : LocalDefId , _code : MockObligationCauseCode) -> Self { MockObligationCause } }

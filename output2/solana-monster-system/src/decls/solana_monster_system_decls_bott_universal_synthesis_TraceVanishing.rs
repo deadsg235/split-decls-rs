@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bott_universal_synthesis_TraceVanishing] # [derive (Debug , Clone)] pub struct TraceVanishing { trace_vanished : bool , private_data_hidden : bool , }

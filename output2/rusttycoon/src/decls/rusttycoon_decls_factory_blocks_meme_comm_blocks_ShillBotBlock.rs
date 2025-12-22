@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ rusttycoon_decls_factory_blocks_meme_comm_blocks_ShillBotBlock] # [derive (Clone , Serialize , Deserialize)] # [typetag :: serde] pub struct ShillBotBlock ;

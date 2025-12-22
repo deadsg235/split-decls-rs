@@ -1,1 +1,0 @@
-use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_impl_for_MockHir] impl MockHir { pub fn walk_tops (self , _f : impl FnMut (& Item)) { } }

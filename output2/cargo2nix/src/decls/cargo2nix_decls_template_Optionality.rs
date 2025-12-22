@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ cargo2nix_decls_template_Optionality] # [derive (PartialEq , Eq , Debug)] pub enum Optionality < 'a > { Required , Optional { activated_by_features : BTreeSet < RootFeature < 'a > > , } , }

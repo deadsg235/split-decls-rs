@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_ref_system_impl_for_Ref] impl Ref { pub fn new (id : usize) -> Self { Self { id } } }

@@ -1,1 +1,0 @@
-prelude ! { } # [decl_ trait_fixer_compiler_host_trait_decls_CompilerHost] pub trait CompilerHost < C > { fn run_compiler_callbacks (& self , args : Vec < String > , callbacks : & mut C) ; }

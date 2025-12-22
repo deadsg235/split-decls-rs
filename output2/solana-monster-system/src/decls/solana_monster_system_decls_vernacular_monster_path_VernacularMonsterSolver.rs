@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_vernacular_monster_path_VernacularMonsterSolver] pub struct VernacularMonsterSolver { pub input_embedding : VernacularEmbedding , pub target_monster : MonsterTarget , }

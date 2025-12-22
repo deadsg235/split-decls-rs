@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_symbol_usage_counter_phi_hash] fn phi_hash (symbol : & str) -> u64 { let mut hash = 5381u64 ; for byte in symbol . bytes () { hash = hash . wrapping_mul (33) . wrapping_add (byte as u64) ; } hash % 196883 }

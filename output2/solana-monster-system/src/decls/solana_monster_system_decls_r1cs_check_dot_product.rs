@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_r1cs_check_dot_product] fn dot_product (coeffs : & [i64] , witness : & [i64]) -> i64 { coeffs . iter () . zip (witness . iter ()) . map (| (a , w) | a * w) . sum () }

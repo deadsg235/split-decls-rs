@@ -1,1 +1,0 @@
-use rustc_ast :: { self as ast , NodeId } ; use rustc_span :: Ident ; use smallvec :: SmallVec ; use crate :: base :: MacResult ; prelude ! { } # [decl_ rustc_ast_fragments_decls_ImplItemTag] struct ImplItemTag ;

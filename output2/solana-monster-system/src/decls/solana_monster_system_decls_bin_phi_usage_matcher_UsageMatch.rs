@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_phi_usage_matcher_UsageMatch] # [derive (Debug)] struct UsageMatch { crate1 : String , crate2 : String , phi_similarity : f64 , usage_overlap : f64 , match_confidence : f64 , }

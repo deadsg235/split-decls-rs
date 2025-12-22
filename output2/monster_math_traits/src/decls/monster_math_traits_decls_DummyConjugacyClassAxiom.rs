@@ -1,1 +1,0 @@
-use serde :: { Deserialize , Serialize } ; use std :: collections :: HashSet ; use std :: path :: { Path , PathBuf } ; use std :: sync :: Arc ; prelude ! { } # [decl_ monster_math_traits_decls_DummyConjugacyClassAxiom] # [doc = " A dummy implementation of `ConjugacyClassAxiom` for testing."] # [derive (Debug , Default)] pub struct DummyConjugacyClassAxiom ;

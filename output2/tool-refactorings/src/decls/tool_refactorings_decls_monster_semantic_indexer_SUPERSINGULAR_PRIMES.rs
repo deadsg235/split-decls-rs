@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ tool_refactorings_decls_monster_semantic_indexer_SUPERSINGULAR_PRIMES] # [doc = " The first 15 supersingular primes (the “omens”)"] const SUPERSINGULAR_PRIMES : [u64 ; 15] = [2 , 3 , 5 , 7 , 11 , 13 , 17 , 19 , 23 , 29 , 31 , 41 , 47 , 59 , 71 ,] ;

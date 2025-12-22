@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_conway_group_ConwayGroup] pub struct ConwayGroup { pub order : u64 , pub leech_lattice : bool , }

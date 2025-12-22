@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_quasi_fiber_bundle_ConnectionForm] # [derive (Debug , Clone)] pub struct ConnectionForm { pub form_name : String , pub connection_type : String , pub parallel_transport : String , pub semantic_transport : String , }

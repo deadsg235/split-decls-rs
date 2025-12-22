@@ -1,1 +1,0 @@
-prelude ! { } # [decl_ tool_refactorings_decls_DefaultSparqlConfig] # [doc = " Dummy implementation of SparqlConfigProvider returning hardcoded values."] pub struct DefaultSparqlConfig ;

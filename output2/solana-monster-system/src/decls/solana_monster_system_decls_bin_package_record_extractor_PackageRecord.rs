@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_package_record_extractor_PackageRecord] # [derive (Debug)] struct PackageRecord { package_name : String , version : String , git_hash : String , branch : String , path : String , }

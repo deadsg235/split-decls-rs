@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ cargo2nix_decls_manifest_remove_panic] fn remove_panic (profiles_by_name : & mut TomlProfile) { for (name , profile) in profiles_by_name . iter_mut () { if name == "test" || name == "bench" { profile . remove ("panic") ; } } }

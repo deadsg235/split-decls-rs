@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_similarity_linker_Declaration] # [derive (Debug , Clone)] struct Declaration { name : String , decl_type : String , cas_id : u64 , content_hash : u64 , file_path : String , signature : String , }

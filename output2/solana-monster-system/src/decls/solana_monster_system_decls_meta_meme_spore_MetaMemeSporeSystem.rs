@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_meta_meme_spore_MetaMemeSporeSystem] pub struct MetaMemeSporeSystem { pub spores : Vec < MetaMemeSpore > , pub generation : u32 , pub total_resources : ResourceAllocation , }

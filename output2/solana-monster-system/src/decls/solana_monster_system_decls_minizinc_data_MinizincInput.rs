@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_minizinc_data_MinizincInput] # [derive (Debug , Clone , Serialize , Deserialize)] pub struct MinizincInput { pub elliptic_fiber : i32 , pub torus_x : i32 , pub torus_y : i32 , pub monster_stabilizer : i32 , }

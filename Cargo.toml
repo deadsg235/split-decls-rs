@@ -5,14 +5,14 @@ edition = "2024"
 authors = []
 build = "build.rs"
 
-# [workspace]
-# members = [
-#     ".", # This crate itself
-#     "cargo-toml-generator-macros",
-#     "cargo-toml-generator-types",
-#     "split-decls-types",
-#     "src/bin/rustmacrodoc", # The new binary target
-# ]
+[workspace]
+members = [
+    ".", # This crate itself
+    "cargo-toml-generator-macros",
+    "cargo-toml-generator-types", 
+    "split-decls-types",
+    "introspector_decl2_macros",
+]
 
 [workspace.dependencies]
 anyhow = "1.0"

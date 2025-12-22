@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_semantic_dep_graph_SemanticNode] # [derive (Debug)] struct SemanticNode { id : String , crate_name : String , version : String , dependencies : Vec < String > , layer : usize , semantic_type : String , }

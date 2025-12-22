@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_wodzicki_residue_zkp_ResidueCalculator] # [doc = " Residue calculator"] pub struct ResidueCalculator { # [doc = " Integration parameters for residue computation"] integration_params : IntegrationParameters , }

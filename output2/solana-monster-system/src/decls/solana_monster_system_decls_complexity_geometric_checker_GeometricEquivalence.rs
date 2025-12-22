@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_complexity_geometric_checker_GeometricEquivalence] # [derive (Debug , Clone)] pub struct GeometricEquivalence { pub phi_left : Vec < i64 > , pub phi_right : Vec < i64 > , pub equivalence_prime : u64 , }

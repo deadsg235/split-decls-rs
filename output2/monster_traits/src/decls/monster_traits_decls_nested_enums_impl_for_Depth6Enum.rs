@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ monster_traits_decls_nested_enums_impl_for_Depth6Enum] impl Depth6Enum { pub const NUM_DIRECT_VARIANTS : u32 = 3 ; pub const MAX_DEPTH : u32 = 3 ; }

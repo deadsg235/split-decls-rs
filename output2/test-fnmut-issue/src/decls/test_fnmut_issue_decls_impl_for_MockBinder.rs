@@ -1,1 +1,0 @@
-use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_impl_for_MockBinder] impl MockBinder { pub fn dummy < T > (_value : T) -> MockBinder { MockBinder } }

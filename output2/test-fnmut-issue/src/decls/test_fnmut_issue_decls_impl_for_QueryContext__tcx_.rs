@@ -1,1 +1,0 @@
-use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_impl_for_QueryContext__tcx_] impl < 'tcx > QueryContext < 'tcx > for QueryContextMockTyCtxt < 'tcx > { fn walk_hir_tops (& self , _f : impl FnMut (& 'tcx Item < 'tcx >)) { println ! ("Mock QueryContextMockTyCtxt::walk_hir_tops called") ; } }

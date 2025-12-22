@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ tool_refactorings_decls_movie_toolkit_config_DefaultMovieToolkitConfig] # [doc = " Dummy implementation of MovieToolkitConfigProvider returning hardcoded values."] pub struct DefaultMovieToolkitConfig ;

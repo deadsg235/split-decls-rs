@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_even_check_impl_for_EvenCheck] impl EvenCheck { pub fn new (value : i64) -> Self { Self { result : if value % 2 == 0 { 1 } else { 0 } , } } pub fn is_one (& self) -> bool { self . result == 1 } }

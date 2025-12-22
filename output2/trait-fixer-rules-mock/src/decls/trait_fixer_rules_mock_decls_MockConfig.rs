@@ -1,1 +1,0 @@
-use serde :: Deserialize ; use trait_fixer_rules_trait :: { ConfigTrait , Rule , RuleKind } ; prelude ! { } # [decl_ trait_fixer_rules_mock_decls_MockConfig] # [derive (Debug , Deserialize)] pub struct MockConfig { pub rule : Vec < Rule > , }

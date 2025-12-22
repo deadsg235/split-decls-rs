@@ -1,1 +1,0 @@
-use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ trait_fixer_rustc_mock_decls_impl_for_MockSubsts] impl MockSubsts { pub fn empty () -> Self { MockSubsts } }

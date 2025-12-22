@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bott_universal_synthesis_MonsterGroupSpace] # [derive (Debug , Clone)] pub struct MonsterGroupSpace { group_order : i64 , generators : Vec < i64 > , structure_constants : Vec < i64 > , source_encoding : i64 , }

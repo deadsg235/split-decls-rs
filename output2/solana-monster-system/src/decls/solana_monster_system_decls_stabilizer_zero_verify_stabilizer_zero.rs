@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_stabilizer_zero_verify_stabilizer_zero] pub fn verify_stabilizer_zero (stabilizer : & StabilizerGroup , zero_vector : & ZeroVector) -> bool { stabilizer . act_on_zero (zero_vector) == 0 }

@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_bin_solfunmeme_zero_ontology_MemeVote] # [derive (Debug)] struct MemeVote { voter : String , rust_code : String , monster_value : u64 , phi_score : f64 , meme_power : u64 , }

@@ -1,1 +1,0 @@
-use trait_fixer_core_trait :: { CoreFixer , Fix } ; use trait_fixer_rules_trait :: ConfigTrait ; use trait_fixer_rules_real as trait_fixer_rules ; use trait_fixer_rustc_mock :: { DefId , Item , Span , TyCtxt } ; prelude ! { } # [decl_ trait_fixer_core_mock_decls_impl_for_MockTraitFixer] impl < 'tcx > MockTraitFixer < 'tcx > { }

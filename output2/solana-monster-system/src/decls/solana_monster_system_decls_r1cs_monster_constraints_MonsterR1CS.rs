@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_r1cs_monster_constraints_MonsterR1CS] pub struct MonsterR1CS { pub constraints : Vec < R1CSConstraint > , pub witness : Vec < i64 > , pub public_inputs : Vec < i64 > , }

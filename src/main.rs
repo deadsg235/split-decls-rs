@@ -8,6 +8,7 @@ use split_decls_rs::{setup_crate_paths, eager_splitter};
 use toml;
 use std::fs;
 use cargo_toml_generator_types::{CargoToml, Dependency};
+use walkdir;
 
 /// Helper function to convert an iterator of (String, cargo_toml_generator_types::Dependency)
 /// to an iterator of (String, toml::Value).
@@ -157,17 +158,49 @@ fn main() -> Result<()> {
 
     // Process each crate for declaration splitting
     println!("Processing crates for declaration splitting...");
-    let crates_dir = workspace_root.join("crates");
-    if crates_dir.exists() {
-        for entry in fs::read_dir(&crates_dir)? {
+    
+    // Find all Cargo.toml files recursively
+    let mut crate_count = 0;
+    for entry in walkdir::WalkDir::new(&workspace_root)
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .filter(|e| e.file_name() == "Cargo.toml")
+    {
+        let cargo_toml_path = entry.path();
+        let crate_path = cargo_toml_path.parent().unwrap();
+        let lib_rs = crate_path.join("src/lib.rs");
+        
+        if lib_rs.exists() {
+            crate_count += 1;
+            println!("Processing crate {}: {}", crate_count, crate_path.file_name().unwrap().to_string_lossy());
+            let paths = setup_crate_paths(&crate_path)?;
+            eager_splitter::eager_split_crate(&paths, &global_config)?;
+        }
+    }
+
+    // Process submodules with Rust crates
+    println!("Processing submodules for declaration splitting...");
+    let submodules_dir = workspace_root.join("submodules");
+    if submodules_dir.exists() {
+        let mut processed_count = 0;
+        for entry in fs::read_dir(&submodules_dir)? {
             let entry = entry?;
             if entry.file_type()?.is_dir() {
                 let crate_path = entry.path();
                 let lib_rs = crate_path.join("src/lib.rs");
-                if lib_rs.exists() {
-                    println!("Processing crate: {}", crate_path.file_name().unwrap().to_string_lossy());
+                let cargo_toml = crate_path.join("Cargo.toml");
+                
+                if lib_rs.exists() && cargo_toml.exists() {
+                    println!("Processing submodule: {}", crate_path.file_name().unwrap().to_string_lossy());
                     let paths = setup_crate_paths(&crate_path)?;
                     eager_splitter::eager_split_crate(&paths, &global_config)?;
+                    processed_count += 1;
+                    
+                    // Limit to prevent overwhelming output
+                    if processed_count >= 50 {
+                        println!("Processed 50 submodules, stopping to prevent overflow...");
+                        break;
+                    }
                 }
             }
         }

@@ -1,1 +1,0 @@
-use rustc_hir :: Item ; use rustc_hir :: ItemKind ; use rustc_hir :: OwnerId ; use rustc_span :: Span ; use trait_fixer_hir_info_trait :: HirInfo ; prelude ! { } # [decl_ trait_fixer_hir_info_real_decls_RealHirInfoItem] pub struct RealHirInfoItem < 'tcx > (pub Item < 'tcx >) ;

@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ tool_refactorings_decls_monster_semantic_indexer_IndexedFile] # [derive (Debug)] pub struct IndexedFile { pub path : PathBuf , pub category : String , pub index : u64 , }

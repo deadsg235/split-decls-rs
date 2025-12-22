@@ -1,1 +1,0 @@
-use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ test_fnmut_issue_decls_impl_for_MockInferCtxt] impl MockInferCtxt { pub fn probe (self , f : impl FnOnce (& MockInferCtxt) -> bool) -> bool { f (& self) } pub fn at (self , _cause : & MockObligationCause , _param_env : MockParamEnv) -> MockInferCtxtAt { MockInferCtxtAt } }

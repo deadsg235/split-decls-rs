@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ cargo2nix_decls_expr_impl_for_fmt_Display] impl < F > fmt :: Display for DisplayFn < F > where F : Fn (& mut fmt :: Formatter) -> fmt :: Result , { fn fmt (& self , f : & mut fmt :: Formatter) -> fmt :: Result { (self . 0) (f) } }

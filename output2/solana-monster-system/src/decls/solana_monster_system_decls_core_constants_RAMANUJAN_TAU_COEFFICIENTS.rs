@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_core_constants_RAMANUJAN_TAU_COEFFICIENTS] pub const RAMANUJAN_TAU_COEFFICIENTS : & [i64] = & [1 , - 24 , 252 , - 1472 , 4830 , - 6048 , - 16744] ;

@@ -1,1 +1,0 @@
-decl_module ! (trait_fixer_rustc_mock_decls_decls , trait_fixer_rustc_mock_decls_oldlib_decls) ;

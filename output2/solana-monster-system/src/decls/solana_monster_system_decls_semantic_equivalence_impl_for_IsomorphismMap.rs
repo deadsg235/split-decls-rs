@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_semantic_equivalence_impl_for_IsomorphismMap] impl IsomorphismMap { fn identity () -> Self { Self { transformation_matrix : [[1 , 0] , [0 , 1]] , monster_scaling : 1 , } } }

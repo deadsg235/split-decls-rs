@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_voevodsky_univalence_impl_for_TypeUniverse] impl TypeUniverse { fn new () -> Self { Self { base_types : Vec :: new () , higher_types : Vec :: new () , universe_level : 0 , } } }

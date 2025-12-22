@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_eleven_is_eleven] pub fn is_eleven (value : i64) -> bool { value == ELEVEN }

@@ -1,1 +1,0 @@
-use std :: marker :: PhantomData ; use super :: Symbol ; prelude ! { } # [decl_ trait_fixer_rustc_mock_decls_impl_for_LocalDefId] impl LocalDefId { pub fn to_def_id (self) -> DefId { DefId } }

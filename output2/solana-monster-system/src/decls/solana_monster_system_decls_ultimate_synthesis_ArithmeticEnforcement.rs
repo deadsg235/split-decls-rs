@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_ultimate_synthesis_ArithmeticEnforcement] # [derive (Debug , Clone)] pub struct ArithmeticEnforcement { tau_function_constraints_satisfied : bool , hecke_eigenvalue_consistency : bool , monster_action_preserved : bool , }

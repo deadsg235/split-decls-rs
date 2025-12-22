@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ tool_refactorings_decls_repository_indexer_config_DefaultRepositoryIndexerConfig] # [doc = " Dummy implementation of RepositoryIndexerConfigProvider returning hardcoded values."] pub struct DefaultRepositoryIndexerConfig ;

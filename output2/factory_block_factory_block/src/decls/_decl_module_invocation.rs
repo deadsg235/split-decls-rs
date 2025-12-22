@@ -1,1 +1,0 @@
-decl_module ! (factory_block_factory_block_decls_decls , factory_block_factory_block_decls_oldlib_decls) ;

@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_ultimate_synthesis_IndexAnalysis] # [derive (Debug , Clone)] pub struct IndexAnalysis { atiyah_singer_applied : bool , fredholm_index_computed : bool , dynamic_behavior_analyzed : bool , }

@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_voevodsky_univalence_impl_for_PathSpace] impl PathSpace { fn new () -> Self { Self { identity_paths : HashMap :: new () , composition_table : HashMap :: new () , } } }

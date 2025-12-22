@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_minizinc_data_structures_StabilizerMapping] # [derive (Debug , Clone , Serialize , Deserialize)] pub struct StabilizerMapping { pub stabilizer_id : u32 , pub mapped_elements : Vec < u64 > , pub orbit_preserved : bool , }

@@ -102,8 +102,7 @@ fn something() {
                     let file_content = quote! {
                         #custom_prelude
                         #common_uses
-                        prelude! {} // Placeholder for the actual prelude! macro
-                        #[decl_ #module_name_ident] // Placeholder for the specific decl macro
+                        prelude!();
                         #decl.content
                     };
                     fs::write(&decl_file_path, file_content.to_string())

@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ monster_traits_decls_hecke_operators_TrialitySystem] # [doc = " Placeholder for the TrialitySystem (3^20)"] # [derive (Debug , Clone , PartialEq , Eq)] pub struct TrialitySystem { pub factor_count : u32 , pub rules : Vec < String > , }

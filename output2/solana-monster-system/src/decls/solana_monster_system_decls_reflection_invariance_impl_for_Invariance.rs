@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_reflection_invariance_impl_for_Invariance] impl Invariance { pub fn new (value : i64) -> Self { Self { value } } pub fn check_zero (& self) -> bool { self . value == 0 } }

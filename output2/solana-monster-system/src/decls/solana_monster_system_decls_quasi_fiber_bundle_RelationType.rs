@@ -1,1 +1,0 @@
-pub use decls :: * ; # [cfg (feature = "introspector_decl2_macros")] pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ solana_monster_system_decls_quasi_fiber_bundle_RelationType] # [derive (Debug , Clone)] pub enum RelationType { Inheritance , Composition , Abstraction , Implementation , }

@@ -1,1 +1,0 @@
-decl_module ! (trait_fixer_trait_checker_trait_decls_decls , trait_fixer_trait_checker_trait_decls_oldlib_decls) ;

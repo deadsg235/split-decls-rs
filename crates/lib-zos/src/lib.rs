@@ -7,5 +7,5 @@ pub mod decls {
 pub use decls::*;
 
 // Re-export prelude macros if available
-#[cfg(feature = "introspector_decl2_macros")]
+
 pub use introspector_decl2_macros::*;
