@@ -39,6 +39,16 @@ pub struct PatchConfig {
     pub generated_crate_dependency: Vec<GeneratedCrateDependency>,
 }
 
+impl Default for PatchConfig {
+    fn default() -> Self {
+        Self {
+            generated_workspace_member: Vec::new(),
+            generated_workspace_dependency: Vec::new(),
+            generated_crate_dependency: Vec::new(),
+        }
+    }
+}
+
 impl PatchConfig {
     pub fn load_from_file(path: &std::path::Path) -> anyhow::Result<Self> {
         if !path.exists() {

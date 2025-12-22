@@ -1,0 +1,14 @@
+Starting split-decls-rs tool...
+Parsed args: ["./target/debug/split-decls-rs", "--verbose"]
+dry_run flag: false
+verbose flag: true
+Global config loaded: SplitDeclsConfig { active_overlay_modules: [], custom_prelude_overlay: None, rustc_source_path: None, patches: {}, string_replacements: None, crates_io_patches: {}, github_org: None, default_branches_to_patch: ["main", "dev"], repo_fork_mapping: {}, workspace_dependencies: {} }
+Error: Failed to load patch config from patch.toml
+
+Caused by:
+    TOML parse error at line 1, column 1
+      |
+    1 | # Patch configuration for cargo2nix ecosystem transformation
+      | ^
+    missing field `targets`
+    

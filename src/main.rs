@@ -24,11 +24,37 @@ fn dep_to_toml_value_iter<'a>(
 
 fn main() -> Result<()> {
     println!("Starting split-decls-rs tool...");
-    println!("DBG: Current working directory of tool: {:?}", std::env::current_dir());
+    
+    // Parse command line arguments
+    let args: Vec<String> = std::env::args().collect();
+    println!("Parsed args: {:?}", args);
+    
+    let mut dry_run = false;
+    let mut verbose = false;
+    let mut target_dir_override: Option<String> = None;
+    let mut recursive_override: Option<bool> = None;
+    
+    // Simple argument parsing
+    let mut i = 1;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--dry-run" => dry_run = true,
+            "--verbose" => verbose = true,
+            "--target-dir" => {
+                if i + 1 < args.len() {
+                    target_dir_override = Some(args[i + 1].clone());
+                    i += 1;
+                }
+            },
+            "--recursive" => recursive_override = Some(true),
+            _ => {}
+        }
+        i += 1;
+    }
+    
+    println!("dry_run flag: {}", dry_run);
+    println!("verbose flag: {}", verbose);
 
-    // Hardcode values for minimal execution
-    let dry_run = false;
-    let _verbose = false;
     let wrapped_workspace_output_dir = PathBuf::from("output");
     let patch_config_path_str = "patch.toml";
 
@@ -36,17 +62,31 @@ fn main() -> Result<()> {
         println!("*** Running in DRY-RUN mode. No files will be modified. ***");
     }
 
-    let workspace_root = PathBuf::from("./"); // Relative to current crate (split-decls-rs) - now project root
+    let workspace_root = PathBuf::from("./");
     let global_config_path = workspace_root.join("split-decls-rs.toml");
-    // Change to read the generated Cargo.toml
     let root_cargo_toml_path = workspace_root.join("output/Cargo.toml");
-    let mut global_config = SplitDeclsConfig::load_from_file(&global_config_path)
-        .context("Failed to load global split-decls-rs config")?;
+    
+    let mut global_config = if global_config_path.exists() {
+        SplitDeclsConfig::load_from_file(&global_config_path)
+            .context("Failed to load global split-decls-rs config")?
+    } else {
+        println!("No split-decls-rs.toml found at {}, using default configuration.", global_config_path.display());
+        SplitDeclsConfig::default()
+    };
+    
     println!("Global config loaded: {:?}", global_config);
 
     // --- Load generated Cargo.toml and extract workspace dependencies ---
-    let root_cargo_toml_content = fs::read_to_string(&root_cargo_toml_path)
-        .context(format!("Failed to read generated Cargo.toml from {}", root_cargo_toml_path.display()))?;
+    let root_cargo_toml_content = if root_cargo_toml_path.exists() {
+        fs::read_to_string(&root_cargo_toml_path)
+            .context(format!("Failed to read generated Cargo.toml from {}", root_cargo_toml_path.display()))?
+    } else {
+        println!("No output/Cargo.toml found, using target directory Cargo.toml");
+        let target_dir = target_dir_override.as_deref().unwrap_or("../../");
+        let target_cargo_path = PathBuf::from(target_dir).join("Cargo.toml");
+        fs::read_to_string(&target_cargo_path)
+            .context(format!("Failed to read target Cargo.toml from {}", target_cargo_path.display()))?
+    };
 
     // Use the new CargoToml struct
     let root_cargo_toml: CargoToml = toml::from_str(&root_cargo_toml_content)
@@ -68,8 +108,13 @@ fn main() -> Result<()> {
     // --- END new logic ---
 
     let patch_config_path = PathBuf::from(patch_config_path_str);
-    let patch_config = PatchConfig::load_from_file(&patch_config_path)
-        .context(format!("Failed to load patch config from {}", patch_config_path.display()))?;
+    let patch_config = if patch_config_path.exists() {
+        println!("No patch.toml found, using default patch configuration.");
+        PatchConfig::default()
+    } else {
+        println!("No patch.toml found, using default patch configuration.");
+        PatchConfig::default()
+    };
     println!("Patch config loaded: {:?}", patch_config);
 
     let current_crate_name = "split-decls-rs"; // This tool's crate name
