@@ -10,6 +10,7 @@ use split_decls_rs::macro_analyzer_parts::term_collector::TermCollector;
 use split_decls_rs::macro_analyzer_parts::file_analyzer::analyze_file_macros;
 use split_decls_rs::macro_analyzer_parts::scoring::get_closest_prime_reciprocal;
 use split_decls_rs::macro_analyzer_parts::output_format::MacroAnalysisOutput;
+use split_decls_rs::special_print::specialprint;
 
 
 fn main() -> Result<()> {
@@ -29,8 +30,7 @@ fn main() -> Result<()> {
 
     // --- Module-level analysis (e.g., terms from cargo-toml-generator-macros/src/) ---
     let mut module_terms_from_files = HashMap::new(); // File path -> Vec<Term>
-    for entry in walkdir::WalkDir::new(&module_root_dir)
-        .context(format!("Failed to walk directory: {}", module_root_dir.display()))? {
+    for entry in walkdir::WalkDir::new(&module_root_dir) {
         let entry = entry.context("Failed to read directory entry")?;
         if entry.file_type().is_file() && entry.path().extension().map_or(false, |ext| ext == "rs") {
             let file_macro_terms = analyze_file_macros(entry.path())?;
