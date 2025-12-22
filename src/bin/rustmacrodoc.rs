@@ -12,6 +12,15 @@ use syn::{Attribute, Ident, Item, ItemFn, ItemMacro, Lit, LitStr, Macro, Meta, P
 use toml;
 use walkdir::WalkDir;
 
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+struct MacroAnalysis {
+    uses_syn: bool,
+    defines_const: bool,
+    defines_enum: bool,
+    defines_struct: bool,
+    calls_other_macros: Vec<String>,
+}
+
 /// Represents information about a single macro.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 struct MacroInfo {
@@ -25,6 +34,8 @@ struct MacroInfo {
     signature: Option<String>, // For proc macros, or `macro_rules! name { ... }`
     #[serde(skip_serializing_if = "Option::is_none")]
     doc_comment: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    analysis: Option<MacroAnalysis>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -66,6 +77,7 @@ impl<'ast> Visit<'ast> for MacroVisitor {
             span_debug_string: format!("{:?}", i.mac.span()),
             signature: Some(quote::quote! { #i }.to_string()), // Capture the whole macro invocation for signature
             doc_comment: get_doc_comment(&i.attrs),
+            analysis: None,
         });
         syn::visit::visit_item_macro(self, i);
     }
@@ -99,6 +111,7 @@ impl<'ast> Visit<'ast> for MacroVisitor {
                 span_debug_string: format!("{:?}", i.span()),
                 signature: Some(quote::quote! { #i.sig }.to_string()), // Capture the function signature
                 doc_comment: get_doc_comment(&i.attrs),
+                analysis: None,
             });
         }
         syn::visit::visit_item_fn(self, i);
@@ -141,6 +154,41 @@ impl<'ast> Visit<'ast> for IncludeVisitor {
                     .join(lit_str.value());
                 self.includes.push(include_path);
             }
+        }
+        syn::visit::visit_macro(self, mac);
+    }
+}
+
+struct CategorizationVisitor {
+    analysis: MacroAnalysis,
+}
+
+impl<'ast> Visit<'ast> for CategorizationVisitor {
+    fn visit_item_use(&mut self, i: &'ast syn::ItemUse) {
+        if format!("{}", quote::quote!(#i)).contains("syn") {
+            self.analysis.uses_syn = true;
+        }
+        syn::visit::visit_item_use(self, i);
+    }
+
+    fn visit_item_const(&mut self, i: &'ast syn::ItemConst) {
+        self.analysis.defines_const = true;
+        syn::visit::visit_item_const(self, i);
+    }
+
+    fn visit_item_enum(&mut self, i: &'ast syn::ItemEnum) {
+        self.analysis.defines_enum = true;
+        syn::visit::visit_item_enum(self, i);
+    }
+
+    fn visit_item_struct(&mut self, i: &'ast syn::ItemStruct) {
+        self.analysis.defines_struct = true;
+        syn::visit::visit_item_struct(self, i);
+    }
+
+    fn visit_macro(&mut self, mac: &'ast syn::Macro) {
+        if let Some(segment) = mac.path.segments.last() {
+            self.analysis.calls_other_macros.push(segment.ident.to_string());
         }
         syn::visit::visit_macro(self, mac);
     }
@@ -256,7 +304,15 @@ fn main() -> Result<()> {
             let mut all_files_metadata: Vec<FileMetadata> = Vec::new();
 
             while let Some(path_to_scan) = paths_to_scan.pop() {
-                if !scanned_paths.insert(path_to_scan.clone()) {
+                let canonical_path_to_scan = match path_to_scan.canonicalize() {
+                    Ok(p) => p,
+                    Err(_) => {
+                        println!("Warning: could not canonicalize path: {}", path_to_scan.display());
+                        continue;
+                    }
+                };
+
+                if !scanned_paths.insert(canonical_path_to_scan.clone()) {
                     continue;
                 }
 
@@ -307,7 +363,35 @@ fn main() -> Result<()> {
                             file_path: path.to_path_buf(),
                         };
                         macro_visitor.visit_file(&syntax_tree);
-                        file_metadata.macros = Some(macro_visitor.macros);
+
+                        let mut updated_macros = Vec::new();
+                        for mut macro_info in macro_visitor.macros {
+                            if let Some(signature) = &macro_info.signature {
+                                if let Ok(item) = syn::parse_str::<syn::Item>(signature) {
+                                    let mut categorization_visitor = CategorizationVisitor {
+                                        analysis: MacroAnalysis::default(),
+                                    };
+                                    categorization_visitor.visit_item(&item);
+                                    macro_info.analysis = Some(categorization_visitor.analysis);
+
+                                    // Recursive scanning from string literals
+                                    let mut string_visitor = StringLiteralVisitor { strings: Vec::new() };
+                                    string_visitor.visit_item(&item);
+            
+                                    for s in string_visitor.strings {
+                                        if s.contains('/') {
+                                            let new_path = PathBuf::from(s);
+                                            if new_path.exists() {
+                                                paths_to_scan.push(new_path);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            updated_macros.push(macro_info);
+                        }
+                        
+                        file_metadata.macros = Some(updated_macros);
 
                         let mut include_visitor = IncludeVisitor {
                             includes: Vec::new(),
