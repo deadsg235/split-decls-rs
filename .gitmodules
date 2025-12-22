@@ -1,0 +1,6 @@
+[submodule "submodules/pagerank_rs"]
+	path = submodules/pagerank_rs
+	url = https://github.com/meta-introspector/pagerank_rs
+[submodule "submodules/reson"]
+	path = submodules/reson
+	url = https://github.com/meta-introspector/reson

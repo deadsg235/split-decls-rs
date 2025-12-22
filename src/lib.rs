@@ -2,7 +2,8 @@ use std::{
     fs,
     path::{Path, PathBuf}, // For running git commands
 };
-
+pub mod macro_analyzer_parts; // Declare the new module
+pub mod special_print;
 use anyhow::{Context, Result};
 use quote::quote;
 use walkdir::WalkDir;
