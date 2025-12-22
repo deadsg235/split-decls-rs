@@ -1,1 +1,0 @@
-decl_module ! (introspector_decl2_macros_decls_decl_module , introspector_decl2_macros_decls_prelude , introspector_decl2_macros_decls_oldlib_decl_module , introspector_decl2_macros_decls_oldlib_prelude) ;

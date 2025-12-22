@@ -1,1 +1,0 @@
-use serde :: { Deserialize , Serialize , Serializer } ; use std :: collections :: HashMap ; use serde :: de :: Error ; prelude ! { } # [decl_ cargo_toml_generator_types_decls_Dependency] # [derive (Debug , Clone , PartialEq)] pub enum Dependency { Version (String) , Table (DependencyTable) , }

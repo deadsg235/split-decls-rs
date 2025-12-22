@@ -1,1 +1,0 @@
-use proc_macro :: TokenStream ; use quote :: quote ; prelude ! { } # [decl_ introspector_decl2_macros_decls_decl_module] # [proc_macro] pub fn decl_module (_input : TokenStream) -> TokenStream { quote ! () . into () }

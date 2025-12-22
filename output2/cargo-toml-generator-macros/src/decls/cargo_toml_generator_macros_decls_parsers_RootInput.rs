@@ -1,1 +1,1 @@
-use proc_macro :: TokenStream ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_parsers_RootInput] pub struct RootInput { pub items : Punctuated < RootItem , Token ! [,] > , }
+pub use decls :: * ; pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_parsers_RootInput] pub struct RootInput { pub items : Punctuated < RootItem , Token ! [,] > , }

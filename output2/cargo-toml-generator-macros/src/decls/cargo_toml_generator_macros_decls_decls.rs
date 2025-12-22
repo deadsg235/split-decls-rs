@@ -1,0 +1,1 @@
+pub use decls :: * ; pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_decls] pub mod decls { include ! ("decls/_decl_module_invocation.rs") ; }

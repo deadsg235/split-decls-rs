@@ -5,3 +5,4 @@ members = [
 ]
 
 [workspace.dependencies]
+introspector_decl2_macros = { path = "introspector_decl2_macros" }

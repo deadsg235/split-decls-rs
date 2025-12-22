@@ -19,6 +19,7 @@ pub mod generate_new_cargotoml;
 pub mod generate_new_lib_rs;
 pub mod generate_new_build_rs;
 pub mod apply_patches_to_syntax_tree;
+pub mod auto_workspace_generator;
 pub mod get_item_name;
 pub mod get_item_kind;
 pub mod process_crate;

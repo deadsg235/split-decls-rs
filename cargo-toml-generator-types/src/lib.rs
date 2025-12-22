@@ -7,5 +7,4 @@ pub mod decls {
 pub use decls::*;
 
 // Re-export prelude macros if available
-
 pub use introspector_decl2_macros::*;

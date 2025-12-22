@@ -11,7 +11,10 @@ members = [
     "cargo-toml-generator-macros",
     "cargo-toml-generator-types", 
     "split-decls-types",
-    "introspector_decl2_macros",
+]
+exclude = [
+    "cargo-toml-generator-macros",
+    "cargo-toml-generator-types",
 ]
 
 [workspace.dependencies]
@@ -30,6 +33,9 @@ clap = { version = "4.0", features = ["derive"] }
 split-decls-types = { path = "split-decls-types" }
 cargo-toml-generator-types = { path = "cargo-toml-generator-types" }
 cargo-toml-generator-macros = { path = "cargo-toml-generator-macros" }
+introspector_decl2_macros = { path = "../../submodules/patch-build-rs/introspector_decl2_macros" }
+introspector_decl_core = { path = "../../submodules/patch-build-rs/introspector_decl_core" }
+introspector_decl_common = { path = "../../submodules/patch-build-rs/introspector_decl_common" }
 # serde_json = "1.0"
 # url = "2.0"
 # quote = "1.0"

@@ -10,6 +10,9 @@ serde_json = "1.0"
 proc-macro2 = { workspace = true }
 quote = "1.0"
 syn = { version = "2.0", features = ["full", "extra-traits"] }
+introspector_decl2_macros = { workspace = true }
+introspector_decl_core = { workspace = true }
+introspector_decl_common = { workspace = true }
 
 [build-dependencies]
 anyhow = { workspace = true }

@@ -1,0 +1,115 @@
+warning: unused import: `generate_decl_registration`
+ --> /mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl_core/src/lib.rs:7:34
+  |
+7 | use introspector_macro_helpers::{generate_decl_registration, parse_decl_args, dispatch_wrap_logic};
+  |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unreachable pattern
+  --> /mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl_core/src/lib.rs:82:9
+   |
+82 |         _ => "unknown_visibility",
+   |         ^ no value can reach this
+   |
+note: multiple earlier patterns match some of the same values
+  --> /mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl_core/src/lib.rs:82:9
+   |
+79 |         Visibility::Public(_) => "pub",
+   |         --------------------- matches some of the same values
+80 |         Visibility::Restricted(_) => "pub(restricted)",
+   |         ------------------------- matches some of the same values
+81 |         Visibility::Inherited => "private",
+   |         --------------------- matches some of the same values
+82 |         _ => "unknown_visibility",
+   |         ^ collectively making this unreachable
+   = note: `#[warn(unreachable_patterns)]` (part of `#[warn(unused)]`) on by default
+
+warning: unreachable pattern
+   --> /mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl_core/src/lib.rs:119:9
+    |
+119 |         _ => "unknown_visibility",
+    |         ^ no value can reach this
+    |
+note: multiple earlier patterns match some of the same values
+   --> /mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl_core/src/lib.rs:119:9
+    |
+116 |         Visibility::Public(_) => "pub",
+    |         --------------------- matches some of the same values
+117 |         Visibility::Restricted(_) => "pub(restricted)",
+    |         ------------------------- matches some of the same values
+118 |         Visibility::Inherited => "private",
+    |         --------------------- matches some of the same values
+119 |         _ => "unknown_visibility",
+    |         ^ collectively making this unreachable
+
+warning: unreachable pattern
+   --> /mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl_core/src/lib.rs:156:9
+    |
+156 |         _ => "unknown_visibility",
+    |         ^ no value can reach this
+    |
+note: multiple earlier patterns match some of the same values
+   --> /mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl_core/src/lib.rs:156:9
+    |
+153 |         Visibility::Public(_) => "pub",
+    |         --------------------- matches some of the same values
+154 |         Visibility::Restricted(_) => "pub(restricted)",
+    |         ------------------------- matches some of the same values
+155 |         Visibility::Inherited => "private",
+    |         --------------------- matches some of the same values
+156 |         _ => "unknown_visibility",
+    |         ^ collectively making this unreachable
+
+warning: unreachable pattern
+   --> /mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl_core/src/lib.rs:193:9
+    |
+193 |         _ => "unknown_visibility",
+    |         ^ no value can reach this
+    |
+note: multiple earlier patterns match some of the same values
+   --> /mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl_core/src/lib.rs:193:9
+    |
+190 |         Visibility::Public(_) => "pub",
+    |         --------------------- matches some of the same values
+191 |         Visibility::Restricted(_) => "pub(restricted)",
+    |         ------------------------- matches some of the same values
+192 |         Visibility::Inherited => "private",
+    |         --------------------- matches some of the same values
+193 |         _ => "unknown_visibility",
+    |         ^ collectively making this unreachable
+
+warning: `introspector_decl_core` (lib) generated 5 warnings (run `cargo fix --lib -p introspector_decl_core` to apply 1 suggestion)
+   Compiling cargo-toml-generator-types v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/cargo-toml-generator-types)
+   Compiling cargo-toml-generator-macros v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/cargo-toml-generator-macros)
+   Compiling cargo-toml-parts v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/build_helpers/cargo_toml_parts)
+   Compiling pagerank_rs v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/submodules/pagerank_rs)
+   Compiling split-decls-types v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/split-decls-types)
+error: cannot find macro `decl_module` in this scope
+ --> cargo-toml-generator-types/src/decls/_decl_module_invocation.rs:1:1
+  |
+1 | decl_module ! (cargo_toml_generator_types_decls_CargoToml , cargo_toml_generator_types_decls_Package , cargo_toml_generator_types_decls_W...
+  | ^^^^^^^^^^^
+  |
+help: consider importing one of these macros
+ --> cargo-toml-generator-types/src/lib.rs:5:5
+  |
+5 +     use crate::decl_module;
+ --> cargo-toml-generator-types/src/lib.rs:5:5
+  |
+5 +     use introspector_decl2_macros::decl_module;
+  |
+
+warning: unused import: `decls::*`
+ --> cargo-toml-generator-types/src/lib.rs:7:9
+  |
+7 | pub use decls::*;
+  |         ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `cargo-toml-generator-types` (lib) generated 1 warning
+error: could not compile `cargo-toml-generator-types` (lib) due to 1 previous error; 1 warning emitted
+warning: build failed, waiting for other jobs to finish...
+warning: `cargo-toml-generator-types` (lib) generated 1 warning (1 duplicate)
+error: could not compile `cargo-toml-generator-types` (lib) due to 1 previous error; 1 warning emitted

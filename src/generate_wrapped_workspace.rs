@@ -1,11 +1,55 @@
 use anyhow::{Context, Result};
 use std::fs;
 use std::path::{Path, PathBuf};
+use toml::Value;
 
 use crate::patch_config;
 use split_decls_types::SplitDeclsConfig;
 
 use crate::generate_wrapped_crate;
+
+fn find_all_cargo_tomls(dir: &Path) -> Result<Vec<PathBuf>> {
+    let mut cargo_tomls = Vec::new();
+    
+    if dir.is_dir() {
+        for entry in fs::read_dir(dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            
+            if path.is_file() && path.file_name() == Some("Cargo.toml".as_ref()) {
+                cargo_tomls.push(path);
+            } else if path.is_dir() && !should_skip_dir(&path) {
+                cargo_tomls.extend(find_all_cargo_tomls(&path)?);
+            }
+        }
+    }
+    
+    Ok(cargo_tomls)
+}
+
+fn should_skip_dir(path: &Path) -> bool {
+    let name = path.file_name().unwrap().to_string_lossy();
+    matches!(name.as_ref(), "target" | ".git" | "node_modules" | ".cargo")
+}
+
+struct SimpleCrateInfo {
+    name: String,
+}
+
+fn extract_crate_info_simple(cargo_path: &Path) -> Result<Option<SimpleCrateInfo>> {
+    let content = fs::read_to_string(cargo_path)?;
+    let toml: Value = toml::from_str(&content)?;
+    
+    if let Some(package) = toml.get("package") {
+        if let Some(name) = package.get("name").and_then(|n| n.as_str()) {
+            return Ok(Some(SimpleCrateInfo {
+                name: name.to_string(),
+            }));
+        }
+    }
+    
+    Ok(None)
+}
 
 /// Calculates the relative path from one directory to another.
 fn path_diff(from: &Path, to: &Path) -> Option<PathBuf> {
@@ -50,6 +94,7 @@ pub fn generate_wrapped_workspace(
     _current_crate_name: &str, // Name of the split-decls-rs tool crate (unused in new logic)
     dry_run: bool,
 ) -> Result<()> {
+    println!("DEBUG: generate_wrapped_workspace called with output_dir: {}", output_dir.display());
     // Project root is assumed to be two levels up from split-decls-rs,
     // i.e., /mnt/data1/nix/vendor/rust/cargo2nix
     let current_pathbuf = PathBuf::from("./").canonicalize()?;
@@ -69,8 +114,43 @@ pub fn generate_wrapped_workspace(
     println!("Wrapped workspace directory: {}", output_dir.display());
 
     let mut workspace_members_content = Vec::new();
-    let mut workspace_dependencies_content = String::new();
+    let mut workspace_dependencies_content = String::from("introspector_decl2_macros = { path = \"introspector_decl2_macros\" }\n");
     let mut patch_crates_io_content = String::new();
+
+    // Auto-generate workspace deps from project root using workspace manager
+    let mut deps_to_add = Vec::new();
+    
+    // Find all Cargo.toml files and extract crate info
+    if let Ok(cargo_tomls) = find_all_cargo_tomls(&project_root) {
+        println!("Found {} Cargo.toml files in project root", cargo_tomls.len());
+        
+        for cargo_path in cargo_tomls.iter().take(20) { // Limit to first 20 for testing
+            if let Ok(Some(crate_info)) = extract_crate_info_simple(&cargo_path) {
+                let relative_path = cargo_path.parent().unwrap()
+                    .strip_prefix(&project_root)
+                    .unwrap_or(Path::new("."))
+                    .to_string_lossy();
+                
+                let mut dep_table = toml::Table::new();
+                dep_table.insert("path".to_string(), toml::Value::String(relative_path.to_string()));
+                
+                deps_to_add.push((crate_info.name.clone(), toml::Value::Table(dep_table)));
+                workspace_members_content.push(format!("\"{}\"", relative_path));
+            }
+        }
+        
+        // Add to workspace dependencies content
+        for (name, value) in &deps_to_add {
+            if let toml::Value::Table(table) = value {
+                if let Some(toml::Value::String(path)) = table.get("path") {
+                    workspace_dependencies_content.push_str(&format!("{} = {{ path = \"{}\" }}\n", name, path));
+                    patch_crates_io_content.push_str(&format!("{} = {{ path = \"{}\" }}\n", name, path));
+                }
+            }
+        }
+        
+        println!("Generated {} workspace dependencies", deps_to_add.len());
+    }
 
     // --- 1. Generate [workspace.members] ---
     for member in &patch_config.generated_workspace_member {
@@ -99,6 +179,7 @@ pub fn generate_wrapped_workspace(
     }
 
     // --- 2. Generate [workspace.dependencies] and [patch.crates-io] ---
+    
     for dep in &patch_config.generated_workspace_dependency {
         let mut dep_string = format!("{} = {{ ", dep.name);
 

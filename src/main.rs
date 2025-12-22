@@ -172,7 +172,10 @@ fn main() -> Result<()> {
         
         if lib_rs.exists() {
             crate_count += 1;
-            println!("Processing crate {}: {}", crate_count, crate_path.file_name().unwrap().to_string_lossy());
+            let crate_name = crate_path.file_name()
+                .map(|n| n.to_string_lossy().to_string())
+                .unwrap_or_else(|| format!("unknown_crate_{}", crate_count));
+            println!("Processing crate {}: {}", crate_count, crate_name);
             let paths = setup_crate_paths(&crate_path)?;
             eager_splitter::eager_split_crate(&paths, &global_config)?;
         }

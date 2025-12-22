@@ -1,1 +1,0 @@
-use proc_macro :: TokenStream ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_oldlib_dep_version] # [proc_macro] pub fn dep_version (input : TokenStream) -> TokenStream { macros :: dep_version_impl (input) }
