@@ -1,3 +1,16 @@
+use std::{fs, collections::HashMap};
+use anyhow::{Context, Result};
+use std::path::Path;
+use split_decls_types::SplitDeclsConfig;
+use crate::{setup_crate_paths, eager_splitter};
+use crate::backup_original_files::backup_original_files;
+use crate::backup_original_cargo::backup_original_cargotoml;
+use crate::generate_new_cargotoml::generate_new_cargotoml;
+use crate::generate_new_lib_rs::generate_new_lib_rs;
+use crate::generate_new_build_rs::generate_new_build_rs;
+use crate::apply_patches_to_syntax_tree::apply_patches_to_syntax_tree;
+use crate::patch_config::PatchConfig;
+
 pub fn process_crate(crate_path: &Path, global_config: &SplitDeclsConfig, dry_run: bool) -> Result<()> {
     let paths = setup_crate_paths(crate_path)?;
     println!("\n=== Processing crate: {} ===", paths.crate_name);
@@ -28,7 +41,10 @@ pub fn process_crate(crate_path: &Path, global_config: &SplitDeclsConfig, dry_ru
 
     backup_original_cargotoml(&paths, dry_run)?;
     backup_original_files(&paths, dry_run)?;
-    generate_new_cargotoml(&paths, global_config, &paths.crate_path, dry_run)?;
+    
+    // Create a dummy patch config for now
+    let patch_config = PatchConfig::default();
+    generate_new_cargotoml(&paths, global_config, &paths.crate_path, &patch_config, dry_run)?;
     generate_new_lib_rs(&paths, dry_run)?;
     // generate_new_build_rs(&paths, dry_run)?; // We will modify this or remove it later
 
@@ -46,7 +62,7 @@ pub fn process_crate(crate_path: &Path, global_config: &SplitDeclsConfig, dry_ru
     let mut syntax_tree = syn::parse_file(&old_lib_rs_content)
         .context("Failed to parse oldlib.rs content for eager splitting")?;
 
-    buildrs_ast_utils::apply_patches_to_syntax_tree(
+    apply_patches_to_syntax_tree(
         &mut syntax_tree,
         &paths.crate_name.replace("-", "_"),
         &crate_config, // Use crate_config which has filtered patches

@@ -26,6 +26,9 @@ pub mod generate_new_build_rs;
 pub mod apply_patches_to_syntax_tree;
 pub mod get_item_name;
 pub mod get_item_kind;
+pub mod process_crate; // Add this module
+pub mod backup_original_files; // Add this module
+pub mod backup_original_cargo; // Add this module
 pub use extracted_decl::*;
 
 use std::collections::HashMap;

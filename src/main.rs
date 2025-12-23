@@ -1,106 +1,105 @@
 use anyhow::{Context, Result};
-use std::path::PathBuf;
-use split_decls_rs::patch_config::PatchConfig;
+use std::path::{Path, PathBuf};
 use split_decls_types::SplitDeclsConfig;
-use split_decls_rs::generate_wrapped_workspace::generate_wrapped_workspace;
-use split_decls_rs::buildrs_generator::build_script_composer; // Import the new build_script_composer
-use toml;
-use std::collections::HashMap;
+use split_decls_rs::process_crate::process_crate;
 use std::fs;
-use cargo_toml_generator_types::{CargoToml, Dependency}; // Import the new CargoToml and Dependency structs
-
-/// Helper function to convert an iterator of (String, cargo_toml_generator_types::Dependency)
-/// to an iterator of (String, toml::Value).
-fn dep_to_toml_value_iter<'a>(
-    iter: impl IntoIterator<Item = (String, Dependency)> + 'a,
-) -> impl Iterator<Item = (String, toml::Value)> + 'a {
-    iter.into_iter().map(|(name, dep)| {
-        let serialized_dep = toml::to_string(&dep)
-            .expect("Failed to serialize Dependency to TOML string");
-        let toml_value: toml::Value = toml::from_str(&serialized_dep)
-            .expect("Failed to parse serialized Dependency TOML string to toml::Value");
-        (name, toml_value)
-    })
-}
 
 fn main() -> Result<()> {
     println!("Starting split-decls-rs tool...");
-    println!("DBG: Current working directory of tool: {:?}", std::env::current_dir());
-
-    // Hardcode values for minimal execution
-    let dry_run = false;
-    let _verbose = false;
-    let wrapped_workspace_output_dir = PathBuf::from("output");
-    let patch_config_path_str = "patch.toml";
-
+    
+    let args: Vec<String> = std::env::args().collect();
+    
+    // Parse command line arguments
+    let dry_run = args.contains(&"--dry-run".to_string());
+    let verbose = args.contains(&"--verbose".to_string());
+    
     if dry_run {
         println!("*** Running in DRY-RUN mode. No files will be modified. ***");
     }
-
-    let workspace_root = PathBuf::from("./"); // Relative to current crate (split-decls-rs) - now project root
-    let global_config_path = workspace_root.join("split-decls-rs.toml");
-    // Change to read the generated Cargo.toml
-    let root_cargo_toml_path = workspace_root.join("output/Cargo.toml");
-    let mut global_config = SplitDeclsConfig::load_from_file(&global_config_path)
-        .context("Failed to load global split-decls-rs config")?;
-    println!("Global config loaded: {:?}", global_config);
-
-    // --- Load generated Cargo.toml and extract workspace dependencies ---
-    let root_cargo_toml_content = fs::read_to_string(&root_cargo_toml_path)
-        .context(format!("Failed to read generated Cargo.toml from {}", root_cargo_toml_path.display()))?;
-
-    // Use the new CargoToml struct
-    let root_cargo_toml: CargoToml = toml::from_str(&root_cargo_toml_content)
-        .context(format!("Failed to parse generated Cargo.toml from {}", root_cargo_toml_path.display()))?;
-
-    // Populate workspace dependencies from the generated CargoToml
-    if let Some(workspace_section) = root_cargo_toml.workspace {
-        global_config.workspace_dependencies.extend(dep_to_toml_value_iter(workspace_section.workspace_dependencies));
-    }
-    // Also extend with top-level dependencies, if any, for compatibility
-    global_config.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.dependencies));
-    global_config.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.dev_dependencies));
-    global_config.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.build_dependencies)); // Include build-dependencies as well
-
-    // Add dependencies from [patch] sections to workspace_dependencies
-    if let Some(patch_section) = root_cargo_toml.patch {
-        global_config.workspace_dependencies.extend(dep_to_toml_value_iter(patch_section.crates_io));
-    }
-    // --- END new logic ---
-
-    let patch_config_path = PathBuf::from(patch_config_path_str);
-    let patch_config = PatchConfig::load_from_file(&patch_config_path)
-        .context(format!("Failed to load patch config from {}", patch_config_path.display()))?;
-    println!("Patch config loaded: {:?}", patch_config);
-
-    let current_crate_name = "split-decls-rs"; // This tool's crate name
-
-    // Always generate a wrapped workspace in this mode (hardcoded for now)
-    println!("Generating wrapped workspace in: {}", wrapped_workspace_output_dir.display());
-    generate_wrapped_workspace(
-        &wrapped_workspace_output_dir,
-        &patch_config,
-        &global_config,
-        current_crate_name,
-        dry_run,
-    )?;
-
-    // --- NEW: Generate a sample build.rs using the new composer ---
-    let target_build_rs_parts_dir = PathBuf::from("buildrs_parts_for_target_crate");
-    let generated_target_build_rs_path = wrapped_workspace_output_dir.join("generated_target_build.rs");
     
-    // Ensure the output directory exists
-    fs::create_dir_all(&wrapped_workspace_output_dir)
-        .context(format!("Failed to create output directory for target build.rs: {}", wrapped_workspace_output_dir.display()))?;
-
-    println!("Attempting to compose target build.rs from parts in: {}", target_build_rs_parts_dir.display());
-    build_script_composer::compose_build_script_from_parts(
-        &target_build_rs_parts_dir,
-        &generated_target_build_rs_path,
-    )?;
-    // --- END NEW ---
-
-    println!("\nWrapped workspace generation finished.");
+    // Get target directory from command line args
+    let target_path = if args.len() > 1 {
+        let mut target_arg = None;
+        for (i, arg) in args.iter().enumerate() {
+            if !arg.starts_with("--") && i > 0 {
+                target_arg = Some(arg.as_str());
+                break;
+            }
+        }
+        target_arg.unwrap_or("./")
+    } else {
+        "./"
+    };
+    
+    let target_path = PathBuf::from(target_path);
+    println!("Target path: {}", target_path.display());
+    
+    // Load configuration
+    let global_config_path = PathBuf::from("split-decls-rs.toml");
+    let global_config = SplitDeclsConfig::load_from_file(&global_config_path)
+        .context("Failed to load global split-decls-rs config")?;
+    
+    if verbose {
+        println!("Global config loaded: {:?}", global_config);
+    }
+    
+    // Check if target is a single crate or directory with multiple crates
+    if target_path.join("Cargo.toml").exists() {
+        // Single crate
+        println!("Processing single crate: {}", target_path.display());
+        process_crate(&target_path, &global_config, dry_run)?;
+    } else {
+        // Directory with multiple crates - find all Cargo.toml files
+        println!("Scanning directory for crates: {}", target_path.display());
+        scan_and_process_crates(&target_path, &global_config, dry_run)?;
+    }
+    
     println!("\nSplit-decls-rs tool finished.");
+    Ok(())
+}
+
+fn scan_and_process_crates(root_path: &Path, global_config: &SplitDeclsConfig, dry_run: bool) -> Result<()> {
+    use walkdir::WalkDir;
+    
+    for entry in WalkDir::new(root_path)
+        .into_iter()
+        .filter_map(|e| e.ok()) {
+        if entry.file_name() == "Cargo.toml" {
+            let cargotoml_path = entry.path();
+            let crate_path = cargotoml_path
+                .parent()
+                .context("Cargo.toml has no parent directory")?;
+
+            // Read Cargo.toml to check if it's a virtual manifest
+            let cargo_toml_content = fs::read_to_string(&cargotoml_path)
+                .context(format!("Failed to read Cargo.toml from {}", cargotoml_path.display()))?;
+            
+            #[derive(Debug, serde::Deserialize)]
+            struct MinimalCargoToml {
+                package: Option<toml::Table>,
+            }
+            let minimal_cargo_toml: MinimalCargoToml = toml::from_str(&cargo_toml_content)
+                .context(format!("Failed to parse Cargo.toml from {}", cargotoml_path.display()))?;
+
+            // Skip virtual manifests (Cargo.toml without a [package] section)
+            if minimal_cargo_toml.package.is_none() {
+                println!("Skipping virtual manifest: {}", cargotoml_path.display());
+                continue;
+            }
+
+            let crate_name = crate_path
+                .file_name()
+                .and_then(|s| s.to_str())
+                .context("Could not get crate name")?;
+
+            // Skip self crate
+            if crate_name == "split-decls-rs" {
+                println!("Skipping self crate: split-decls-rs");
+                continue;
+            }
+
+            process_crate(crate_path, global_config, dry_run)?;
+        }
+    }
     Ok(())
 }

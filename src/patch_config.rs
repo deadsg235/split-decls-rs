@@ -29,7 +29,7 @@ pub struct GeneratedCrateDependency {
 }
 
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct PatchConfig {
     #[serde(default)]
     pub generated_workspace_member: Vec<GeneratedWorkspaceMember>,

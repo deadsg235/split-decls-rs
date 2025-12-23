@@ -4,24 +4,7 @@
 
 Split-Decls-RS is a tool that helps you modify Rust code from other projects without changing the original files. Think of it like putting a transparent overlay on a map - you can draw on the overlay without damaging the original map underneath.
 
-## Why Would You Use This?
-
-Imagine you want to:
-- Fix a bug in someone else's Rust library
-- Add features to existing code
-- Experiment with changes without breaking the original
-- Keep your modifications separate and organized
-
-Split-Decls-RS lets you do all this while keeping the original code untouched.
-
-## How It Works (Simple Explanation)
-
-1. **Takes apart** a Rust library file (`lib.rs`) into individual pieces
-2. **Applies your changes** to specific pieces
-3. **Puts everything back together** with your modifications included
-4. **Keeps originals safe** - never touches the source files
-
-## Installation & Setup
+## Quick Start (5 Minutes)
 
 ### Step 1: Build the Tool
 ```bash
@@ -29,275 +12,237 @@ cd split-decls-rs
 cargo build --release
 ```
 
-### Step 2: Create Your First Configuration
-Create a file called `split-decls-rs.toml`:
+### Step 2: Create a Test Project
+```bash
+mkdir my_test_project
+cd my_test_project
+mkdir src
+```
 
+Create `Cargo.toml`:
 ```toml
-# Your modification rules go here
+[package]
+name = "my_test_crate"
+version = "0.1.0"
+edition = "2021"
+```
+
+Create `src/lib.rs`:
+```rust
+pub fn hello() -> String {
+    "Hello, World!".to_string()
+}
+
+pub fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+```
+
+### Step 3: Create Configuration
+In the split-decls-rs directory, create `split-decls-rs.toml`:
+```toml
+# Minimal working configuration
+string_replacements = []
+patches = {}
+custom_prelude_overlay = "// Custom prelude"
+```
+
+### Step 4: Run the Tool
+```bash
+cargo run --bin split-decls-rs my_test_project
+```
+
+## Configuration Format (Correct)
+
+### Basic Structure
+```toml
+# String replacements - array of replacement objects
+string_replacements = [
+    { old = "println!", new = "eprintln!" },
+    { old = "TODO", new = "FIXME" }
+]
+
+# Patches - map of crate names to patch arrays
 [patches]
-# Empty for now - we'll add patches later
+my_crate = [
+    { path = "patches/fix1.rs" },
+    { path = "patches/fix2.rs", git_reference = "main" }
+]
 
-[string_replacements]
-# Simple text replacements
-# "old_text" = "new_text"
-
-# Code that gets added to every file
+# Custom prelude - string of Rust code
 custom_prelude_overlay = '''
-// This comment will appear in every generated file
+#![allow(unused_imports)]
 use std::collections::HashMap;
 '''
 ```
 
-## Basic Usage
-
-### Running the Tool
-```bash
-# Process all Rust crates in current directory
-cargo run --bin split-decls-rs
-
-# Process a specific directory
-cargo run --bin split-decls-rs /path/to/rust/project
+### String Replacements (Fixed Format)
+```toml
+string_replacements = [
+    { old = "broken_function", new = "fixed_function" },
+    { old = "use old_crate::", new = "use new_crate::" },
+    { old = "// TODO", new = "// FIXME" }
+]
 ```
 
-### What Happens When You Run It
+### Patches (Fixed Format)
+```toml
+[patches]
+# Single patch file
+my_crate = [
+    { path = "patches/my_fix.rs" }
+]
 
-1. **Finds Rust projects** in the specified directory
-2. **Backs up original files** (renames `lib.rs` to `oldlib.rs`)
-3. **Splits code** into individual declaration files
-4. **Applies your patches** from the config file
-5. **Creates new structure** that Rust can compile
+# Multiple patches for one crate
+another_crate = [
+    { path = "patches/fix1.rs" },
+    { path = "patches/fix2.rs" },
+    { path = "patches/enhancement.rs", git_reference = "v1.0" }
+]
+```
 
-## Configuration File Explained
+## Complete Working Example
 
-### Basic Structure
+### Directory Structure
+```
+my_project/
+├── split-decls-rs.toml     # Configuration
+├── patches/                # Your fixes
+│   └── better_hello.rs
+├── target_crate/           # Project to modify
+│   ├── Cargo.toml
+│   └── src/
+│       └── lib.rs
+└── output/                 # Generated files
+    └── Cargo.toml
+```
+
+### Configuration File
 ```toml
 # split-decls-rs.toml
+string_replacements = [
+    { old = "World", new = "Universe" }
+]
 
-# Simple text replacements (applied before parsing)
-[string_replacements]
-"println!" = "eprintln!"  # Change all println! to eprintln!
-"TODO" = "FIXME"          # Change all TODO comments to FIXME
-
-# Code patches (replace entire functions/structs)
 [patches]
-"my_crate" = "patches/my_fixes.rs"  # Apply patches/my_fixes.rs to my_crate
+target_crate = [
+    { path = "patches/better_hello.rs" }
+]
 
-# Code added to every generated file
 custom_prelude_overlay = '''
-#![allow(unused_imports)]
-use std::collections::*;
+// Added to every generated file
+use std::fmt::Display;
 '''
 ```
 
-### String Replacements
-Replace any text in the code before it gets processed:
-
-```toml
-[string_replacements]
-# Fix a typo in all files
-"recieve" = "receive"
-
-# Change function names
-"old_function_name" = "new_function_name"
-
-# Update imports
-"use old_crate::" = "use new_crate::"
-```
-
-### Patches
-Replace entire functions, structs, or other code blocks:
-
-```toml
-[patches]
-"target_crate_name" = "path/to/patch/file.rs"
-```
-
-Create `path/to/patch/file.rs`:
+### Patch File
 ```rust
-// This will replace the original function
-pub fn my_function() -> String {
-    "This is my improved version!".to_string()
+// patches/better_hello.rs
+pub fn hello() -> String {
+    "Hello, Amazing Universe!".to_string()
 }
 
-// This will replace the original struct
-pub struct MyStruct {
-    pub new_field: i32,
-    pub improved_field: String,
+pub fn greet(name: &str) -> String {
+    format!("Hello, {}!", name)
 }
 ```
 
-## Step-by-Step Example
-
-### Example 1: Fix a Simple Function
-
-**Original code** (in some library's `lib.rs`):
-```rust
-pub fn broken_function() -> i32 {
-    42 / 0  // This will panic!
-}
-```
-
-**Step 1:** Create `split-decls-rs.toml`:
-```toml
-[patches]
-"example_crate" = "fixes/safe_function.rs"
-
-custom_prelude_overlay = ""
-```
-
-**Step 2:** Create `fixes/safe_function.rs`:
-```rust
-pub fn broken_function() -> i32 {
-    42  // Fixed: no more division by zero
-}
-```
-
-**Step 3:** Run the tool:
+### Running
 ```bash
-cargo run --bin split-decls-rs
+cargo run --bin split-decls-rs target_crate
 ```
 
-**Result:** The library now uses your safe version instead of the broken one!
+## What Happens Step by Step
 
-### Example 2: Add Debug Logging
+1. **Tool starts** and loads `split-decls-rs.toml`
+2. **Finds Rust projects** in the specified directory
+3. **Backs up original** `lib.rs` → `oldlib.rs`
+4. **Applies string replacements** to the backed up content
+5. **Splits code** into individual declaration files in `src/decls/`
+6. **Applies patches** by replacing matching functions/structs
+7. **Adds custom prelude** to each generated file
+8. **Creates new `lib.rs`** that imports all the split declarations
 
-**Goal:** Add logging to all functions without modifying original code.
-
-**Configuration:**
-```toml
-[string_replacements]
-"fn " = "fn "  # We'll use prelude instead
-
-custom_prelude_overlay = '''
-// Add logging to every file
-use log::{info, debug, warn, error};
-
-macro_rules! log_entry {
-    ($func_name:expr) => {
-        debug!("Entering function: {}", $func_name);
-    };
-}
-'''
-```
-
-## Directory Structure After Processing
+## Directory After Processing
 
 **Before:**
 ```
-my_project/
+target_crate/
 ├── src/
-│   └── lib.rs          # Original code
+│   └── lib.rs
 └── Cargo.toml
 ```
 
 **After:**
 ```
-my_project/
+target_crate/
 ├── src/
 │   ├── lib.rs          # New gateway file
 │   ├── oldlib.rs       # Original backed up
 │   └── decls/          # Split declarations
-│       ├── my_project_decls_function1.rs
-│       ├── my_project_decls_struct1.rs
+│       ├── target_crate_decls_hello.rs
+│       ├── target_crate_decls_add.rs
 │       └── _decl_module_invocation.rs
 └── Cargo.toml
 ```
 
-## Common Use Cases
+## Troubleshooting
 
-### 1. Bug Fixes
-```toml
-[patches]
-"buggy_crate" = "fixes/security_patch.rs"
+### "Failed to read generated Cargo.toml from ./output/Cargo.toml"
+**Solution:** Create the output directory:
+```bash
+mkdir output
+echo '[package]' > output/Cargo.toml
+echo 'name = "workspace"' >> output/Cargo.toml
+echo 'version = "0.1.0"' >> output/Cargo.toml
+echo 'edition = "2021"' >> output/Cargo.toml
 ```
 
-### 2. Performance Improvements
+### "TOML parse error"
+**Common fixes:**
+- Use `string_replacements = []` not `[string_replacements]`
+- Use `patches = {}` not `[patches]`
+- Use `{ old = "text", new = "replacement" }` format for replacements
+
+### "No changes applied"
+- Check crate names match exactly (case-sensitive)
+- Verify patch file paths exist
+- Make sure you're running from the right directory
+
+## Ready-to-Use Templates
+
+### Template 1: Simple Text Replacement
 ```toml
-[patches]
-"slow_crate" = "optimizations/faster_algorithm.rs"
+string_replacements = [
+    { old = "panic!", new = "eprintln!" }
+]
+patches = {}
+custom_prelude_overlay = ""
 ```
 
-### 3. Adding Features
+### Template 2: Function Replacement
 ```toml
+string_replacements = []
+
 [patches]
-"basic_crate" = "enhancements/new_methods.rs"
+my_crate = [
+    { path = "fixes/safe_function.rs" }
+]
+
+custom_prelude_overlay = ""
+```
+
+### Template 3: Add Debugging
+```toml
+string_replacements = []
+patches = {}
 
 custom_prelude_overlay = '''
-// Add new traits to all files
-use serde::{Serialize, Deserialize};
-'''
-```
-
-### 4. Debugging
-```toml
-[string_replacements]
-"return " = "{ println!(\"Returning from function\"); return "
-
-custom_prelude_overlay = '''
-// Add debug macros everywhere
-macro_rules! dbg_print {
+// Debug macros for all files
+macro_rules! debug_print {
     ($msg:expr) => { println!("[DEBUG] {}", $msg); };
 }
 '''
 ```
 
-## Troubleshooting
-
-### "Failed to read generated Cargo.toml"
-- Make sure you're running the tool in a directory with Rust projects
-- Check that `split-decls-rs.toml` exists in the current directory
-
-### "Build errors after processing"
-- Check your patch files for syntax errors
-- Make sure replacement strings don't break Rust syntax
-- Verify that your `custom_prelude_overlay` is valid Rust code
-
-### "No changes applied"
-- Check that crate names in `[patches]` match actual crate names
-- Verify patch file paths are correct
-- Make sure string replacements match exactly (case-sensitive)
-
-## Advanced Tips
-
-### 1. Test Your Changes
-Always test in a copy of the project first:
-```bash
-cp -r original_project test_project
-cd test_project
-# Run split-decls-rs here
-cargo test  # Make sure everything still works
-```
-
-### 2. Incremental Changes
-Start small and build up:
-```toml
-# First, just add some imports
-custom_prelude_overlay = '''
-use std::collections::HashMap;
-'''
-
-# Later, add more complex changes
-[patches]
-"my_crate" = "small_fix.rs"
-```
-
-### 3. Version Control
-Keep your patches and config in version control:
-```
-my_overlay_project/
-├── split-decls-rs.toml
-├── patches/
-│   ├── fix1.rs
-│   └── enhancement1.rs
-└── target_projects/
-    └── (projects you're modifying)
-```
-
-## What's Next?
-
-1. **Start simple** - try string replacements first
-2. **Learn by doing** - experiment with small patches
-3. **Read the main README** for advanced features
-4. **Check examples** in the project repository
-
-Remember: Split-Decls-RS is like having a magic overlay system for Rust code. You can modify anything without fear of breaking the original!
+The tool is now properly configured and ready to use!
