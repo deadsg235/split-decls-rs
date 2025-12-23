@@ -177,86 +177,116 @@ pub fn generate_wrapped_workspace(
             anyhow::bail!("No [package] section found in {}", main_crate_cargo_toml_path.display());
         }
 
-        let mut package_deps = HashMap::new();
-        let mut package_build_deps = HashMap::new();
-        let mut package_dev_deps = HashMap::new();
-        let mut package_patch_deps = HashMap::new();
 
-        // 1. Populate initial dependencies from the root Cargo.toml
-        if let Some(deps) = root_cargo_toml.get("dependencies").and_then(|v| v.as_table()) {
-            package_deps.extend(deps.clone());
-        }
-        if let Some(build_deps) = root_cargo_toml.get("build-dependencies").and_then(|v| v.as_table()) {
-            package_build_deps.extend(build_deps.clone());
-        }
-        if let Some(dev_deps) = root_cargo_toml.get("dev-dependencies").and_then(|v| v.as_table()) {
-            package_dev_deps.extend(dev_deps.clone());
-        }
-        if let Some(patch_section) = root_cargo_toml.get("patch").and_then(|v| v.as_table()) {
-            if let Some(crates_io_patch) = patch_section.get("crates-io").and_then(|v| v.as_table()) {
-                package_patch_deps.extend(crates_io_patch.clone());
-            }
-        }
-        
-        // 2. Merge workspace dependencies from global_config
-        for (dep_name, dep_value) in global_config.workspace_dependencies.iter() {
-            let mut processed_dep_value = dep_value.clone();
-            
-            // If it's a path dependency, calculate the relative path
-            if let Some(dep_table) = processed_dep_value.as_table_mut() {
-                if let Some(path_value) = dep_table.get("path") {
-                    if let Some(path_str) = path_value.as_str() {
-                        let absolute_dep_path = scan_root.join(path_str);
-                        let relative_path = path_diff(output_dir, &absolute_dep_path)
-                            .context(format!("Failed to calculate relative path for workspace dependency '{}'", dep_name))?;
-                        dep_table.insert("path".to_string(), Value::String(relative_path.display().to_string()));
-                        dep_table.remove("workspace"); // Ensure workspace = true is not propagated
+
+        let mut package_deps_output = HashMap::new();
+        let mut package_build_deps_output = HashMap::new();
+        let mut package_dev_deps_output = HashMap::new();
+        let mut package_patch_deps_output = HashMap::new();
+        let mut workspace_dependencies_output = HashMap::new();
+
+        // Helper to process dependencies, determining if they should be moved to [workspace.dependencies]
+        // or kept as direct dependencies.
+        let mut process_dep_group = |deps_source: Option<&Table>, output_map: &mut HashMap<String, Value>| -> Result<()> {
+            if let Some(deps_table) = deps_source {
+                for (dep_name, dep_value) in deps_table.iter() {
+                    let mut dep_value_clone = dep_value.clone();
+                    let mut is_workspace_dep_ref = false;
+
+                    if let Some(dep_table) = dep_value_clone.as_table_mut() {
+                        if dep_table.contains_key("workspace") && dep_table["workspace"].as_bool().unwrap_or(false) {
+                            is_workspace_dep_ref = true;
+                            // Remove `workspace = true` as it's implicit when referencing [workspace.dependencies]
+                            dep_table.remove("workspace");
+                        }
+                    }
+
+                    // If it's a workspace dependency from global_config, add it to workspace_dependencies_output
+                    // and replace the reference in the current dependency group with `workspace = true`
+                    if global_config.workspace_dependencies.contains_key(dep_name) {
+                        if let Some(mut global_dep_value) = global_config.workspace_dependencies.get(dep_name).cloned() {
+                            // If it's a path dependency in global_config, adjust the path
+                            if let Some(global_dep_table) = global_dep_value.as_table_mut() {
+                                if let Some(path_value) = global_dep_table.get("path") {
+                                    if let Some(path_str) = path_value.as_str() {
+                                        let absolute_dep_path = scan_root.join(path_str);
+                                        let relative_path = path_diff(output_dir, &absolute_dep_path)
+                                            .context(format!("Failed to calculate relative path for workspace dependency '{}'", dep_name))?;
+                                        global_dep_table.insert("path".to_string(), Value::String(relative_path.display().to_string()));
+                                    }
+                                }
+                                global_dep_table.remove("workspace"); // Ensure workspace = true is not propagated here
+                            }
+                            workspace_dependencies_output.insert(dep_name.clone(), global_dep_value);
+                        }
+                        // For the local dependency, make it a workspace reference
+                        output_map.insert(dep_name.clone(), toml::Value::Table(Table::from_iter(vec![("workspace".to_string(), Value::Boolean(true))] )));
+                    } else if is_workspace_dep_ref {
+                        // If it explicitly said `workspace = true` but is not in global_config,
+                        // treat it as a direct dependency with `workspace = true` which will fail Cargo build.
+                        // For now, we'll keep it as-is, which means the error will persist if not defined globally.
+                        // The user can then add it to global_config.workspace_dependencies to fix.
+                        output_map.insert(dep_name.clone(), dep_value_clone);
+                    }
+                    else {
+                        // Regular direct dependency
+                        if let Some(dep_table) = dep_value_clone.as_table_mut() {
+                            if let Some(path_value) = dep_table.get("path") {
+                                if let Some(path_str) = path_value.as_str() {
+                                    let absolute_dep_path = scan_root.join(path_str);
+                                    let relative_path = path_diff(output_dir, &absolute_dep_path)
+                                        .context(format!("Failed to calculate relative path for dependency '{}'", dep_name))?;
+                                    dep_table.insert("path".to_string(), Value::String(relative_path.display().to_string()));
+                                }
+                            }
+                        }
+                        output_map.insert(dep_name.clone(), dep_value_clone);
                     }
                 }
             }
+            Ok(())
+        };
 
-            // Determine where to add the dependency (default to regular dependencies)
-            // A more sophisticated approach might check if this is specifically a dev/build dep
-            // from the workspace, but for now, we'll assume it's a general dependency
-            // unless already specified in build-dependencies or dev-dependencies.
-            
-            // Check if it's already in build-dependencies or dev-dependencies, if so, update there
-            if package_build_deps.contains_key(dep_name) {
-                package_build_deps.insert(dep_name.clone(), processed_dep_value);
-            } else if package_dev_deps.contains_key(dep_name) {
-                package_dev_deps.insert(dep_name.clone(), processed_dep_value);
-            } else if package_patch_deps.contains_key(dep_name) {
-                 // For patch dependencies, ensure they are in the patch table
-                 package_patch_deps.insert(dep_name.clone(), processed_dep_value);
-            }
-            else {
-                // Otherwise, add/update in regular dependencies
-                package_deps.insert(dep_name.clone(), processed_dep_value);
+        process_dep_group(root_cargo_toml.get("dependencies").and_then(|v| v.as_table()), &mut package_deps_output)?;
+        process_dep_group(root_cargo_toml.get("build-dependencies").and_then(|v| v.as_table()), &mut package_build_deps_output)?;
+        process_dep_group(root_cargo_toml.get("dev-dependencies").and_then(|v| v.as_table()), &mut package_dev_deps_output)?;
+        // For patch dependencies, we handle them directly in the patch section
+        if let Some(patch_section) = root_cargo_toml.get("patch").and_then(|v| v.as_table()) {
+            if let Some(crates_io_patch) = patch_section.get("crates-io").and_then(|v| v.as_table()) {
+                package_patch_deps_output.extend(crates_io_patch.clone());
             }
         }
+
 
         // Write the consolidated dependencies to final_cargo_toml_content
-        if !package_deps.is_empty() {
+        if !package_deps_output.is_empty() {
             final_cargo_toml_content.push_str("\n[dependencies]\n");
-            for (key, value) in package_deps.iter() {
+            for (key, value) in package_deps_output.iter() {
                 final_cargo_toml_content.push_str(&format!("{} = {}\n", key, value.to_string()));
             }
         }
 
-        if !package_build_deps.is_empty() {
+        if !package_build_deps_output.is_empty() {
             final_cargo_toml_content.push_str("\n[build-dependencies]\n");
-            for (key, value) in package_build_deps.iter() {
+            for (key, value) in package_build_deps_output.iter() {
                 final_cargo_toml_content.push_str(&format!("{} = {}\n", key, value.to_string()));
             }
         }
 
-        if !package_dev_deps.is_empty() {
+        if !package_dev_deps_output.is_empty() {
             final_cargo_toml_content.push_str("\n[dev-dependencies]\n");
-            for (key, value) in package_dev_deps.iter() {
+            for (key, value) in package_dev_deps_output.iter() {
                 final_cargo_toml_content.push_str(&format!("{} = {}\n", key, value.to_string()));
             }
         }
         
+        // New: Add [workspace.dependencies] section if any were collected
+        if !workspace_dependencies_output.is_empty() {
+            final_cargo_toml_content.push_str("\n[workspace.dependencies]\n");
+            for (key, value) in workspace_dependencies_output.iter() {
+                final_cargo_toml_content.push_str(&format!("{} = {}\n", key, value.to_string()));
+            }
+        }        
         // Handle [[bin]] sections - direct copy of relevant parts, but adjust paths
         if let Some(bin_array) = root_cargo_toml.get("bin").and_then(|v| v.as_array()) {
             for bin_item in bin_array {
@@ -279,9 +309,9 @@ pub fn generate_wrapped_workspace(
         }
 
         // Handle [patch] sections
-        if !package_patch_deps.is_empty() {
+        if !package_patch_deps_output.is_empty() {
             final_cargo_toml_content.push_str("\n[patch.crates-io]\n");
-            for (key, value) in package_patch_deps.iter() {
+            for (key, value) in package_patch_deps_output.iter() {
                 final_cargo_toml_content.push_str(&format!("{} = {}\n", key, value.to_string()));
             }
         }
