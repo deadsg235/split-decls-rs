@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; fn extract_submodule_name (decls_path : & Path) -> Option < String > { decls_path . parent () ? . parent () ? . file_name () ? . to_str () . map (| s | s . to_string ()) }

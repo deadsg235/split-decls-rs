@@ -1,9 +1,12 @@
 use anyhow::{Context, Result};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use crate::goal_parser::{Workflow, Stage, Operation, FunctionCallOperation, LoopOperation, SequenceOperation, Task, Input, Output, SwitchOperation};
+use std::process::Command;
+use std::io::Write;
+use std::fs;
+use crate::goal_parser::{Workflow, Stage, Operation, FunctionCallOperation, LoopOperation, SequenceOperation, Task, Input, Output, SwitchOperation, ShellCommandOperation};
 use crate::eager_splitter;
-use crate::setup_crate_paths;
+use crate::paths::setup_crate_paths;
 use crate::crate_finder::{self, CrateInfo};
 use crate::patch_config::PatchConfig;
 use crate::generate_new_cargotoml;
@@ -84,6 +87,7 @@ impl WorkflowExecutor {
             },
             Operation::Sequence(op) => self.execute_sequence(op, &stage.inputs, &stage.outputs)?,
             Operation::Switch(op) => self.execute_switch(op, &stage.inputs, &stage.outputs)?,
+            Operation::Shell(op) => self.execute_shell_command(op, &stage.inputs, &stage.outputs)?, // Handle new Shell operation
             Operation::Unknown(value) => {
                 anyhow::bail!("Unknown operation type encountered in stage {}: {:?}", stage.name, value);
             }
@@ -256,6 +260,51 @@ impl WorkflowExecutor {
                     println!("  Generated Cargo.toml for crate '{}' in {}", crate_name, output_crate_dir.display());
                 }
             },
+            "generate_crate_toml" => {
+                if self.verbose {
+                    println!("  (Calling generate_new_cargotoml::generate_new_cargotoml)");
+                }
+                let output_crate_dir_str = resolved_args.get(0).context("generate_crate_toml expects output_crate_dir as the first argument")?;
+                let crate_info_context_key = resolved_args.get(1).context("generate_crate_toml expects crate_info context key as the second argument")?;
+                
+                let output_crate_dir = PathBuf::from(output_crate_dir_str);
+
+                let crate_info_toml = self.context.get(crate_info_context_key)
+                    .context(format!("Crate info '{}' not found in context for generate_crate_toml", crate_info_context_key))?
+                    .as_table()
+                    .context(format!("Crate info '{}' in context is not a table for generate_crate_toml", crate_info_context_key))?;
+                
+                let crate_name = crate_info_toml.get("name")
+                    .context("Crate info missing 'name' field")?
+                    .as_str()
+                    .context("Crate name is not a string")?
+                    .to_string();
+
+                let original_crate_path_str = crate_info_toml.get("original_path")
+                    .context("Crate info missing 'original_path' field")?
+                    .as_str()
+                    .context("Original crate path is not a string")?
+                    .to_string();
+                let original_crate_root_path = PathBuf::from(original_crate_path_str);
+                let original_cargo_toml_path = original_crate_root_path.join("Cargo.toml");
+                let output_cargo_toml_path = output_crate_dir.join("Cargo.toml");
+
+                // Dummy PatchConfig for now - this should ideally be passed through or loaded
+                // from a common config.
+                let dummy_patch_config = PatchConfig::default();
+
+                crate::generate_new_cargotoml::generate_new_cargotoml(
+                    &original_cargo_toml_path,
+                    &output_cargo_toml_path,
+                    &original_crate_root_path,
+                    &self.global_config,
+                    &dummy_patch_config,
+                    self.dry_run,
+                )?;
+                if self.verbose {
+                    println!("  Generated Cargo.toml for crate '{}' in {}", crate_name, output_crate_dir.display());
+                }
+            },
             _ => {
                 anyhow::bail!("Unknown function call: {}", op.function);
             }
@@ -263,6 +312,84 @@ impl WorkflowExecutor {
 
         // --- End Placeholder ---
         
+        Ok(())
+    }
+
+    fn execute_shell_command(&mut self, op: &ShellCommandOperation, _inputs: &[Input], outputs: &[Output]) -> Result<()> {
+        if self.verbose {
+            println!("  Executing shell command: {}", op.command);
+            if let Some(ref wd) = op.working_dir {
+                println!("  Working directory: {}", wd);
+            }
+        }
+
+        let mut command_parts = op.command.split_whitespace();
+        let program = command_parts.next().context("Shell command cannot be empty")?;
+        let args = command_parts;
+
+        let mut command = Command::new(program);
+        command.args(args);
+
+        if let Some(ref wd_str) = op.working_dir {
+            let resolved_wd = self.resolve_arg_value(wd_str)?;
+            let work_dir = PathBuf::from(&resolved_wd);
+            if !work_dir.exists() {
+                // Try to create the directory if it doesn't exist
+                fs::create_dir_all(&work_dir)
+                    .context(format!("Failed to create working directory: {}", work_dir.display()))?;
+                if self.verbose {
+                    println!("  Created working directory: {}", work_dir.display());
+                }
+            }
+            command.current_dir(&work_dir);
+        }
+
+        if self.dry_run {
+            println!("  (Dry run: Would execute: {:?})", command);
+            // In a dry run, we might want to simulate success or a specific output
+            // For now, just return Ok. If specific dry-run outputs are needed,
+            // they can be added to the workflow definition or configuration.
+            if let Some(output_def) = outputs.iter().find(|o| o.name == "stdout") {
+                self.context.insert(output_def.name.clone(), toml::Value::String("(dry run stdout)".to_string()));
+            }
+            if let Some(output_def) = outputs.iter().find(|o| o.name == "stderr") {
+                self.context.insert(output_def.name.clone(), toml::Value::String("(dry run stderr)".to_string()));
+            }
+            if let Some(output_def) = outputs.iter().find(|o| o.name == "status") {
+                self.context.insert(output_def.name.clone(), toml::Value::Integer(0));
+            }
+            return Ok(());
+        }
+
+        let output = command.output()
+            .context(format!("Failed to execute command: {}", op.command))?;
+
+        let stdout = String::from_utf8_lossy(&output.stdout).into_owned();
+        let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+        let status = output.status.code().unwrap_or(-1);
+
+        if self.verbose {
+            println!("  Command stdout:\n{}", stdout);
+            println!("  Command stderr:\n{}", stderr);
+            println!("  Command exit status: {}", status);
+        }
+
+        if op.capture_output {
+            if let Some(output_def) = outputs.iter().find(|o| o.name == "stdout") {
+                self.context.insert(output_def.name.clone(), toml::Value::String(stdout.clone()));
+            }
+            if let Some(output_def) = outputs.iter().find(|o| o.name == "stderr") {
+                self.context.insert(output_def.name.clone(), toml::Value::String(stderr.clone()));
+            }
+            if let Some(output_def) = outputs.iter().find(|o| o.name == "status") {
+                self.context.insert(output_def.name.clone(), toml::Value::Integer(status as i64));
+            }
+        }
+        
+        if op.error_on_failure && !output.status.success() {
+            anyhow::bail!("Command '{}' failed with status {}. Stderr: {}", op.command, status, stderr);
+        }
+
         Ok(())
     }
 
@@ -361,6 +488,7 @@ impl WorkflowExecutor {
             Operation::Loop(op) => self.execute_loop(op, task_inputs, task_outputs)?,
             Operation::Sequence(op) => self.execute_sequence(op, task_inputs, task_outputs)?,
             Operation::Switch(op) => self.execute_switch(op, task_inputs, task_outputs)?,
+            Operation::Shell(op) => self.execute_shell_command(op, task_inputs, task_outputs)?, // Handle new Shell operation
             Operation::Unknown(value) => {
                 anyhow::bail!("Unknown operation type encountered in task {}: {:?}", task.name, value);
             }
@@ -408,5 +536,10 @@ impl WorkflowExecutor {
             // Not a template string, return as is
             Ok(arg.to_string())
         }
+    }
+
+    // Public method to access context values
+    pub fn get_context_value(&self, key: &str) -> Option<&toml::Value> {
+        self.context.get(key)
     }
 }

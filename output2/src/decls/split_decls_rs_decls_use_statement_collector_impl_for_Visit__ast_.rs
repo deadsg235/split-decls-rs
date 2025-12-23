@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; impl < 'ast > Visit < 'ast > for UseStatementCollector { fn visit_item_use (& mut self , i : & 'ast ItemUse) { self . uses . push (i . clone ()) ; visit :: visit_item_use (self , i) ; } }

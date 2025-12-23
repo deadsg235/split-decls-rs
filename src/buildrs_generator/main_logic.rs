@@ -5,16 +5,16 @@ use quote::quote;
 use syn::LitStr;
 
 pub fn generate_main_logic_token_stream(
-    old_lib_rs_path_lit: &LitStr, // Still needed for rerun-if-changed, though not parsed
-    old_build_rs_path_lit: &LitStr, // Still needed for rerun-if-changed
+
+
     _decls_output_dir_lit: &LitStr, // Still needed for rerun-if-changed
     crate_name_sanitized_lit: &LitStr,
 ) -> TokenStream {
     quote! {
         fn main() -> Result<()> {
             println!("cargo:rerun-if-changed=build.rs");
-            println!("cargo:rerun-if-changed{}", #old_lib_rs_path_lit); // oldlib.rs
-            println!("cargo:rerun-if-changed{}", #old_build_rs_path_lit); // oldbuild.rs
+
+
             println!("cargo:rerun-if-changed=.split-decls-config.toml");
 
             // Load configuration for this crate to get patch file paths
@@ -49,14 +49,13 @@ mod tests {
 
     #[test]
     fn test_generate_main_logic_token_stream_basic() {
-        let old_lib_rs_path_lit = LitStr::new("/tmp/test_crate/src/oldlib.rs", Span::call_site());
-        let old_build_rs_path_lit = LitStr::new("/tmp/test_crate/oldbuild.rs", Span::call_site());
+
+
         let decls_output_dir_lit = LitStr::new("/tmp/test_crate/src/decls", Span::call_site());
         let crate_name_sanitized_lit = LitStr::new("test_crate_name", Span::call_site());
 
         let token_stream = generate_main_logic_token_stream(
-            &old_lib_rs_path_lit,
-            &old_build_rs_path_lit,
+
             &decls_output_dir_lit,
             &crate_name_sanitized_lit,
         );

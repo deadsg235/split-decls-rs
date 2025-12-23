@@ -1,13 +1,11 @@
 use std::fs;
 use anyhow::{Context, Result};
-use crate::{CratePaths, buildrs_generator};
+use crate::paths::CratePaths; use crate::buildrs_generator;
 
 /// Generates the new build.rs for the crate.
 pub fn generate_new_build_rs(paths: &CratePaths, dry_run: bool) -> Result<()> {
     // Generate the TokenStream for the build.rs content using the generator module
     let build_rs_token_stream = buildrs_generator::generate_build_rs_token_stream(
-        &paths.old_lib_rs_path,
-        &paths.old_build_rs_path,
         &paths.decls_output_dir,
         &paths.crate_name.replace("-", "_"),
     )?;

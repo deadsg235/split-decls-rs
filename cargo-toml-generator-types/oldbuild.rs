@@ -3,7 +3,7 @@ use anyhow::Result;
 
 fn main() -> Result<()> {
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=src/oldlib.rs");
+
     println!("cargo:rerun-if-changed=.split-decls-config.toml");
     
     // This build.rs monitors for changes that would require re-running split-decls-rs

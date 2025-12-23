@@ -32,6 +32,7 @@ pub enum Operation {
     Loop(LoopOperation),
     Sequence(SequenceOperation),
     Switch(SwitchOperation),
+    Shell(ShellCommandOperation), // New operation for running shell commands
     // Add other operation types as needed
     #[serde(untagged)]
     Unknown(toml::Value), // Catch-all for unknown operation types
@@ -74,6 +75,23 @@ pub struct SequenceOperation {
     #[serde(rename = "type")]
     pub op_type: String, // Should be "sequence"
     pub tasks: Vec<Task>, // Nested tasks within the sequence
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct ShellCommandOperation {
+    #[serde(rename = "type")]
+    pub op_type: String, // Should be "shell"
+    pub command: String,
+    #[serde(default)]
+    pub working_dir: Option<String>,
+    #[serde(default = "default_true")]
+    pub capture_output: bool,
+    #[serde(default)]
+    pub error_on_failure: bool,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

@@ -32,6 +32,7 @@ cargo-toml-generator-types = { path = "cargo-toml-generator-types" }
 cargo-toml-generator-macros = { path = "cargo-toml-generator-macros" }
 
 [dependencies]
+rayon = { workspace = true } # Added for multi-threaded processing
 anyhow = { workspace = true }
 toml = { workspace = true }
 serde = { workspace = true }
@@ -42,7 +43,7 @@ quote = { workspace = true }
 syn = { workspace = true, features= ["full","visit", "visit-mut", "extra-traits"] } # Added extra-traits
 walkdir = { workspace = true }
 split-decls-types = { workspace = true } # Use workspace dependency
-proc-macro2 = { workspace = true }
+proc-macro2 = { workspace = true, features = ["span-locations"] }
 tempfile = { workspace = true }
 cargo-toml-generator-types = { workspace = true } # Use workspace dependency
 sha2 = "0.10"

@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; # [doc = " Represents a single extracted declaration."] # [derive (Debug , Clone)] pub struct ExtractedDecl { pub name : String , pub kind : String , pub content : TokenStream , pub metadata : ExtractedDeclMetadata , }

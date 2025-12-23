@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; # [derive (Debug , Deserialize , Serialize)] pub struct GeneratedCrateDependency { pub crate_name : String , pub section : String , pub name : String , pub workspace : bool , pub version : Option < String > , pub features : Option < Vec < String > > , pub package : Option < String > , }

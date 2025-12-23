@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; # [doc = " The report structure containing all discovered macros."] # [derive (Debug , Serialize , Deserialize)] struct MacroReport { files : Vec < FileMetadata > , }

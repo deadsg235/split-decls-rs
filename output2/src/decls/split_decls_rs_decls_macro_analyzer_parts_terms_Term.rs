@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; # [derive (Debug , Clone , PartialEq , Eq , Hash , Serialize , Deserialize)] pub enum Term { StringLiteral (String) , NumericLiteral (String) , BooleanLiteral (bool) , CharLiteral (char) , ByteLiteral (u8) , FloatLiteral (String) , Identifier (String) , FunctionCall (String) , }

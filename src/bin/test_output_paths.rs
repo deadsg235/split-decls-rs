@@ -11,7 +11,7 @@ fn main() {
     println!("Crate name: {}", paths.crate_name);
     println!("Crate path: {}", paths.crate_path.display());
     println!("Lib.rs path: {}", paths.lib_rs_path.display());
-    println!("Old lib.rs path: {}", paths.old_lib_rs_path.display());
+    println!("Lib.rs path: {}", paths.lib_rs_path.display());
     println!("Decls output dir: {}", paths.decls_output_dir.display());
     
     // Verify the output directory structure

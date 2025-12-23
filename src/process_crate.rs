@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use std::path::Path;
 use std::fs;
 use split_decls_types::SplitDeclsConfig;
-use crate::setup_crate_paths;
+use crate::paths::setup_crate_paths;
 use crate::eager_splitter::eager_split_crate;
 
 /// Process a single crate by applying the split-decls transformation.

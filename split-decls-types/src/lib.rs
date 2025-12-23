@@ -30,7 +30,7 @@ pub struct SplitDeclsConfig {
     pub rustc_source_path: Option<PathBuf>,
     /// A map of crate names to a list of patch specifications.
     pub patches: Option<HashMap<String, Vec<PatchSpec>>>,
-    /// A list of raw string replacements to apply to oldlib.rs content before AST parsing.
+    /// A list of raw string replacements to apply to .rs content before AST parsing.
     pub string_replacements: Option<Vec<StringReplacement>>,
     /// A map of crate names to local paths for [patch.crates-io] entries.
     pub crates_io_patches: Option<HashMap<String, PathBuf>>,

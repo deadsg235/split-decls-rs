@@ -1,1 +1,1 @@
-pub use decls :: * ; pub use introspector_decl2_macros :: * ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_parsers_InlineTable] pub struct InlineTable { pub items : Punctuated < KeyValue , Token ! [,] > , }
+use proc_macro :: TokenStream ; prelude ! { } # [decl_ cargo_toml_generator_macros_decls_parsers_InlineTable] pub struct InlineTable { pub items : Punctuated < KeyValue , Token ! [,] > , }
