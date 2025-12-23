@@ -7,40 +7,34 @@ use crate::patch_config;
 
 /// Generates the new Cargo.toml for the crate, adding necessary build-dependencies.
 pub fn generate_new_cargotoml(
-    paths: &CratePaths,
-    global_config: &SplitDeclsConfig, // Still needed for root workspace info
-    original_crate_real_path: &Path,
-    patch_config: &patch_config::PatchConfig, // New: to get crate-specific dependencies
+    original_cargo_toml_path: &Path,
+    output_cargo_toml_path: &Path,
+    original_crate_root_path: &Path, // This is the path to the original crate's directory
+    global_config: &SplitDeclsConfig,
+    patch_config: &patch_config::PatchConfig,
     dry_run: bool,
 ) -> Result<()> {
-    let mut cargo_toml_content = fs::read_to_string(&paths.old_cargo_toml_path)
-        .context(format!("Failed to read old Cargo.toml from {}", paths.old_cargo_toml_path.display()))?;
+    let original_cargo_toml_content = fs::read_to_string(original_cargo_toml_path)
+        .context(format!("Failed to read original Cargo.toml from {}", original_cargo_toml_path.display()))?;
     
-    // If the file was empty (no Cargo.toml existed), initialize with a minimal structure
-    if cargo_toml_content.trim().is_empty() {
-        cargo_toml_content = format!(
-            "[package]\nname = \"{}\nversion = \"0.1.0\"\nedition = \"2021\"\n",
-            paths.crate_name
-        );
-    }
+    let mut cargo_toml: CargoToml = toml::from_str(&original_cargo_toml_content)
+        .context(format!("Failed to parse original Cargo.toml from {}", original_cargo_toml_path.display()))?;
 
-    let mut cargo_toml: CargoToml = toml::from_str(&cargo_toml_content)
-        .context(format!("Failed to parse old Cargo.toml from {}", paths.old_cargo_toml_path.display()))?;
+    // Extract crate name from the package section
+    let crate_name = cargo_toml.package.name.clone();
 
     // Remove unwanted top-level sections for submodules
     cargo_toml.other.remove("workspace");
-    cargo_toml.other.remove("profile"); // This removes a top-level `[profile]` section
-    cargo_toml.other.remove("lints"); // This removes a top-level `[lints]` section
-    cargo_toml.other.remove("bench"); // Remove top-level `[bench]` sections
+    cargo_toml.other.remove("profile");
+    cargo_toml.other.remove("lints");
+    cargo_toml.other.remove("bench");
 
-    // Iterate through `other` and remove any keys starting with "profile.", "lints.", "bench."
-    // or containing "workspace" (unless it's specifically "package.workspace" which is handled in Package struct)
     let keys_to_remove: Vec<String> = cargo_toml.other.keys()
         .filter(|k| 
             k.starts_with("profile.") || 
             k.starts_with("lints.") || 
             k.starts_with("bench.") ||
-            (k.contains("workspace") && *k != "workspace") // Remove other workspace-related keys
+            (k.contains("workspace") && *k != "workspace")
         )
         .cloned()
         .collect();
@@ -49,14 +43,10 @@ pub fn generate_new_cargotoml(
         cargo_toml.other.remove(&key);
     }
 
-    // Process existing dependencies from the old Cargo.toml
-    // This will convert any path dependencies to workspace = true if they are found in global_config.workspace_dependencies
-    process_dependency_table(&mut cargo_toml.dependencies, global_config, original_crate_real_path)?;
-    process_dependency_table(&mut cargo_toml.dev_dependencies, global_config, original_crate_real_path)?;
-    process_dependency_table(&mut cargo_toml.build_dependencies, global_config, original_crate_real_path)?;
+    process_dependency_table(&mut cargo_toml.dependencies, global_config, original_crate_root_path)?;
+    process_dependency_table(&mut cargo_toml.dev_dependencies, global_config, original_crate_root_path)?;
+    process_dependency_table(&mut cargo_toml.build_dependencies, global_config, original_crate_root_path)?;
 
-
-    // Ensure essential build dependencies are present
     let build_deps_table = &mut cargo_toml.build_dependencies;
     let essential_build_deps = [
         ("anyhow", None),
@@ -77,16 +67,12 @@ pub fn generate_new_cargotoml(
         build_deps_table.insert(dep_name.to_string(), toml::Value::Table(dep_table_value));
     }
 
-    // Add introspector macro crate as regular dependency
-    // Use workspace dependency instead of path
     let mut macro_dep = toml::Table::new();
     macro_dep.insert("workspace".to_string(), toml::Value::Boolean(true));
     cargo_toml.dependencies.insert("introspector_decl2_macros".to_string(), toml::Value::Table(macro_dep));
 
-    // Dynamically add/update dependencies from patch_config.generated_crate_dependency
     for dep_entry in &patch_config.generated_crate_dependency {
-        // Only process dependencies relevant to this specific crate
-        if dep_entry.crate_name != paths.crate_name {
+        if dep_entry.crate_name != crate_name {
             continue;
         }
 
@@ -122,23 +108,20 @@ pub fn generate_new_cargotoml(
         target_table.insert(dep_entry.name.clone(), toml::Value::Table(dep_table_value));
     }
 
-
-    // Remove [patch.crates-io] section from individual crate Cargo.toml
     cargo_toml.patch.clear();
-
 
     let new_cargo_toml_content = toml::to_string(&cargo_toml)
         .context("Failed to serialize new Cargo.toml")?;
     
     if dry_run {
-        let new_path = paths.cargo_toml_path.with_extension("new"); // Changed to .new
+        let new_path = output_cargo_toml_path.with_extension("new");
         fs::write(&new_path, new_cargo_toml_content)
             .context(format!("Failed to write new Cargo.toml to {}", new_path.display()))?;
-        println!("Dry-run: Generated new Cargo.toml content to {} for crate {}", new_path.display(), paths.crate_name);
+        println!("Dry-run: Generated new Cargo.toml content to {} for crate {}", new_path.display(), crate_name);
     } else {
-        fs::write(&paths.cargo_toml_path, new_cargo_toml_content)
-            .context(format!("Failed to write new Cargo.toml to {}", paths.cargo_toml_path.display()))?;
-        println!("Generated new Cargo.toml for crate {}", paths.crate_name);
+        fs::write(output_cargo_toml_path, new_cargo_toml_content)
+            .context(format!("Failed to write new Cargo.toml to {}", output_cargo_toml_path.display()))?;
+        println!("Generated new Cargo.toml for crate {}", crate_name);
     }
 
     Ok(())

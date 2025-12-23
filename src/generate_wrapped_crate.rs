@@ -70,7 +70,14 @@ pub fn generate_wrapped_crate(
 
     // Generate Cargo.toml for the wrapped crate
     // This will reference the original project's crates if they are part of the original workspace
-    generate_new_cargotoml(&wrapped_crate_paths, global_config, original_crate_path, patch_config, dry_run)?;
+    generate_new_cargotoml(
+        &original_cargo_toml_path,
+        &wrapped_crate_paths.cargo_toml_path, // Output path for the new Cargo.toml
+        original_crate_path,
+        global_config,
+        patch_config,
+        dry_run,
+    )?;
     
     // Generate lib.rs for the wrapped crate
     generate_new_lib_rs(&wrapped_crate_paths, dry_run)?;

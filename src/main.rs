@@ -12,6 +12,8 @@ use walkdir;
 use clap::{Parser, Subcommand}; // Added clap imports
 use std::time::Instant; // Added for ecosystem_scan_mode
 use std::path::Path; // Added for ecosystem_scan_mode (Path type)
+use split_decls_rs::goal_parser::{GoalConfig, Workflow};
+use split_decls_rs::workflow_executor::WorkflowExecutor;
 mod ecosystem_processor; // New module for ecosystem processing
 
 #[derive(Parser, Debug)]
@@ -47,11 +49,22 @@ enum Commands {
 
         /// Run in dry-run mode, no files will be modified
         #[arg(short, long)]
+        recursive: bool,
+
+	/// Run in dry-run mode, no files will be modified
+        #[arg(short, long)]
         dry_run: bool,
 
-        /// Process crates recursively in the base path
+    },
+    /// Executes a workflow defined in a goal.toml file
+    #[command(name = "execute-goal-workflow")]
+    ExecuteGoalWorkflow {
+        /// Path to the goal.toml file
+        #[arg(value_name = "FILE")]
+        goal_file: PathBuf,
+        /// Run in dry-run mode, no files will be modified
         #[arg(short, long)]
-        recursive: bool,
+        dry_run: bool,
     },
 }
 
@@ -250,7 +263,28 @@ fn run_ecosystem_scan_mode(
     recursive: bool,
     global_config: &SplitDeclsConfig,
 ) -> Result<()> {
-    println!("Running ecosystem-scan mode (implementation pending).");
+    ecosystem_processor::process_ecosystem(verbose, dry_run, base_path, recursive, global_config)
+}
+
+fn run_execute_goal_workflow_mode(
+    verbose: bool,
+    dry_run: bool,
+    goal_file: &PathBuf,
+    global_config: &SplitDeclsConfig,
+) -> Result<()> {
+    if verbose {
+        if dry_run {
+            println!("*** Running in DRY-RUN mode. No files will be modified. ***");
+        }
+        println!("Executing workflow from: {}", goal_file.display());
+    }
+
+    let goal_config = GoalConfig::load_from_file(goal_file)
+        .context(format!("Failed to load goal file from {}", goal_file.display()))?;
+
+    let mut workflow_executor = WorkflowExecutor::new(verbose, dry_run, global_config.clone());
+    workflow_executor.execute(&goal_config.workflow)?;
+
     Ok(())
 }
 
@@ -306,8 +340,11 @@ fn main() -> Result<()> {
         Commands::WrappedWorkspace { output_dir, dry_run } => {
             run_wrapped_workspace_mode(cli.verbose, *dry_run, output_dir.as_ref(), &global_config)?;
         }
-        Commands::EcosystemScan { base_path, dry_run, recursive } => {
+        Commands::EcosystemScan { base_path, recursive, dry_run } => {
             run_ecosystem_scan_mode(cli.verbose, *dry_run, base_path, *recursive, &global_config)?;
+        }
+        Commands::ExecuteGoalWorkflow { goal_file, dry_run } => {
+            run_execute_goal_workflow_mode(cli.verbose, *dry_run, goal_file, &global_config)?;
         }
     }
 

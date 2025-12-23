@@ -23,7 +23,11 @@ pub mod auto_workspace_generator;
 pub mod get_item_name;
 pub mod get_item_kind;
 pub mod process_crate;
+pub mod generate_new_workspace;
+pub mod crate_finder;
+pub mod workflow_executor;
 pub mod process_crates_in_path;
+pub mod goal_parser;
 pub use extracted_decl::*;
 
 // Re-export key functions for tests

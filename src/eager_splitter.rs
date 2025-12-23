@@ -3,6 +3,7 @@ use proc_macro2::{Ident, Span, TokenStream};
 use quote::ToTokens;
 use std::fs;
 use std::io::Write;
+use std::path::{Path, PathBuf}; // Added Path
 use syn::visit::Visit;
 use syn::{self};
 
@@ -174,6 +175,46 @@ fn process_module_recursively(
         }
     }
     
+    Ok(())
+}
+
+use std::collections::HashMap; // Added for HashMap
+
+/// Extracts declarations from a crate's lib.rs and returns them as a map.
+pub fn extract_declarations_to_map(paths: &CratePaths) -> Result<HashMap<String, TokenStream>> {
+    let lib_content = fs::read_to_string(&paths.lib_rs_path)
+        .context(format!("Failed to read {}", paths.lib_rs_path.display()))?;
+    
+    let syntax_tree: syn::File = syn::parse_file(&lib_content)
+        .context("Failed to parse lib.rs as Rust code")?;
+
+    let mut extracted_decls: HashMap<String, TokenStream> = HashMap::new();
+    let mut item_count = 0; // for unique names if needed
+
+    for item in &syntax_tree.items {
+        if let Some(decl) = declaration_extractor::extract_single_declaration(item, item_count) {
+            extracted_decls.insert(decl.name, decl.content);
+            item_count += 1;
+        }
+    }
+    Ok(extracted_decls)
+}
+
+/// Copies extracted declarations to the specified output directory.
+pub fn copy_declarations_to_output(
+    crate_name: &str,
+    declarations: &HashMap<String, String>, // Declarations as name -> TokenStream string
+    output_base_path: &Path,
+) -> Result<()> {
+    let crate_output_dir = output_base_path.join(crate_name).join("src").join("decls");
+    std::fs::create_dir_all(&crate_output_dir)
+        .context(format!("Failed to create output directory for declarations: {}", crate_output_dir.display()))?;
+
+    for (decl_name, decl_tokens_str) in declarations {
+        let file_path = crate_output_dir.join(format!("{}.rs", decl_name));
+        std::fs::write(&file_path, decl_tokens_str)
+            .context(format!("Failed to write declaration to {}", file_path.display()))?;
+    }
     Ok(())
 }
 
