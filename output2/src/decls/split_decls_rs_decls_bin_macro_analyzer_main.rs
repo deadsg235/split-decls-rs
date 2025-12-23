@@ -1,1 +1,146 @@
- use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; fn main () -> anyhow :: Result < () > { let cli = Cli :: parse () ; let module_root_dir = cli . module_root_dir ; let _global_root_dirs = cli . global_root_dirs ; let mut errors : Vec < String > = Vec :: new () ; let mut analysis = TermAnalysis :: default () ; let mut all_global_terms_vec = Vec :: new () ; let mut module_terms_from_files = HashMap :: new () ; for entry in walkdir :: WalkDir :: new (& module_root_dir) { let entry = entry . context ("Failed to read directory entry") ? ; if entry . file_type () . is_file () && entry . path () . extension () . map_or (false , | ext | ext == "rs") { match analyze_file_macros (entry . path ()) { Ok (file_macro_terms) => { for (macro_name , terms) in file_macro_terms { analysis . terms_per_macro . insert (macro_name . clone () , terms . clone ()) ; all_global_terms_vec . extend (terms . clone ()) ; module_terms_from_files . entry (entry . path () . to_path_buf ()) . or_insert_with (Vec :: new) . extend (terms) ; } } , Err (e) => { errors . push (format ! ("Error processing file {}: {:?}" , entry . path () . display () , e)) ; } } } } let mut all_module_terms_vec_for_freq = Vec :: new () ; for (_ , terms) in & module_terms_from_files { all_module_terms_vec_for_freq . extend (terms . clone ()) ; } analysis . total_module_terms = all_module_terms_vec_for_freq . len () ; for term in & all_module_terms_vec_for_freq { * analysis . module_frequencies . entry (term . clone ()) . or_insert (0) += 1 ; } analysis . total_global_terms = all_global_terms_vec . len () ; for term in & all_global_terms_vec { * analysis . global_frequencies . entry (term . clone ()) . or_insert (0) += 1 ; } let mut term_scores_by_macro : HashMap < String , HashMap < Term , f64 > > = HashMap :: new () ; let mut global_module_term_scores : HashMap < Term , (f64 , f64) > = HashMap :: new () ; for (macro_name , terms) in & analysis . terms_per_macro { let mut local_counts : HashMap < Term , usize > = HashMap :: new () ; for term in terms { * local_counts . entry (term . clone ()) . or_insert (0) += 1 ; } let total_local_terms = terms . len () ; let mut current_macro_local_scores : HashMap < Term , f64 > = HashMap :: new () ; for term in terms { let module_frequency = * analysis . module_frequencies . get (term) . unwrap_or (& 0) ; let global_frequency = * analysis . global_frequencies . get (term) . unwrap_or (& 0) ; let local_frequency = * local_counts . get (term) . unwrap_or (& 0) ; let module_relative_frequency = if analysis . total_module_terms > 0 { module_frequency as f64 / analysis . total_module_terms as f64 } else { 0.0 } ; let global_relative_frequency = if analysis . total_global_terms > 0 { global_frequency as f64 / analysis . total_global_terms as f64 } else { 0.0 } ; let local_relative_frequency = if total_local_terms > 0 { local_frequency as f64 / total_local_terms as f64 } else { 0.0 } ; let module_score = get_closest_prime_reciprocal (module_relative_frequency) ; let global_score = get_closest_prime_reciprocal (global_relative_frequency) ; let local_score = get_closest_prime_reciprocal (local_relative_frequency) ; current_macro_local_scores . insert (term . clone () , local_score) ; global_module_term_scores . insert (term . clone () , (module_score , global_score)) ; } term_scores_by_macro . insert (macro_name . clone () , current_macro_local_scores) ; } let output_data = calculate_and_format_scores (analysis , term_scores_by_macro , global_module_term_scores ,) ; let toml_string = toml :: to_string_pretty (& output_data) . context ("Failed to serialize analysis results to TOML") ? ; let output_file_path = cli . output_file ; let output_dir = output_file_path . parent () . unwrap_or_else (| | Path :: new (".")) ; fs :: create_dir_all (& output_dir) . with_context (| | format ! ("Failed to create output directory: {}" , output_dir . display ())) ? ; fs :: write (& output_file_path , toml_string) . with_context (| | format ! ("Failed to write analysis results to file: {}" , output_file_path . display ())) ? ; println ! ("Analysis results written to {}" , output_file_path . display ()) ; println ! ("--- Term Analysis Results ---") ; println ! ("\nModule Frequencies (Total terms: {})" , output_data . total_module_terms) ; for (term , count) in & output_data . module_frequencies { println ! ("  {:?}: {}\n" , term , count) ; } println ! ("\nGlobal Frequencies (Total terms: {})" , output_data . total_global_terms) ; let mut sorted_global_frequencies : Vec < (& String , & usize) > = output_data . global_frequencies . iter () . collect () ; sorted_global_frequencies . sort_by (| a , b | b . 1 . cmp (a . 1)) ; for (term , count) in sorted_global_frequencies { println ! ("  {:?}: {}\n" , term , count) ; } println ! ("\nTerm Scores (Module, Global, and Local per macro):") ; for (term , (module_score , global_score)) in & output_data . global_module_term_scores { print ! ("  {:?}: Module: {:.4}, Global: {:.4}" , term , module_score , global_score) ; for (macro_name , local_scores_map) in & output_data . term_scores_by_macro { if let Some (& local_score) = local_scores_map . get (term) { specialprint (macro_name , local_score) ; } } println ! () ; } if ! errors . is_empty () { println ! ("\n--- Errors Encountered During Analysis ---") ; for error in errors { eprintln ! ("{}" , error) ; } } Ok (()) }
+// Generated by add_generated_rust_header! macro at submodules/split-decls-rs/src/eager_splitter/declaration_writer.rs:71 from submodules/split-decls-rs/src/eager_splitter/declaration_writer.rs at 2025-12-23T17:27:46.488193386+00:00
+// Do not edit this file by hand. Your changes will be overwritten.
+
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+fn main() -> anyhow::Result<()> {
+    let cli = Cli::parse();
+    let module_root_dir = cli.module_root_dir;
+    let _global_root_dirs = cli.global_root_dirs;
+    let mut errors: Vec<String> = Vec::new();
+    let mut analysis = TermAnalysis::default();
+    let mut all_global_terms_vec = Vec::new();
+    let mut module_terms_from_files = HashMap::new();
+    for entry in walkdir::WalkDir::new(&module_root_dir) {
+        let entry = entry.context("Failed to read directory entry")?;
+        if entry.file_type().is_file() && entry.path().extension().map_or(false, |ext| ext == "rs")
+        {
+            match analyze_file_macros(entry.path()) {
+                Ok(file_macro_terms) => {
+                    for (macro_name, terms) in file_macro_terms {
+                        analysis
+                            .terms_per_macro
+                            .insert(macro_name.clone(), terms.clone());
+                        all_global_terms_vec.extend(terms.clone());
+                        module_terms_from_files
+                            .entry(entry.path().to_path_buf())
+                            .or_insert_with(Vec::new)
+                            .extend(terms);
+                    }
+                }
+                Err(e) => {
+                    errors.push(format!(
+                        "Error processing file {}: {:?}",
+                        entry.path().display(),
+                        e
+                    ));
+                }
+            }
+        }
+    }
+    let mut all_module_terms_vec_for_freq = Vec::new();
+    for (_, terms) in &module_terms_from_files {
+        all_module_terms_vec_for_freq.extend(terms.clone());
+    }
+    analysis.total_module_terms = all_module_terms_vec_for_freq.len();
+    for term in &all_module_terms_vec_for_freq {
+        *analysis.module_frequencies.entry(term.clone()).or_insert(0) += 1;
+    }
+    analysis.total_global_terms = all_global_terms_vec.len();
+    for term in &all_global_terms_vec {
+        *analysis.global_frequencies.entry(term.clone()).or_insert(0) += 1;
+    }
+    let mut term_scores_by_macro: HashMap<String, HashMap<Term, f64>> = HashMap::new();
+    let mut global_module_term_scores: HashMap<Term, (f64, f64)> = HashMap::new();
+    for (macro_name, terms) in &analysis.terms_per_macro {
+        let mut local_counts: HashMap<Term, usize> = HashMap::new();
+        for term in terms {
+            *local_counts.entry(term.clone()).or_insert(0) += 1;
+        }
+        let total_local_terms = terms.len();
+        let mut current_macro_local_scores: HashMap<Term, f64> = HashMap::new();
+        for term in terms {
+            let module_frequency = *analysis.module_frequencies.get(term).unwrap_or(&0);
+            let global_frequency = *analysis.global_frequencies.get(term).unwrap_or(&0);
+            let local_frequency = *local_counts.get(term).unwrap_or(&0);
+            let module_relative_frequency = if analysis.total_module_terms > 0 {
+                module_frequency as f64 / analysis.total_module_terms as f64
+            } else {
+                0.0
+            };
+            let global_relative_frequency = if analysis.total_global_terms > 0 {
+                global_frequency as f64 / analysis.total_global_terms as f64
+            } else {
+                0.0
+            };
+            let local_relative_frequency = if total_local_terms > 0 {
+                local_frequency as f64 / total_local_terms as f64
+            } else {
+                0.0
+            };
+            let module_score = get_closest_prime_reciprocal(module_relative_frequency);
+            let global_score = get_closest_prime_reciprocal(global_relative_frequency);
+            let local_score = get_closest_prime_reciprocal(local_relative_frequency);
+            current_macro_local_scores.insert(term.clone(), local_score);
+            global_module_term_scores.insert(term.clone(), (module_score, global_score));
+        }
+        term_scores_by_macro.insert(macro_name.clone(), current_macro_local_scores);
+    }
+    let output_data =
+        calculate_and_format_scores(analysis, term_scores_by_macro, global_module_term_scores);
+    let toml_string = toml::to_string_pretty(&output_data)
+        .context("Failed to serialize analysis results to TOML")?;
+    let output_file_path = cli.output_file;
+    let output_dir = output_file_path.parent().unwrap_or_else(|| Path::new("."));
+    fs::create_dir_all(&output_dir).with_context(|| {
+        format!(
+            "Failed to create output directory: {}",
+            output_dir.display()
+        )
+    })?;
+    fs::write(&output_file_path, toml_string).with_context(|| {
+        format!(
+            "Failed to write analysis results to file: {}",
+            output_file_path.display()
+        )
+    })?;
+    println!("Analysis results written to {}", output_file_path.display());
+    println!("--- Term Analysis Results ---");
+    println!(
+        "\nModule Frequencies (Total terms: {})",
+        output_data.total_module_terms
+    );
+    for (term, count) in &output_data.module_frequencies {
+        println!("  {:?}: {}\n", term, count);
+    }
+    println!(
+        "\nGlobal Frequencies (Total terms: {})",
+        output_data.total_global_terms
+    );
+    let mut sorted_global_frequencies: Vec<(&String, &usize)> =
+        output_data.global_frequencies.iter().collect();
+    sorted_global_frequencies.sort_by(|a, b| b.1.cmp(a.1));
+    for (term, count) in sorted_global_frequencies {
+        println!("  {:?}: {}\n", term, count);
+    }
+    println!("\nTerm Scores (Module, Global, and Local per macro):");
+    for (term, (module_score, global_score)) in &output_data.global_module_term_scores {
+        print!(
+            "  {:?}: Module: {:.4}, Global: {:.4}",
+            term, module_score, global_score
+        );
+        for (macro_name, local_scores_map) in &output_data.term_scores_by_macro {
+            if let Some(&local_score) = local_scores_map.get(term) {
+                specialprint(macro_name, local_score);
+            }
+        }
+        println!();
+    }
+    if !errors.is_empty() {
+        println!("\n--- Errors Encountered During Analysis ---");
+        for error in errors {
+            eprintln!("{}", error);
+        }
+    }
+    Ok(())
+}
