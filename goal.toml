@@ -1,0 +1,54 @@
+# goal.toml
+
+# Ansible-like playbook definition for a declaration processing workflow
+[workflow]
+name = "Ecosystem Declaration Splitting and Workspace Generation"
+description = "Processes Rust crates to extract declarations and re-organize them into a new workspace."
+style_influences = ["Ansible", "Lisp", "Lean4", "Rust", "LLVM", "Bash"]
+
+[[workflow.stages]]
+name = "Discover Crates"
+description = "Recursively finds all Rust crates (Cargo.toml + src/lib.rs) within the specified base path."
+processor_hint = "Bash-like directory traversal with Rust-like path filtering"
+operation = { type = "function_call", function = "find_crates", args = ["../../"], recursive = true }
+outputs = [{ name = "discovered_crates", type = "list<Path>", description = "Paths to detected crate roots." }]
+# Lean4-like: assert output is non-empty list of valid paths
+
+[[workflow.stages]]
+name = "Extract and Copy Declarations"
+description = "For each discovered crate, extracts all top-level declarations and copies them to the designated output directory."
+processor_hint = "LLVM-like pass over AST, Rust-like type extraction"
+inputs = [{ name = "crates_to_process", from_stage = "Discover Crates", output_name = "discovered_crates" }]
+operation = { type = "loop", over = "crates_to_process", loop_var = "crate_path" }
+
+  [[workflow.stages.operation.tasks]]
+  name = "Extract Declarations for Crate"
+  operation = { type = "function_call", function = "extract_declarations", args = ["{{ crate_path }}"], output_base = "output/" }
+  outputs = [{ name = "extracted_decls", type = "map<DeclName, TokenStream>", description = "Mapping of declaration names to their TokenStream representations." }]
+  # Lean4-like: proof that extraction preserves semantics
+
+  [[workflow.stages.operation.tasks]]
+  name = "Copy Declarations to Output"
+  inputs = [{ name = "declarations", from_task = "Extract Declarations for Crate", output_name = "extracted_decls" }]
+  operation = { type = "function_call", function = "copy_to_output", args = ["{{ crate_path.name }}", "{{ declarations }}", "output/"] }
+  # Bash-like: cp -r ...
+
+[[workflow.stages]]
+name = "Generate New Workspace Structure"
+description = "Creates a new Cargo workspace root and individual Cargo.toml files for each processed crate in the output directory."
+processor_hint = "Ansible-like templating and file generation"
+inputs = [{ name = "processed_crates", from_stage = "Extract and Copy Declarations", output_name = "all_processed_crates_info" }] # Assuming previous stage aggregates info
+operation = { type = "sequence" }
+
+  [[workflow.stages.operation.tasks]]
+  name = "Create Workspace Root Cargo.toml"
+  operation = { type = "function_call", function = "generate_workspace_root_toml", args = ["output/", "{{ processed_crates }}"] }
+  # Rust-like: ensures validity of generated TOML schema
+
+  [[workflow.stages.operation.tasks]]
+  name = "Create Individual Crate Cargo.toml files"
+  operation = { type = "loop", over = "processed_crates", loop_var = "crate_info" }
+    [[workflow.stages.operation.tasks.operation.tasks]]
+    name = "Generate Crate Cargo.toml"
+    operation = { type = "function_call", function = "generate_crate_toml", args = ["output/{{ crate_info.name }}/", "{{ crate_info }}"] }
+    # Lisp-like: (generate-crate-toml (path output-dir crate-name) crate-info)

@@ -1,0 +1,33 @@
+# goal3.toml - Describes the high-level structure of goal2.toml
+
+[schema_meta_description]
+name = "Goal2.toml Schema Description Structure"
+version = "1.0"
+description = "Defines the expected TOML structure for describing a schema, as seen in goal2.toml."
+
+# Top-level 'schema_description' table
+[schema_meta_description.schema_description]
+type = "table"
+contains = [
+    { key = "name", type = "string", description = "The name of the schema being described." },
+    { key = "version", type = "string", description = "The version of the schema description." },
+    { key = "description", type = "string", description = "A general description of the schema." }
+    # Other tables within schema_description are dynamically named, their structure follows 'structural_item_pattern'
+]
+
+# Pattern for describing a structural item (like 'workflow', 'stages_item', 'inputs_item', etc. in goal2.toml)
+[schema_meta_description.structural_item_pattern]
+type = "table"
+contains = [
+    { key = "type", type = "string", description = "The type of the structural element (e.g., 'table', 'array<table>')." },
+    { key = "contains", type = "array<table>", description = "A list of key-value pair descriptions contained within this element. Each item follows 'key_value_description_pattern'." }
+]
+
+# Pattern for describing a key-value pair within a 'contains' array
+[schema_meta_description.key_value_description_pattern]
+type = "table"
+contains = [
+    { key = "key", type = "string", description = "The name of the key." },
+    { key = "type", type = "string", description = "The data type associated with the key's value (e.g., 'string', 'array<string>', 'table')." },
+    { key = "description", type = "string", description = "A description of the key's purpose." }
+]

@@ -1,0 +1,73 @@
+# goal2.toml - Describes the high-level structure of goal.toml
+
+[schema_description]
+name = "Goal.toml Workflow Structure"
+version = "1.0"
+description = "Describes the expected TOML structure for defining a multi-stage workflow goal."
+
+# Top-level 'workflow' table
+[schema_description.workflow]
+type = "table"
+contains = [
+    { key = "name", type = "string", description = "The workflow's name." },
+    { key = "description", type = "string", description = "A detailed explanation of the workflow." },
+    { key = "style_influences", type = "array<string>", description = "List of conceptual influences (e.g., 'Ansible', 'Lisp')." },
+    { key = "stages", type = "array<table>", description = "A list of sequential stages in the workflow." }
+]
+
+# Structure of each 'stage' table within 'workflow.stages' array
+[schema_description.workflow.stages_item]
+type = "table"
+contains = [
+    { key = "name", type = "string", description = "Name of the stage." },
+    { key = "description", type = "string", description = "Description of the stage." },
+    { key = "processor_hint", type = "string", description = "Optional hint for processing style." },
+    { key = "inputs", type = "array<table>", description = "Optional: Data dependencies from previous stages or tasks. See 'inputs_item' schema." },
+    { key = "outputs", type = "array<table>", description = "Optional: Data produced by this stage. See 'outputs_item' schema." },
+    { key = "operation", type = "table", description = "Details of the main operation(s) for this stage. See 'operation' schema." }
+]
+
+# Structure of an 'inputs' item (reused for stage.inputs and task.inputs)
+[schema_description.inputs_item]
+type = "table"
+contains = [
+    { key = "name", type = "string", description = "Local name for the input." },
+    { key = "from_stage", type = "string", description = "Name of the stage providing this input." },
+    { key = "from_task", type = "string", description = "Optional: Name of the task providing this input within a stage." },
+    { key = "output_name", type = "string", description = "The name of the output field from the source." }
+]
+
+# Structure of an 'outputs' item (reused for stage.outputs and task.outputs)
+[schema_description.outputs_item]
+type = "table"
+contains = [
+    { key = "name", type = "string", description = "Name of the output field." },
+    { key = "type", type = "string", description = "Data type of the output (e.g., 'list<Path>', 'map<string, TokenStream>')." },
+    { key = "description", type = "string", description = "Description of the output's content." }
+]
+
+# Structure of an 'operation' table (reused for stage.operation and task.operation)
+[schema_description.operation]
+type = "table"
+contains = [
+    { key = "type", type = "string", description = "Type of operation ('function_call', 'loop', 'sequence')." },
+    { key = "function", type = "string", description = "Function name (for 'function_call'). Required if type is 'function_call'." },
+    { key = "args", type = "array<string>", description = "Arguments for the function call." },
+    { key = "recursive", type = "boolean", description = "Whether the operation should be recursive (if applicable)." },
+    { key = "over", type = "string", description = "The variable to iterate over (for 'loop'). Required if type is 'loop'." },
+    { key = "loop_var", type = "string", description = "The name of the loop variable (for 'loop'). Required if type is 'loop'." },
+    { key = "tasks", type = "array<table>", description = "Nested tasks (for 'loop' or 'sequence'). See 'task_item' schema." },
+    { key = "output_base", type = "string", description = "Base directory for output (for certain operations)." }
+]
+
+# Structure of a 'task' table within an operation.tasks array
+[schema_description.task_item]
+type = "table"
+contains = [
+    { key = "name", type = "string", description = "Name of the sub-task." },
+    { key = "operation", type = "table", description = "The operation definition for this sub-task. See 'operation' schema." },
+    { key = "inputs", type = "array<table>", description = "Optional: Inputs specific to this sub-task. See 'inputs_item' schema." },
+    { key = "outputs", type = "array<table>", description = "Optional: Outputs specific to this sub-task. See 'outputs_item' schema." }
+]
+
+# Note: The 'operation', 'inputs_item', and 'outputs_item' schemas are reused for nested operations and tasks.
