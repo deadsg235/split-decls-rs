@@ -30,7 +30,6 @@ pub mod crate_finder;
 pub mod workflow_executor;
 pub mod process_crates_in_path;
 pub mod goal_parser;
-pub mod backup_original_files;
 pub mod backup_original_cargo;
 pub mod ecosystem_processor;
 pub use extracted_decl::*;

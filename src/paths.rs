@@ -10,6 +10,7 @@ pub struct CratePaths {
     pub build_rs_path: PathBuf,
 
     pub cargo_toml_path: PathBuf, // New field for Cargo.toml
+    pub old_cargo_toml_path: PathBuf, // Backup path for original Cargo.toml
 
     pub decls_output_dir: PathBuf,
     pub target_config_path: PathBuf,
@@ -36,6 +37,7 @@ pub fn setup_crate_paths(crate_path: &Path) -> Result<CratePaths> {
     let build_rs_path = crate_path.join("build.rs");
 
     let cargo_toml_path = crate_path.join("Cargo.toml");
+    let old_cargo_toml_path = crate_path.join("oldCargo.toml");
 
     let decls_output_dir = output_crate_path.join("src").join("decls"); // Decls within the output crate
     let target_config_path = output_crate_path.join(".split-decls-config.toml"); // Config within the output crate
@@ -48,6 +50,7 @@ pub fn setup_crate_paths(crate_path: &Path) -> Result<CratePaths> {
         build_rs_path,
 
         cargo_toml_path,
+        old_cargo_toml_path,
 
         decls_output_dir,
         target_config_path,

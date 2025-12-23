@@ -27,6 +27,7 @@ proc-macro2 = "1.0"
 tempfile = "3.0"
 clap = { version = "4.0", features = ["derive"] }
 darling = "0.20"
+rayon = "1.8"
 split-decls-types = { path = "split-decls-types" }
 cargo-toml-generator-types = { path = "cargo-toml-generator-types" }
 cargo-toml-generator-macros = { path = "cargo-toml-generator-macros" }

@@ -19,8 +19,11 @@ The codebase has undergone significant quality improvements and **SUCCESSFUL ECO
 - **✅ Error Handling**: Consistent error propagation with `anyhow::Result`
 - **✅ Large-Scale Processing**: Successfully processed thousands of declarations
 - **✅ Ecosystem Ready**: Validated on complex codebases, ready for cargo2nix integration
+- **✅ Modern CLI Interface**: Full clap-based CLI with subcommands and options
+- **✅ Multi-threaded Processing**: Parallel crate processing with rayon
+- **✅ Comprehensive Documentation**: Updated with all commands and features
 
-See [QA_REPORT.md](QA_REPORT.md) and [ECOSYSTEM_TRANSFORMATION.md](ECOSYSTEM_TRANSFORMATION.md) for detailed analysis.
+See [QA_REPORT.md](QA_REPORT.md), [ECOSYSTEM_TRANSFORMATION.md](ECOSYSTEM_TRANSFORMATION.md), and [COMMANDS_REFERENCE.md](COMMANDS_REFERENCE.md) for detailed analysis.
 
 ## Core Vision: Rust Packages via Overlays
 The system functions as a package maintenance layer where third-party Rust modules are ingested and transformed into a modular structure. This approach aims to solve common problems associated with modifying external dependencies, offering significant benefits:
@@ -128,8 +131,34 @@ let report = llm! {
 
 
 
-## Testing 
+## Quick Start
 
+### Installation
+```bash
+git clone https://github.com/deadsg235/split-decls-rs.git
+cd split-decls-rs
+cargo build --release
 ```
+
+### Basic Usage
+```bash
+# Show all available commands
+cargo run --bin split-decls-rs -- --help
+
+# Scan and process crates in current directory (dry-run)
+cargo run --bin split-decls-rs -- ecosystem-scan --recursive --dry-run --verbose .
+
+# Bootstrap the tool on itself
 cargo run --bin split-decls-rs -- bootstrap
+
+# Generate a wrapped workspace
+cargo run --bin split-decls-rs -- wrapped-workspace --output-dir ./output
 ```
+
+### CLI Commands
+- **`ecosystem-scan`**: Scan directories for Rust crates and process them
+- **`wrapped-workspace`**: Generate wrapped workspace structures
+- **`execute-goal-workflow`**: Execute complex workflow pipelines
+- **`bootstrap`**: Self-process the split-decls-rs project
+
+See [COMMANDS_REFERENCE.md](COMMANDS_REFERENCE.md) for complete documentation.

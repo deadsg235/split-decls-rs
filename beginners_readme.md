@@ -1,283 +1,239 @@
-# Split-Decls-RS: Complete Beginner's Guide
-                                                                                                                                              
-## What is Split-Decls-RS?                                                                                                                    
-                                                                                                                                              
-Split-Decls-RS is a tool that helps you modify Rust code from other projects without changing the original files. Think of it like putting a t
-ransparent overlay on a map - you can draw on the overlay without damaging the original map underneath.                                       
-                                                                                                                                              
-## Quick Start (5 Minutes)                                                                                                                    
-                                                                                                                                              
-### Step 1: Build the Tool                                                                                                                    
-```bash                                                                                                                                       
-cd split-decls-rs                                                                                                                             
-cargo build --release                                                                                                                         
-```                                                                                                                                           
-                                                                                                                                              
-### Step 2: Create a Test Project                                                                                                             
-```bash                                                                                                                                       
-mkdir my_test_project                                                                                                                         
-cd my_test_project                                                                                                                            
-mkdir src                                                                                                                                     
-```                                                                                                                                           
-                                                                                                                                              
-Create `Cargo.toml`:                                                                                                                          
-```toml                                                                                                                                       
-[package]                                                                                                                                     
-name = "my_test_crate"                                                                                                                        
-version = "0.1.0"                                                                                                                             
-edition = "2021"                                                                                                                              
-```                                                                                                                                           
-                                                                                                                                              
-Create `src/lib.rs`:                                                                                                                          
-```rust                                                                                                                                       
-pub fn hello() -> String {                                                                                                                    
-    "Hello, World!".to_string()                                                                                                               
-}                                                                                                                                             
-                                                                                                                                              
-pub fn add(a: i32, b: i32) -> i32 {                                                                                                           
-    a + b                                                                                                                                     
-}                                                                                                                                             
-```                                                                                                                                           
-                                                                                                                                              
-### Step 3: Create Configuration                                                                                                              
-In the split-decls-rs directory, create `split-decls-rs.toml`:                                                                                
-```toml                                                                                                                                       
-# Minimal working configuration                                                                                                               
-string_replacements = []                                                                                                                      
-patches = {}                                                                                                                                  
-custom_prelude_overlay = "// Custom prelude"                                                                                                  
-```                                                                                                                                           
-                                                                                                                                              
-### Step 4: Run the Tool                                                                                                                      
-```bash                                                                                                                                       
-cargo run --bin split-decls-rs my_test_project                                                                                                
-```                                                                                                                                           
-                                                                                                                                              
-## Configuration Format (Correct)                                                                                                             
-                                                                                                                                              
-### Basic Structure                                                                                                                           
-```toml                                                                                                                                       
-# String replacements - array of replacement objects                                                                                          
-string_replacements = [                                                                                                                       
-    { old = "println!", new = "eprintln!" },                                                                                                  
-    { old = "TODO", new = "FIXME" }                                                                                                           
-]                                                                                                                                             
-                                                                                                                                              
-# Patches - map of crate names to patch arrays                                                                                                
-[patches]                                                                                                                                     
-my_crate = [                                                                                                                                  
-    { path = "patches/fix1.rs" },                                                                                                             
-    { path = "patches/fix2.rs", git_reference = "main" }                                                                                      
-]                                                                                                                                             
-                                                                                                                                              
-# Custom prelude - string of Rust code                                                                                                        
-custom_prelude_overlay = '''                                                                                                                  
-#![allow(unused_imports)]                                                                                                                     
-use std::collections::HashMap;                                                                                                                
-'''                                                                                                                                           
-```                                                                                                                                           
-                                                                                                                                              
-### String Replacements (Fixed Format)                                                                                                        
-```toml                                                                                                                                       
-string_replacements = [                                                                                                                       
-    { old = "broken_function", new = "fixed_function" },                                                                                      
-    { old = "use old_crate::", new = "use new_crate::" },                                                                                     
-    { old = "// TODO", new = "// FIXME" }                                                                                                     
-]                                                                                                                                             
-```                                                                                                                                           
-                                                                                                                                              
-### Patches (Fixed Format)                                                                                                                    
-```toml                                                                                                                                       
-[patches]                                                                                                                                     
-# Single patch file                                                                                                                           
-my_crate = [                                                                                                                                  
-    { path = "patches/my_fix.rs" }                                                                                                            
-]                                                                                                                                             
-                                                                                                                                              
-# Multiple patches for one crate                                                                                                              
-another_crate = [                                                                                                                             
-    { path = "patches/fix1.rs" },                                                                                                             
-    { path = "patches/fix2.rs" },                                                                                                             
-    { path = "patches/enhancement.rs", git_reference = "v1.0" }                                                                               
-]                                                                                                                                             
-```                                                                                                                                           
-                                                                                                                                              
-## Complete Working Example                                                                                                                   
-                                                                                                                                              
-### Directory Structure                                                                                                                       
-```                                                                                                                                           
-my_project/                                                                                                                                   
-├── split-decls-rs.toml     # Configuration                                                                                                   
-├── patches/                # Your fixes                                                                                                      
-│   └── better_hello.rs                                                                                                                       
-├── target_crate/           # Project to modify                                                                                               
-│   ├── Cargo.toml                                                                                                                            
-│   └── src/                                                                                                                                  
-│       └── lib.rs                                                                                                                            
-└── output/                 # Generated files                                                                                                 
-    └── Cargo.toml                                                                                                                            
-```                                                                                                                                           
-                                                                                                                                              
-### Configuration File                                                                                                                        
-```toml                                                                                                                                       
-# split-decls-rs.toml                                                                                                                         
-string_replacements = [                                                                                                                       
-    { old = "World", new = "Universe" }                                                                                                       
-]                                                                                                                                             
-                                                                                                                                              
-[patches]                                                                                                                                     
-target_crate = [                                                                                                                              
-    { path = "patches/better_hello.rs" }                                                                                                      
-]                                                                                                                                             
-                                                                                                                                              
-custom_prelude_overlay = '''                                                                                                                  
-// Added to every generated file                                                                                                              
-use std::fmt::Display;                                                                                                                        
-'''                                                                                                                                           
-```                                                                                                                                           
-                                                                                                                                              
-### Patch File                                                                                                                                
-```rust                                                                                                                                       
-// patches/better_hello.rs                                                                                                                    
-pub fn hello() -> String {                                                                                                                    
-    "Hello, Amazing Universe!".to_string()                                                                                                    
-}                                                                                                                                             
-                                                                                                                                              
-pub fn greet(name: &str) -> String {                                                                                                          
-    format!("Hello, {}!", name)                                                                                                               
-}                                                                                                                                             
-```                                                                                                                                           
-                                                                                                                                              
-### Running                                                                                                                                   
-```bash                                                                                                                                       
-cargo run --bin split-decls-rs target_crate                                                                                                   
-```                                                                                                                                           
-                                                                                                                                              
-## What Happens Step by Step                                                                                                                  
-                                                                                                                                              
-1. **Tool starts** and loads `split-decls-rs.toml`                                                                                            
-2. **Finds Rust projects** in the specified directory                                                                                         
-3. **Backs up original** `lib.rs` → `oldlib.rs`                                                                                               
-4. **Applies string replacements** to the backed up content                                                                                   
-5. **Splits code** into individual declaration files in `src/decls/`                                                                          
-6. **Applies patches** by replacing matching functions/structs                                                                                
-7. **Adds custom prelude** to each generated file                                                                                             
-8. **Creates new `lib.rs`** that imports all the split declarations                                                                           
-                                                                                                                                              
-## Directory After Processing                                                                                                                 
-                                                                                                                                              
-**Before:**                                                                                                                                   
-```                                                                                                                                           
-target_crate/                                                                                                                                 
-├── src/                                                                                                                                      
-│   └── lib.rs                                                                                                                                
-└── Cargo.toml                                                                                                                                
-```                                                                                                                                           
-                                                                                                                                              
-**After:**                                                                                                                                    
-```                                                                                                                                           
-target_crate/                                                                                                                                 
-├── src/                                                                                                                                      
-│   ├── lib.rs          # New gateway file                                                                                                    
-│   ├── oldlib.rs       # Original backed up                                                                                                  
-│   └── decls/          # Split declarations                                                                                                  
-│       ├── target_crate_decls_hello.rs                                                                                                       
-│       ├── target_crate_decls_add.rs                                                                                                         
-│       └── _decl_module_invocation.rs                                                                                                        
-└── Cargo.toml                                                                                                                                
-```                                                                                                                                           
-                                                                                                                                              
-## Troubleshooting                                                                                                                            
-                                                                                                                                              
-### "Failed to read generated Cargo.toml from ./output/Cargo.toml"                                                                            
-**Solution:** Create the output directory:                                                                                                    
-```bash                                                                                                                                       
-mkdir output                                                                                                                                  
-echo '[package]' > output/Cargo.toml                                                                                                          
-echo 'name = "workspace"' >> output/Cargo.toml                                                                                                
-echo 'version = "0.1.0"' >> output/Cargo.toml                                                                                                 
-echo 'edition = "2021"' >> output/Cargo.toml                                                                                                  
-```                                                                                                                                           
-                                                                                                                                              
-### "TOML parse error"                                                                                                                        
-**Common fixes:**                                                                                                                             
-- Use `string_replacements = []` not `[string_replacements]`                                                                                  
-- Use `patches = {}` not `[patches]`                                                                                                          
-- Use `{ old = "text", new = "replacement" }` format for replacements                                                                         
-                                                                                                                                              
-### "No changes applied"                                                                                                                      
-- Check crate names match exactly (case-sensitive)                                                                                            
-- Verify patch file paths exist                                                                                                               
-- Make sure you're running from the right directory                                                                                           
-                                                                                                                                              
-## Ready-to-Use Templates                                                                                                                     
-                                                                                                                                              
-### Template 1: Simple Text Replacement                                                                                                       
-```toml                                                                                                                                       
-string_replacements = [                                                                                                                       
-    { old = "panic!", new = "eprintln!" }                                                                                                     
-]                                                                                                                                             
-patches = {}                                                                                                                                  
-custom_prelude_overlay = ""                                                                                                                   
-```                                                                                                                                           
-                                                                                                                                              
-### Template 2: Function Replacement                                                                                                          
-```toml                                                                                                                                       
-string_replacements = []                                                                                                                      
-                                                                                                                                              
-[patches]                                                                                                                                     
-my_crate = [                                                                                                                                  
-    { path = "fixes/safe_function.rs" }                                                                                                       
-]                                                                                                                                             
-                                                                                                                                              
-custom_prelude_overlay = ""                                                                                                                   
-```                                                                                                                                           
-                                                                                                                                              
-### Template 3: Add Debugging                                                                                                                 
-```toml                                                                                                                                       
-string_replacements = []                                                                                                                      
-patches = {}                                                                                                                                  
-                                                                                                                                              
-custom_prelude_overlay = '''                                                                                                                  
-// Debug macros for all files                                                                                                                 
-macro_rules! debug_print {                                                                                                                    
-    ($msg:expr) => { println!("[DEBUG] {}", $msg); };                                                                                         
-}                                                                                                                                             
-'''                                                                                                                                           
-```                                                                                                                                           
-                                                                                                                                              
-## Issues Fixed and Testing Summary                                                                                                           
-                                                                                                                                              
-### ✅ Issues Fixed:                                                                                                                           
-1. **Main function**: Fixed hardcoded main.rs to properly use CLI arguments and process individual crates                                     
-2. **Missing imports**: Added required module imports to lib.rs, process_crate.rs, and backup modules                                         
-3. **Type errors**: Fixed string type conversion in CLI argument parsing                                                                      
-4. **Default trait**: Added Default derive to PatchConfig struct                                                                              
-5. **Function signatures**: Fixed generate_new_cargotoml function call with proper parameters                                                 
-                                                                                                                                              
-### ✅ Successfully Tested:                                                                                                                    
-1. **Basic functionality**: Tool processes single crates and splits declarations correctly                                                    
-2. **String replacements**: "World" → "Universe" replacement works as expected                                                                
-3. **File structure**: Generates proper directory structure with src/decls/ containing split files                                            
-4. **Backup system**: Creates oldlib.rs, oldbuild.rs, and oldCargo.toml backups                                                               
-5. **Declaration splitting**: Functions, structs, and other items are split into individual files                                             
-                                                                                                                                              
-### ⚠️ Known Limitations:                                                                                                                      
-1. **Patch functionality**: Patches configuration needs further testing (custom_prelude_overlay parsing issue)                                
-2. **Complex projects**: Only tested with simple single-crate projects                                                                        
-3. **Dependencies**: Generated projects may need additional dependencies for compilation                                                      
-                                                                                                                                              
-### 📝 Updated Configuration Format:                                                                                                           
-                                                                                                                                              
-The tool now works with this **corrected** configuration format:                                                                              
-                                                                                                                                              
-```toml                                                                                                                                       
-# Working configuration format                                                                                                                
-string_replacements = [                                                                                                                       
-    { old = "World", new = "Universe" }                                                                                                       
-]                                                                                                                                             
-                                                                                                                                              
-# Note: patches and custom_prelude_overlay need further investigation                                                                         
-# patches = {}                                                                                                                                
-# custom_prelude_overlay = "// Custom prelude"                                                                                                
+# split-decls-rs Beginner's Guide
+
+## What is split-decls-rs?
+
+split-decls-rs is a Rust tool that transforms Rust crates by "splitting" their declarations into individual files. This creates a modular structure that enables precise patching and overlay systems similar to Nix flakes.
+
+## Quick Start
+
+### 1. Installation
+```bash
+git clone https://github.com/deadsg235/split-decls-rs.git
+cd split-decls-rs
+cargo build --release
 ```
+
+### 2. Basic Commands
+```bash
+# Show all available commands
+cargo run --bin split-decls-rs -- --help
+
+# Process crates in current directory (safe dry-run mode)
+cargo run --bin split-decls-rs -- ecosystem-scan --recursive --dry-run --verbose .
+
+# Bootstrap the tool on itself
+cargo run --bin split-decls-rs -- bootstrap
+```
+
+### 3. Available Commands
+- **`ecosystem-scan`**: Scan and process Rust crates in a directory
+- **`wrapped-workspace`**: Generate wrapped workspace structures  
+- **`execute-goal-workflow`**: Execute complex processing workflows
+- **`bootstrap`**: Self-process the split-decls-rs project
+
+## How It Works
+
+### Input: Original Crate Structure
+```
+my-crate/
+├── Cargo.toml
+├── src/
+│   └── lib.rs          # Contains all declarations
+└── build.rs (optional)
+```
+
+### Output: Split Declaration Structure
+```
+output2/my-crate/
+├── Cargo.toml          # Generated with proper dependencies
+├── src/
+│   ├── lib.rs          # New minimal lib.rs with re-exports
+│   ├── oldlib.rs       # Backup of original lib.rs
+│   └── decls/          # Split declarations directory
+│       ├── _decl_module_invocation.rs
+│       ├── my_crate_decls_function_name.rs
+│       ├── my_crate_decls_struct_name.rs
+│       └── ...
+├── build.rs            # Generated build script
+└── oldbuild.rs         # Backup of original build.rs
+```
+
+## Configuration
+
+Create a `split-decls-rs.toml` file to customize the transformation:
+
+```toml
+# String replacements applied before AST parsing
+string_replacements = [
+    { old = "World", new = "Universe" },
+    { old = "println!", new = "eprintln!" }
+]
+
+# Patch files to apply to specific crates
+[patches]
+my_crate = [
+    { path = "fixes/safe_function.rs" }
+]
+
+# Custom prelude injected into all generated files
+custom_prelude_overlay = '''
+// Debug macros for all files
+macro_rules! debug_print {
+    ($msg:expr) => { println!("[DEBUG] {}", $msg); };
+}
+'''
+```
+
+## Command Examples
+
+### ecosystem-scan Command
+```bash
+# Scan current directory recursively in dry-run mode
+cargo run --bin split-decls-rs -- ecosystem-scan --recursive --dry-run --verbose .
+
+# Process a specific crate directory
+cargo run --bin split-decls-rs -- ecosystem-scan ./my-crate
+
+# Scan entire workspace recursively (live mode)
+cargo run --bin split-decls-rs -- ecosystem-scan --recursive ./workspace-root
+```
+
+### wrapped-workspace Command
+```bash
+# Generate wrapped workspace in default location
+cargo run --bin split-decls-rs -- wrapped-workspace
+
+# Generate in custom output directory
+cargo run --bin split-decls-rs -- wrapped-workspace --output-dir ./my-output
+
+# Dry-run to see what would be generated
+cargo run --bin split-decls-rs -- wrapped-workspace --dry-run --verbose
+```
+
+### bootstrap Command
+```bash
+# Self-process the split-decls-rs project
+cargo run --bin split-decls-rs -- bootstrap
+```
+
+## Understanding Generated Files
+
+### New `src/lib.rs`
+```rust
+// Re-exports the split declarations
+pub mod decls;
+pub use decls::*;
+```
+
+### Example Split Declaration
+`src/decls/my_crate_decls_hello_world.rs`:
+```rust
+// Common use statements
+use std::*;
+
+// Prelude macro placeholder
+prelude!{}
+
+// Declaration attribute
+#[decl_my_crate]
+pub fn hello_world() {
+    println!("Hello, Universe!"); // "World" replaced by "Universe"
+}
+```
+
+### Generated `build.rs`
+Handles the transformation process during compilation, including:
+- Reading and parsing the original `oldlib.rs`
+- Applying string replacements and patches
+- Splitting declarations into individual files
+- Generating module invocations
+
+## Configuration Templates
+
+### Template 1: Simple String Replacement
+```toml
+string_replacements = [
+    { old = "World", new = "Universe" },
+    { old = "TODO", new = "FIXME" }
+]
+
+patches = {}
+custom_prelude_overlay = ""
+```
+
+### Template 2: Function Replacement
+```toml
+string_replacements = []
+
+[patches]
+my_crate = [
+    { path = "fixes/safe_function.rs" }
+]
+
+custom_prelude_overlay = ""
+```
+
+### Template 3: Add Debugging
+```toml
+string_replacements = []
+patches = {}
+
+custom_prelude_overlay = '''
+// Debug macros for all files
+macro_rules! debug_print {
+    ($msg:expr) => { println!("[DEBUG] {}", $msg); };
+}
+'''
+```
+
+## Current Status & Features
+
+### ✅ Working Features:
+1. **Modern CLI Interface**: Full clap-based CLI with subcommands and options
+2. **Multi-threaded Processing**: Parallel crate processing with rayon
+3. **Dry-run Mode**: Safe preview of changes without modifying files
+4. **Recursive Scanning**: Process entire directory trees of crates
+5. **String Replacements**: Text-based transformations work correctly
+6. **Declaration Splitting**: Functions, structs, and other items split into individual files
+7. **Backup System**: Creates oldlib.rs, oldbuild.rs, and oldCargo.toml backups
+8. **Workspace Generation**: Proper Cargo.toml generation with dependencies
+
+### ⚠️ Known Limitations:
+1. **Patch Functionality**: Advanced patch system needs further testing
+2. **Complex Projects**: Primarily tested with simple single-crate projects
+3. **Dependencies**: Generated projects may need additional dependencies for compilation
+
+### 📝 Configuration Format:
+The tool works with this **validated** configuration format:
+
+```toml
+# Working configuration format
+string_replacements = [
+    { old = "World", new = "Universe" }
+]
+
+# Note: patches and custom_prelude_overlay are implemented but need more testing
+patches = {}
+custom_prelude_overlay = "// Custom prelude"
+```
+
+## Troubleshooting
+
+### Common Issues
+1. **Permission Errors**: Ensure you have write permissions to the output directory
+2. **Missing Dependencies**: The generated code may require additional dependencies
+3. **Build Failures**: Check that the original crate compiles before processing
+
+### Getting Help
+- Use `--help` with any command for detailed usage information
+- Use `--verbose` flag for detailed logging
+- Use `--dry-run` to preview changes safely
+- Check the [COMMANDS_REFERENCE.md](COMMANDS_REFERENCE.md) for complete documentation
+
+## Next Steps
+
+1. **Start with dry-run**: Always use `--dry-run` first to preview changes
+2. **Test on simple crates**: Begin with small, single-file crates
+3. **Experiment with configuration**: Try different string replacements
+4. **Explore the output**: Examine the generated `output2/` directory structure
+5. **Read the full documentation**: See [README.md](README.md) and [COMMANDS_REFERENCE.md](COMMANDS_REFERENCE.md)
