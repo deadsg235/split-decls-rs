@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; fn is_likely_enum (name : & str) -> bool { name . chars () . next () . map_or (false , | c | c . is_uppercase ()) && name . contains ("Kind") }

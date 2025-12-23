@@ -6,7 +6,7 @@ use std::io::Write;
 use std::fs;
 use crate::goal_parser::{Workflow, Stage, Operation, FunctionCallOperation, LoopOperation, SequenceOperation, Task, Input, Output, SwitchOperation, ShellCommandOperation};
 use crate::eager_splitter;
-use crate::setup_crate_paths;
+use crate::paths::setup_crate_paths;
 use crate::crate_finder::{self, CrateInfo};
 use crate::patch_config::PatchConfig;
 use crate::generate_new_cargotoml;

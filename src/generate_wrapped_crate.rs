@@ -4,7 +4,7 @@ use std::path::Path;
 
 use crate::patch_config;
 use split_decls_types::SplitDeclsConfig;
-use crate::setup_crate_paths;
+use crate::paths::{CratePaths, setup_crate_paths};
 use crate::generate_new_cargotoml::generate_new_cargotoml;
 use crate::generate_new_lib_rs::generate_new_lib_rs;
 use crate::generate_new_build_rs::generate_new_build_rs;
@@ -38,34 +38,17 @@ pub fn generate_wrapped_crate(
     // The `old_lib_rs_path` etc. for this `CratePaths` will refer to the copies *within* the wrapped crate.
     let wrapped_crate_paths = setup_crate_paths(&wrapped_crate_path)?;
 
-    // Copy original oldlib.rs and oldCargo.toml into the wrapped crate's location
     // These will be the source for eager splitting within the wrapped crate context.
     let original_lib_rs_path = original_crate_path.join("src").join("lib.rs");
     let original_cargo_toml_path = original_crate_path.join("Cargo.toml");
-    
-    if original_lib_rs_path.exists() {
-        if !dry_run {
-            fs::copy(&original_lib_rs_path, &wrapped_crate_paths.old_lib_rs_path)
-                .context(format!("Failed to copy {} to {}", original_lib_rs_path.display(), wrapped_crate_paths.old_lib_rs_path.display()))?;
-        }
-        println!("Copied original lib.rs to {}", wrapped_crate_paths.old_lib_rs_path.display());
-    } else {
-        // If no original lib.rs, create an empty oldlib.rs in the wrapped crate
-        if !dry_run { fs::write(&wrapped_crate_paths.old_lib_rs_path, "")?; }
-        println!("No original lib.rs found, created empty {}", wrapped_crate_paths.old_lib_rs_path.display());
-    }
 
-    if original_cargo_toml_path.exists() {
-        if !dry_run {
-            fs::copy(&original_cargo_toml_path, &wrapped_crate_paths.old_cargo_toml_path)
-                .context(format!("Failed to copy {} to {}", original_cargo_toml_path.display(), wrapped_crate_paths.old_cargo_toml_path.display()))?;
-        }
-        println!("Copied original Cargo.toml to {}", wrapped_crate_paths.old_cargo_toml_path.display());
+    let mut old_lib_rs_content = if original_lib_rs_path.exists() {
+        fs::read_to_string(&original_lib_rs_path)
+            .context(format!("Failed to read original lib.rs at {}", original_lib_rs_path.display()))?
     } else {
-        // If no original Cargo.toml, create an empty oldCargo.toml in the wrapped crate
-        if !dry_run { fs::write(&wrapped_crate_paths.old_cargo_toml_path, "")?; }
-        println!("No original Cargo.toml found, created empty {}", wrapped_crate_paths.old_cargo_toml_path.display());
-    }
+        String::new()
+    };
+ 
 
 
     // Generate Cargo.toml for the wrapped crate
@@ -109,9 +92,6 @@ pub fn generate_wrapped_crate(
 
 
     // Eager Splitting Logic for the wrapped crate
-    let mut old_lib_rs_content = fs::read_to_string(&wrapped_crate_paths.old_lib_rs_path)
-        .context("Failed to read oldlib.rs content for eager splitting in wrapped crate")?;
-
     if let Some(replacements) = &global_config.string_replacements {
         for sr in replacements {
             old_lib_rs_content = old_lib_rs_content.replace(&sr.old, &sr.new);
@@ -120,7 +100,7 @@ pub fn generate_wrapped_crate(
     }
 
     let mut syntax_tree = syn::parse_file(&old_lib_rs_content)
-        .context("Failed to parse oldlib.rs content for eager splitting in wrapped crate")?;
+        .context("Failed to parse .rs content for eager splitting in wrapped crate")?;
 
     apply_patches_to_syntax_tree(
         &mut syntax_tree,

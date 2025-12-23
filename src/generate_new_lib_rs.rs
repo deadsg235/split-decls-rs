@@ -1,7 +1,7 @@
 use std::fs;
 use anyhow::{Context, Result};
 use quote::quote;
-use crate::CratePaths;
+use crate::paths::CratePaths;
 
 /// Generates the new, minimal src/lib.rs for the crate.
 pub fn generate_new_lib_rs(paths: &CratePaths, dry_run: bool) -> Result<()> {

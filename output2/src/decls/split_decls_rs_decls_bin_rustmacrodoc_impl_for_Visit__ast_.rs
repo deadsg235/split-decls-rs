@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; impl < 'ast > Visit < 'ast > for StringLiteralVisitor { fn visit_lit_str (& mut self , lit_str : & 'ast LitStr) { self . strings . push (lit_str . value ()) ; } }

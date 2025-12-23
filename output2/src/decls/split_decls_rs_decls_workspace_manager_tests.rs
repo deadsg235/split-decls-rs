@@ -1,0 +1,12 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; # [cfg (test)] mod tests { use super :: * ; use std :: fs ; use tempfile :: tempdir ; # [test] fn test_manage_workspace_dependencies_with_package_section () -> Result < () > { let dir = tempdir () ? ; let root_cargo_toml_path = dir . path () . join ("Cargo.toml") ; let initial_content = r#"
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+authors = ["Test Author"]
+
+[workspace]
+members = ["crate_a", "crate_b"]
+
+[workspace.dependencies]
+rand = "0.8"
+"# ; fs :: write (& root_cargo_toml_path , initial_content) ? ; let deps_to_add = vec ! [("serde" . to_string () , toml :: Value :: String ("1.0" . to_string ())) ,] ; manage_workspace_dependencies (& root_cargo_toml_path , & deps_to_add , false) ? ; let modified_content = fs :: read_to_string (& root_cargo_toml_path) ? ; println ! ("{}" , modified_content) ; assert ! (modified_content . contains ("[workspace.package]")) ; assert ! (modified_content . contains ("edition = \"2021\"")) ; assert ! (modified_content . contains ("version = \"0.1.0\"")) ; assert ! (modified_content . contains ("authors = [\"Test Author\"]")) ; assert ! (modified_content . contains ("serde = \"1.0\"")) ; assert ! (modified_content . contains ("rand = \"0.8\"")) ; Ok (()) } }

@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; # [derive (Debug , Deserialize , Serialize , Clone)] pub struct Input { pub name : String , # [serde (default)] pub from_stage : Option < String > , # [serde (default)] pub from_task : Option < String > , pub output_name : String , }

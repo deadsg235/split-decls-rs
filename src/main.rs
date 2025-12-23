@@ -4,7 +4,8 @@ use split_decls_rs::patch_config::PatchConfig;
 use split_decls_types::SplitDeclsConfig;
 use split_decls_rs::generate_wrapped_workspace::generate_wrapped_workspace;
 use split_decls_rs::buildrs_generator::build_script_composer;
-use split_decls_rs::{setup_crate_paths, eager_splitter};
+use split_decls_rs::eager_splitter;
+use split_decls_rs::paths::{CratePaths, setup_crate_paths}; // Import CratePaths and setup_crate_paths
 use toml;
 use std::fs;
 use cargo_toml_generator_types::{CargoToml, Dependency};

@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; impl Workflow { pub fn load_from_file (path : & std :: path :: Path) -> anyhow :: Result < Self > { let content = std :: fs :: read_to_string (path) ? ; let workflow : Workflow = toml :: from_str (& content) ? ; Ok (workflow) } }

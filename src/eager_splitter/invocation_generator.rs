@@ -4,7 +4,7 @@ use quote::quote;
 use std::fs;
 use syn::punctuated::Punctuated;
 
-use crate::CratePaths;
+use crate::paths::CratePaths;
 
 /// Generates the `_decl_module_invocation.rs` file, which contains the `decl_module!` macro invocation.
 pub fn generate_decl_module_invocation(

@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; # [derive (Debug , Deserialize , Serialize , Clone)] pub struct Workflow { pub name : String , pub description : String , # [serde (default)] pub style_influences : Vec < String > , pub stages : Vec < Stage > , }

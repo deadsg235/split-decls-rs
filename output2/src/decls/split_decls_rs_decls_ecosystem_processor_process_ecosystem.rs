@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; pub fn process_ecosystem (_verbose : bool , _dry_run : bool , _base_path : & Path , _recursive : bool , _global_config : & SplitDeclsConfig ,) -> Result < () > { Ok (()) }

@@ -7,7 +7,7 @@ use sha2::{Digest, Sha256}; // Added for metadata hashing
 use serde_json; // For serializing metadata
 
 //use crate::buildrs_ast_utils::ExtractedDecl;
-use crate::CratePaths;
+use crate::paths::CratePaths;
 use split_decls_types::SplitDeclsConfig;
 use crate::ExtractedDecl;
 /// Generates the file content for a single declaration and writes it to disk.

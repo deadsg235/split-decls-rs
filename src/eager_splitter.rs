@@ -1,13 +1,14 @@
 use anyhow::{Context, Result};
-use proc_macro2::{Ident, Span, TokenStream};
+use proc_macro2::{Ident, Span, TokenStream}; // Added LineColumn
 use quote::ToTokens;
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf}; // Added Path
 use syn::visit::Visit;
-use syn::{self};
+use syn::{self, LitStr}; // Added LitStr
+use quote::quote; // Added quote
 
-use crate::CratePaths;
+use crate::paths::CratePaths;
 use split_decls_types::SplitDeclsConfig;
 
 // Import new modules
@@ -66,8 +67,63 @@ fn process_all_rust_files(
         
         println!("Processing file: {}", rust_file.display());
         
-        let file_content = fs::read_to_string(&rust_file)?;
-        let file_ast: syn::File = syn::parse_str(&file_content)?;
+        let file_content = fs::read_to_string(&rust_file)
+            .context(format!("Failed to read file: {}", rust_file.display()))?;
+
+        // Sanitize crate name once
+        let crate_name_sanitized = paths.crate_name.replace("-", "_").replace(".", "_");
+
+        // Handle parsing errors
+        let file_ast = match syn::parse_str::<syn::File>(&file_content) {
+            Ok(ast) => ast,
+            Err(e) => {
+                let file_path_display = rust_file.display();
+                eprintln!("Error parsing file {}: {}", file_path_display, e);
+
+                let file_stem = rust_file.file_stem().unwrap().to_string_lossy();
+                let error_module_name_str = format!("{}_decls_error_{}", crate_name_sanitized, file_stem.replace("-", "_").replace(".", "_"));
+                let error_module_name_ident = Ident::new(&error_module_name_str, Span::call_site());
+                collected_module_names.push(error_module_name_ident.clone());
+
+                let error_message = e.to_string();
+                let error_line = e.span().start().line;
+                let error_column = e.span().start().column;
+                
+                let file_path_str_lit = LitStr::new(&file_path_display.to_string(), Span::call_site());
+                let error_message_lit = LitStr::new(&error_message, Span::call_site());
+                let file_content_lit = LitStr::new(&file_content, Span::call_site());
+                let crate_name_sanitized_lit = LitStr::new(&crate_name_sanitized, Span::call_site());
+
+                let error_output_tokens = quote! {
+                    #[llm_error_message(
+                        file = #file_path_str_lit,
+                        line = #error_line,
+                        column = #error_column,
+                        message = #error_message_lit
+                    )]
+                    #[llm_source_code(
+                        #file_content_lit
+                    )]
+                    #[llm_context(
+                        crate_name = #crate_name_sanitized_lit,
+                        original_file = #file_path_str_lit
+                    )]
+                    pub struct #error_module_name_ident; // Dummy item to make it a valid Rust module
+                };
+
+                let decl_file_path = paths.decls_output_dir.join(format!("{}.rs", error_module_name_str));
+                if !dry_run {
+                    fs::write(&decl_file_path, error_output_tokens.to_string())
+                        .context(format!("Failed to write error declaration to {}", decl_file_path.display()))?;
+                } else {
+                    println!("Dry-run: Would write error declaration to {}", decl_file_path.display());
+                }
+                println!("  (Parsing error captured in {} for later LLM processing)", decl_file_path.display());
+
+                *item_count += 1; // Increment item_count for the error declaration
+                return Ok(()); // Continue processing other files
+            }
+        };
         
         // Get relative path for naming
         let rel_path = rust_file.strip_prefix(&src_dir).unwrap_or(&rust_file);
@@ -76,7 +132,7 @@ fn process_all_rust_files(
         for item in &file_ast.items {
             if let Some(decl) = declaration_extractor::extract_single_declaration(item, *item_count) {
                 let module_name_str = format!("{}_decls_{}_{}", 
-                    paths.crate_name.replace("-", "_").replace(".", "_"), 
+                    crate_name_sanitized, 
                     path_str.replace("-", "_").replace(".", "_"),
                     decl.name
                 );
@@ -122,8 +178,61 @@ fn process_module_recursively(
         return Ok(());
     };
     
-    let mod_content = fs::read_to_string(&mod_file)?;
-    let mod_ast: syn::File = syn::parse_str(&mod_content)?;
+    let mod_content = fs::read_to_string(&mod_file)
+        .context(format!("Failed to read module file: {}", mod_file.display()))?;
+
+    let crate_name_sanitized = paths.crate_name.replace("-", "_").replace(".", "_");
+
+    let mod_ast = match syn::parse_str::<syn::File>(&mod_content) {
+        Ok(ast) => ast,
+        Err(e) => {
+            let mod_file_display = mod_file.display();
+            eprintln!("Error parsing module file {}: {}", mod_file_display, e);
+
+            let file_stem = mod_file.file_stem().unwrap().to_string_lossy();
+            let error_module_name_str = format!("{}_decls_error_{}", crate_name_sanitized, file_stem.replace("-", "_").replace(".", "_"));
+            let error_module_name_ident = Ident::new(&error_module_name_str, Span::call_site());
+            collected_module_names.push(error_module_name_ident.clone());
+
+            let error_message = e.to_string();
+            let error_line = e.span().start().line;
+            let error_column = e.span().start().column;
+            
+            let file_path_str_lit = LitStr::new(&mod_file_display.to_string(), Span::call_site());
+            let error_message_lit = LitStr::new(&error_message, Span::call_site());
+            let file_content_lit = LitStr::new(&mod_content, Span::call_site());
+            let crate_name_sanitized_lit = LitStr::new(&crate_name_sanitized, Span::call_site());
+
+            let error_output_tokens = quote! {
+                #[llm_error_message(
+                    file = #file_path_str_lit,
+                    line = #error_line,
+                    column = #error_column,
+                    message = #error_message_lit
+                )]
+                #[llm_source_code(
+                    #file_content_lit
+                )]
+                #[llm_context(
+                    crate_name = #crate_name_sanitized_lit,
+                    original_file = #file_path_str_lit
+                )]
+                pub struct #error_module_name_ident;
+            };
+
+            let decl_file_path = paths.decls_output_dir.join(format!("{}.rs", error_module_name_str));
+            if !dry_run {
+                fs::write(&decl_file_path, error_output_tokens.to_string())
+                    .context(format!("Failed to write error declaration to {}", decl_file_path.display()))?;
+            } else {
+                println!("Dry-run: Would write error declaration to {}", decl_file_path.display());
+            }
+            println!("  (Parsing error captured in {} for later LLM processing)", decl_file_path.display());
+
+            *item_count += 1;
+            return Ok(());
+        }
+    };
     
     for item in &mod_ast.items {
         if let Some(decl) = declaration_extractor::extract_single_declaration(item, *item_count) {
@@ -134,7 +243,7 @@ fn process_module_recursively(
             };
             
             let module_name_str = format!("{}_decls_{}_{}", 
-                paths.crate_name.replace("-", "_").replace(".", "_"), 
+                crate_name_sanitized, 
                 full_path.replace("-", "_").replace(".", "_"),
                 decl.name
             );
@@ -220,16 +329,30 @@ pub fn copy_declarations_to_output(
 
 /// Main entry point for eager splitting of a crate
 pub fn eager_split_crate(paths: &CratePaths, config: &SplitDeclsConfig) -> Result<()> {
-    // 1. We no longer backup original files, as we are writing to a new location.
-    
-    // 2. Parse the original lib.rs
+    // 1. Parse the original lib.rs
     println!("📖 Parsing lib.rs...");
-    let lib_content = fs::read_to_string(&paths.old_lib_rs_path)
-        .context(format!("Failed to read {}", paths.old_lib_rs_path.display()))?;
+    let lib_content = fs::read_to_string(&paths.lib_rs_path)
+        .context(format!("Failed to read {}", paths.lib_rs_path.display()))?;
     
     println!("🔧 Parsing {} bytes of Rust code...", lib_content.len());
-    let syntax_tree: syn::File = syn::parse_file(&lib_content)
-        .context("Failed to parse lib.rs as Rust code")?;
+    let syntax_tree: syn::File = match syn::parse_file(&lib_content) {
+        Ok(ast) => ast,
+        Err(e) => {
+            let file_path_display = paths.lib_rs_path.display();
+            let error_message = e.to_string();
+            let error_line = e.span().start().line;
+            let error_column = e.span().start().column;
+
+            return Err(anyhow::anyhow!(
+                "Failed to parse lib.rs as Rust code: {}\nFile: {}\nLine: {}, Column: {}\nError: {}",
+                file_path_display,
+                paths.lib_rs_path.to_string_lossy(),
+                error_line,
+                error_column,
+                error_message
+            ));
+        }
+    };
     
     // 3. Split declarations into individual files (to output directory)
     split_and_generate_decls(&syntax_tree, paths, config, false)?;
@@ -248,26 +371,7 @@ pub fn eager_split_crate(paths: &CratePaths, config: &SplitDeclsConfig) -> Resul
     Ok(())
 }
 
-/// Backup original files before modification
-fn backup_original_files(paths: &CratePaths) -> Result<()> {
-    // Backup lib.rs to oldlib.rs
-    if paths.lib_rs_path.exists() {
-        fs::copy(&paths.lib_rs_path, &paths.old_lib_rs_path)
-            .context(format!("Failed to backup {} to {}", 
-                paths.lib_rs_path.display(), paths.old_lib_rs_path.display()))?;
-        println!("Backed up lib.rs to oldlib.rs");
-    }
-    
-    // Backup build.rs to oldbuild.rs if it exists
-    if paths.build_rs_path.exists() {
-        fs::copy(&paths.build_rs_path, &paths.old_build_rs_path)
-            .context(format!("Failed to backup {} to {}", 
-                paths.build_rs_path.display(), paths.old_build_rs_path.display()))?;
-        println!("Backed up build.rs to oldbuild.rs");
-    }
-    
-    Ok(())
-}
+
 
 /// Generate new lib.rs that re-exports the split declarations in the output directory
 fn generate_output_lib_rs(paths: &CratePaths) -> Result<()> {
@@ -329,7 +433,6 @@ use anyhow::Result;
 
 fn main() -> Result<()> {{
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=src/oldlib.rs");
     println!("cargo:rerun-if-changed=.split-decls-config.toml");
     
     // This build.rs monitors for changes that would require re-running split-decls-rs

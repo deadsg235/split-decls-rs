@@ -125,3 +125,11 @@ let report = llm! {
     data: diff_vector
 };
 ```
+
+
+
+## Testing 
+
+```
+cargo run --bin split-decls-rs -- bootstrap
+```
