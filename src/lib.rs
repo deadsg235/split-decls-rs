@@ -32,6 +32,8 @@ pub mod process_crates_in_path;
 pub mod goal_parser;
 pub use extracted_decl::*;
 
+pub use crate::paths::{CratePaths, setup_crate_paths}; // Re-export from paths module
+
 // Re-export key functions for tests
 pub use process_crate::process_crate;
 pub use process_crates_in_path::process_crates_in_path;

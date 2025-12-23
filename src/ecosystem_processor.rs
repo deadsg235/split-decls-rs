@@ -3,9 +3,9 @@ use std::path::{Path, PathBuf};
 use split_decls_types::SplitDeclsConfig;
 use walkdir::WalkDir; // Added for finding Cargo.toml files
 use rayon::prelude::*; // Added for parallel processing
-
+use split_decls_rs::setup_crate_paths;
 use crate::eager_splitter; // Added eager_splitter and CratePaths
-use crate::paths::{CratePaths, setup_crate_paths};
+//use crate::paths::{CratePaths, setup_crate_paths};
 
 pub fn process_ecosystem(
     verbose: bool,
@@ -56,7 +56,7 @@ pub fn process_ecosystem(
         // Perform eager splitting
         eager_splitter::eager_split_crate(&paths, global_config)?;
 
-        Ok(())
+        Ok::<(), anyhow::Error>(())
     })?;
 
 
