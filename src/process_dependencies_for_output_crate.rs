@@ -53,6 +53,7 @@ pub fn process_dependencies_for_output_crate(
             } 
             // Handle regular path dependencies
             else if let Some(original_path_value) = dep_table.get("path") {
+                println!("DEBUG:   Is a regular path dependency.");
                 if let Some(original_path_str) = original_path_value.as_str() {
                     let absolute_original_path = project_root.join(original_path_str);
                     let relative_path = path_diff(output_dir, &absolute_original_path)
@@ -64,6 +65,7 @@ pub fn process_dependencies_for_output_crate(
             new_deps.insert(dep_name.clone(), Value::Table(processed_dep_table));
 
         } else {
+            println!("DEBUG:   Is a non-table dependency (e.g., version string).");
             // Non-table dependency (e.g., version string directly)
             new_deps.insert(dep_name.clone(), dep_value.clone());
         }

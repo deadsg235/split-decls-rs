@@ -11,34 +11,34 @@ name = "split-decls-rs"
 version = "0.1.0"
 
 [dependencies]
-anyhow = { path = ".././../../../../../../../../../anyhow" }
-cargo-toml-generator-macros = { path = ".././../../../../../../../../cargo-toml-generator-macros" }
-cargo-toml-generator-types = { path = ".././../../../../../../../../cargo-toml-generator-types" }
+anyhow = { path = "../../../../../../../anyhow" }
+cargo-toml-generator-macros = { path = "../../../../../cargo-toml-generator-macros" }
+cargo-toml-generator-types = { path = "../../../../../cargo-toml-generator-types" }
 cargo-toml-parts = { path = ".././build_helpers/cargo_toml_parts" }
 chrono = "0.4"
-clap = { features = ["derive"], path = ".././../../../../../../../../../clap" }
+clap = { features = ["derive"], path = "../../../../../../../clap" }
 pagerank_rs = { path = ".././submodules/pagerank_rs" }
-proc-macro2 = { features = ["span-locations"], path = ".././../../proc-macro2" }
-quote = { path = ".././../../../../../../../../../quote" }
-rayon = { path = ".././../../../../../../../../../rayon" }
-serde = { path = ".././../../../../../../../../../serde/serde" }
-serde_derive = { path = ".././../../../../../../../../../serde/serde_derive" }
-serde_json = { workspace = true }
+proc-macro2 = { features = ["span-locations"], path = "../../../proc-macro2" }
+quote = { path = "../../../../../../../quote" }
+rayon = { path = "../../../../../../../rayon" }
+serde = { version = "1.0", features = ["derive"] }
+serde_derive = { path = "../../../../../../../serde/serde_derive" }
+serde_json = { version = "1.0" }
 sha2 = "0.10"
-split-decls-types = { path = ".././../../../../../../../split-decls-types" }
-syn = { features = ["full", "visit", "visit-mut", "extra-traits"], path = ".././../../../../../../../../../syn" }
-tempfile = { path = ".././../../../../../../../../../tempfile" }
-toml = { path = ".././../../../../../../../../../toml/crates/toml" }
-url = { workspace = true }
-walkdir = { workspace = true }
+split-decls-types = { path = "../../../../split-decls-types" }
+syn = { features = ["full", "visit", "visit-mut", "extra-traits"], path = "../../../../../../../syn" }
+tempfile = { path = "../../../../../../../tempfile" }
+toml = { path = "../../../../../../../toml/crates/toml" }
+url = { version = "2.0" }
+walkdir = { version = "2.5" }
 
 [build-dependencies]
-cargo-toml-generator-macros = { path = ".././../../../../../../../../cargo-toml-generator-macros" }
-cargo-toml-generator-types = { path = ".././../../../../../../../../cargo-toml-generator-types" }
+cargo-toml-generator-macros = { path = "../../../../../cargo-toml-generator-macros" }
+cargo-toml-generator-types = { path = "../../../../../cargo-toml-generator-types" }
 cargo-toml-parts = { path = ".././build_helpers/cargo_toml_parts" }
-serde = { path = ".././../../../../../../../../../serde/serde" }
-serde_json = { workspace = true }
-toml = { path = ".././../../../../../../../../../toml/crates/toml" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+toml = { path = "../../../../../../../toml/crates/toml" }
 
 [[bin]]
 name = "rustmacrodoc"

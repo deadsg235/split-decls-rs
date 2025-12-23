@@ -4,6 +4,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use toml::{Table, Value}; // Import Table
 use chrono::Utc;
+use std::process::Command;
+use walkdir::WalkDir;
 
 use crate::add_generated_header;
 
@@ -94,6 +96,32 @@ pub fn path_relative_from(path: &Path, base: &Path) -> Option<PathBuf> {
     }
 }
 
+
+fn format_generated_rust_files(output_dir: &Path, verbose: bool) -> Result<()> {
+    if verbose {
+        println!("DEBUG: Formatting generated Rust files in {}", output_dir.display());
+    }
+
+    // Find all .rs files in the output directory
+    for entry in WalkDir::new(output_dir).into_iter().filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
+            if verbose {
+                println!("DEBUG: Running rustfmt on {}", path.display());
+            }
+            let output = Command::new("rustfmt")
+                .arg(path)
+                .output()
+                .context(format!("Failed to execute rustfmt on {}", path.display()))?;
+
+            if !output.status.success() {
+                eprintln!("WARNING: rustfmt failed on {}:", path.display());
+                eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+            }
+        }
+    }
+    Ok(())
+}
 
 /// Generates a new workspace containing "wrapped" versions of the target crates.
 /// Each wrapped crate will have its declarations eagerly split and patched.
@@ -350,6 +378,7 @@ introspector_decl2_macros = {{ path = "../../submodules/patch-build-rs/introspec
             if !dry_run {
                 add_generated_header!(&workspace_cargo_toml_path, final_cargo_toml_content.as_str())
                     .context(format!("Failed to write Cargo.toml for single crate: {}", workspace_cargo_toml_path.display()))?;
+                format_generated_rust_files(output_dir, verbose)?;
             }    if verbose {
         println!("Generated Cargo.toml at: {}", workspace_cargo_toml_path.display());
         println!("DEBUG: Exiting generate_wrapped_workspace.");
