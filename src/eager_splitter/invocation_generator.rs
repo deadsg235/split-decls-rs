@@ -15,6 +15,7 @@ pub fn generate_decl_module_invocation(
     let decl_module_invocation_args = Punctuated::<Ident, syn::token::Comma>::from_iter(collected_module_names.into_iter());
 
     let final_decl_module_code = quote! {
+        use introspector_decl2_macros::decl_module;
         decl_module!(#decl_module_invocation_args);
     };
 

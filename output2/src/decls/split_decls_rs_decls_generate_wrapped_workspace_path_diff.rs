@@ -1,1 +1,1 @@
- use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; # [doc = " Calculates the relative path from one directory to another."] fn path_diff (from : & Path , to : & Path) -> Option < PathBuf > { path_relative_from (to , from) }
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; # [doc = " Calculates the relative path from one directory to another."] pub fn path_diff (from : & Path , to : & Path) -> Option < PathBuf > { path_relative_from (to , from) }

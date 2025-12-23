@@ -12,3 +12,19 @@ recursive = true
 
 [workspace_dependencies]
 # Workspace-level dependencies
+rayon = { path = "submodules/rayon" }
+anyhow = { path = "submodules/anyhow" }
+toml = { path = "submodules/toml/crates/toml" }
+serde = { version = "1.0", features = ["derive"] }
+serde_derive = { path = "submodules/serde/serde_derive" }
+serde_json = { version = "1.0" }
+url = { version = "2.0" }
+quote = { path = "submodules/quote" }
+syn = { path = "submodules/syn" }
+walkdir = { version = "2.5" }
+split-decls-types = { path = "submodules/split-decls-rs/split-decls-types" }
+proc-macro2 = { path = "submodules/proc-macro2" }
+tempfile = { path = "submodules/tempfile" }
+cargo-toml-generator-types = { path = "cargo-toml-generator-types" }
+clap = { features = ["derive"], path = "submodules/clap" }
+cargo-toml-generator-macros = { path = "cargo-toml-generator-macros" }

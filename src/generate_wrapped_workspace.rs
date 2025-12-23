@@ -1,11 +1,17 @@
 use anyhow::{Context, Result};
+use std::collections::HashMap; // Add this import
 use std::fs;
 use std::path::{Path, PathBuf};
-use toml::Value;
+use toml::{Table, Value}; // Import Table
+use chrono::Utc;
+use std::process::Command;
+use walkdir::WalkDir;
+
+use crate::add_generated_header;
 
 use crate::patch_config;
 use split_decls_types::SplitDeclsConfig;
-
+use crate::process_dependencies_for_output_crate;
 use crate::generate_wrapped_crate;
 
 fn find_all_cargo_tomls(dir: &Path, verbose: bool) -> Result<Vec<PathBuf>> {
@@ -33,7 +39,7 @@ fn find_all_cargo_tomls(dir: &Path, verbose: bool) -> Result<Vec<PathBuf>> {
     Ok(cargo_tomls)
 }
 
-fn should_skip_dir(path: &Path) -> bool {
+pub fn should_skip_dir(path: &Path) -> bool {
     let name = path.file_name().unwrap().to_string_lossy();
     matches!(name.as_ref(), "target" | ".git" | "node_modules" | ".cargo")
 }
@@ -42,7 +48,7 @@ struct SimpleCrateInfo {
     name: String,
 }
 
-fn extract_crate_info_simple(cargo_path: &Path) -> Result<Option<SimpleCrateInfo>> {
+pub fn extract_crate_info_simple(cargo_path: &Path) -> Result<Option<SimpleCrateInfo>> {
     let content = fs::read_to_string(cargo_path)?;
     let toml: Value = toml::from_str(&content)?;
     
@@ -58,11 +64,11 @@ fn extract_crate_info_simple(cargo_path: &Path) -> Result<Option<SimpleCrateInfo
 }
 
 /// Calculates the relative path from one directory to another.
-fn path_diff(from: &Path, to: &Path) -> Option<PathBuf> {
+pub fn path_diff(from: &Path, to: &Path) -> Option<PathBuf> {
     path_relative_from(to, from)
 }
 
-fn path_relative_from(path: &Path, base: &Path) -> Option<PathBuf> {
+pub fn path_relative_from(path: &Path, base: &Path) -> Option<PathBuf> {
     let mut relativized_path = PathBuf::new();
     let mut common_prefix = 0;
 
@@ -91,6 +97,32 @@ fn path_relative_from(path: &Path, base: &Path) -> Option<PathBuf> {
 }
 
 
+fn format_generated_rust_files(output_dir: &Path, verbose: bool) -> Result<()> {
+    if verbose {
+        println!("DEBUG: Formatting generated Rust files in {}", output_dir.display());
+    }
+
+    // Find all .rs files in the output directory
+    for entry in WalkDir::new(output_dir).into_iter().filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
+            if verbose {
+                println!("DEBUG: Running rustfmt on {}", path.display());
+            }
+            let output = Command::new("rustfmt")
+                .arg(path)
+                .output()
+                .context(format!("Failed to execute rustfmt on {}", path.display()))?;
+
+            if !output.status.success() {
+                eprintln!("WARNING: rustfmt failed on {}:", path.display());
+                eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+            }
+        }
+    }
+    Ok(())
+}
+
 /// Generates a new workspace containing "wrapped" versions of the target crates.
 /// Each wrapped crate will have its declarations eagerly split and patched.
 pub fn generate_wrapped_workspace(
@@ -104,6 +136,7 @@ pub fn generate_wrapped_workspace(
     if verbose {
         println!("DEBUG: generate_wrapped_workspace called with output_dir: {}", output_dir.display());
         println!("DEBUG: Scanning root for Cargo.tomls: {}", scan_root.display());
+        println!("DEBUG: patch_config.generated_workspace_member.is_empty(): {}", patch_config.generated_workspace_member.is_empty());
     }
     
     if !dry_run {
@@ -114,143 +147,240 @@ pub fn generate_wrapped_workspace(
         println!("Wrapped workspace directory: {}", output_dir.display());
     }
 
-    let mut workspace_members_content = Vec::new();
-    let mut workspace_dependencies_content = String::from("introspector_decl2_macros = { path = \"introspector_decl2_macros\" }\n");
-    let mut patch_crates_io_content = String::new();
+    let mut final_cargo_toml_content = String::new();
+    let main_crate_cargo_toml_path = scan_root.join("Cargo.toml");
 
-    // Auto-generate workspace deps from project root using workspace manager
-    let mut deps_to_add = Vec::new();
-    
-    if verbose {
-        println!("Calling find_all_cargo_tomls in scan root: {}", scan_root.display());
-    }
-    // Find all Cargo.toml files and extract crate info
-    if let Ok(cargo_tomls) = find_all_cargo_tomls(scan_root, verbose) {
+    // Scenario: Wrapping a single crate (e.g., in bootstrap mode for split-decls-rs itself)
+    // This is indicated if patch_config.generated_workspace_member is empty,
+    // and scan_root is presumed to be the single crate.
+    if patch_config.generated_workspace_member.is_empty() && main_crate_cargo_toml_path.exists() {
         if verbose {
-            println!("Found {} Cargo.toml files in scan root", cargo_tomls.len());
+            println!("DEBUG: Detected single crate wrapping scenario. Generating [package] Cargo.toml.");
         }
-        
-        for cargo_path in cargo_tomls.iter() { // Removed .take(20) limit
-            if verbose {
-                println!("  Extracting crate info from: {}", cargo_path.display());
+        let root_cargo_toml_content = fs::read_to_string(&main_crate_cargo_toml_path)
+            .context(format!("Failed to read Cargo.toml from scan_root: {}", main_crate_cargo_toml_path.display()))?;
+        let root_cargo_toml: Table = toml::from_str(&root_cargo_toml_content)
+            .context(format!("Failed to parse Cargo.toml from scan_root: {}", main_crate_cargo_toml_path.display()))?;
+
+        // Construct [package] section
+        if let Some(package_section) = root_cargo_toml.get("package").and_then(|v| v.as_table()) {
+            // Add the workspace declaration first for a single crate being wrapped as its own workspace
+            final_cargo_toml_content.push_str("[workspace]\n\n");
+            final_cargo_toml_content.push_str("[package]\n");
+            for (key, value) in package_section.iter() {
+                // Skip workspace-related keys if they exist in the package section (unlikely but good practice)
+                if key != "workspace" {
+                    final_cargo_toml_content.push_str(&format!("{} = {}\n", key, value.to_string()));
+                }
             }
-            if let Ok(Some(crate_info)) = extract_crate_info_simple(&cargo_path) {
-                let relative_path = cargo_path.parent().unwrap()
-                    .strip_prefix(scan_root)
-                    .unwrap_or(Path::new("."))
-                    .to_string_lossy();
-                
-                let mut dep_table = toml::Table::new();
-                dep_table.insert("path".to_string(), toml::Value::String(relative_path.to_string()));
-                
-                deps_to_add.push((crate_info.name.clone(), toml::Value::Table(dep_table)));
-                workspace_members_content.push(format!("\"{}\"", relative_path));
-                if verbose {
-                    println!("    Added crate {} as workspace member and dependency candidate.", crate_info.name);
+        } else {
+            anyhow::bail!("No [package] section found in {}", main_crate_cargo_toml_path.display());
+        }
+
+        // Process and construct [dependencies]
+        if let Some(deps) = root_cargo_toml.get("dependencies").and_then(|v| v.as_table()) {
+            let processed_deps = process_dependencies_for_output_crate(deps, global_config, output_dir, scan_root, verbose)?;
+            if !processed_deps.is_empty() {
+                final_cargo_toml_content.push_str("\n[dependencies]\n");
+                for (key, value) in processed_deps.iter() {
+                    final_cargo_toml_content.push_str(&format!("{} = {}\n", key, value.to_string()));
                 }
             }
         }
-        
-        if verbose {
-            println!("Generated {} workspace dependencies", deps_to_add.len());
+
+        // Process and construct [build-dependencies]
+        if let Some(build_deps) = root_cargo_toml.get("build-dependencies").and_then(|v| v.as_table()) {
+            let processed_build_deps = process_dependencies_for_output_crate(build_deps, global_config, output_dir, scan_root, verbose)?;
+            if !processed_build_deps.is_empty() {
+                final_cargo_toml_content.push_str("\n[build-dependencies]\n");
+                for (key, value) in processed_build_deps.iter() {
+                    final_cargo_toml_content.push_str(&format!("{} = {}\n", key, value.to_string()));
+                }
+            }
         }
+
+        // Process and construct [dev-dependencies]
+        if let Some(dev_deps) = root_cargo_toml.get("dev-dependencies").and_then(|v| v.as_table()) {
+            let processed_dev_deps = process_dependencies_for_output_crate(dev_deps, global_config, output_dir, scan_root, verbose)?;
+            if !processed_dev_deps.is_empty() {
+                final_cargo_toml_content.push_str("\n[dev-dependencies]\n");
+                for (key, value) in processed_dev_deps.iter() {
+                    final_cargo_toml_content.push_str(&format!("{} = {}\n", key, value.to_string()));
+                }
+            }
+        }
+
+        // Handle [[bin]] sections - direct copy of relevant parts, but adjust paths
+        if let Some(bin_array) = root_cargo_toml.get("bin").and_then(|v| v.as_array()) {
+            for bin_item in bin_array {
+                if let Some(bin_table) = bin_item.as_table() {
+                    final_cargo_toml_content.push_str("\n[[bin]]\n");
+                    for (key, value) in bin_table.iter() {
+                        if key == "path" {
+                            if let Some(path_str) = value.as_str() {
+                                let absolute_bin_path = scan_root.join(path_str);
+                                let relative_bin_path = path_diff(output_dir, &absolute_bin_path)
+                                    .context(format!("Failed to calculate relative path for bin '{}'", path_str))?;
+                                final_cargo_toml_content.push_str(&format!("path = \"{}\"\n", relative_bin_path.display()));
+                            }
+                        } else {
+                            final_cargo_toml_content.push_str(&format!("{} = {}\n", key, value.to_string()));
+                        }
+                    }
+                }
+            }
+        }
+
+        // Handle [patch] sections
+        if let Some(patch_section) = root_cargo_toml.get("patch").and_then(|v| v.as_table()) {
+            if !patch_section.is_empty() {
+                final_cargo_toml_content.push_str("\n[patch.crates-io]\n");
+                if let Some(crates_io_patch) = patch_section.get("crates-io").and_then(|v| v.as_table()) {
+                    let processed_patch_deps = process_dependencies_for_output_crate(crates_io_patch, global_config, output_dir, scan_root, verbose)?;
+                     for (key, value) in processed_patch_deps.iter() {
+                        final_cargo_toml_content.push_str(&format!("{} = {}\n", key, value.to_string()));
+                    }
+                }
+            }
+        }
+
     } else {
-        if verbose {
-            println!("Failed to find any Cargo.toml files in scan root: {}", scan_root.display());
-        }
-    }
-
-    // --- 1. Generate [workspace.members] ---
-    for member in &patch_config.generated_workspace_member {
-        if verbose {
-            println!("Processing generated workspace member: {}", member.name);
-        }
-        workspace_members_content.push(format!("\"{}\"", member.path.display()));
+        // Existing logic for workspace generation (if patch_config.generated_workspace_member is NOT empty)
+        // This part remains mostly the same, but integrate the new dependency processing if applicable
         
-        // Call generate_wrapped_crate for each member
-        let original_crate_location = scan_root.join(&member.path); // Use scan_root as base
-        
+        let mut workspace_members_content = Vec::new();
+        let mut workspace_dependencies_content_str = String::new(); // Use a new name to avoid conflict
+        let mut patch_crates_io_content_str = String::new(); // Use a new name to avoid conflict
+
+        // Auto-generate workspace deps from project root using workspace manager
+        // This block needs to be carefully considered if it's still relevant when generating a workspace
+        // Currently, it populates `workspace_members_content` and `deps_to_add`
         if verbose {
-            println!("  Calling generate_wrapped_crate for member '{}' at '{}'", member.name, original_crate_location.display());
+            println!("Calling find_all_cargo_tomls in scan root: {}", scan_root.display());
         }
-        generate_wrapped_crate::generate_wrapped_crate(
-            output_dir,
-            &member.name, // The original name of the crate, e.g., "unimacro_derive"
-            &original_crate_location, // Path to the original crate's directory
-            global_config,
-            patch_config, // Pass patch_config here
-            dry_run,
-        )?;
-        if verbose {
-            println!("  Finished generate_wrapped_crate for member: {}", member.name);
-        }
-    }
-
-    // --- 2. Generate [workspace.dependencies] and [patch.crates-io] ---
-    
-    for dep in &patch_config.generated_workspace_dependency {
-        if verbose {
-            println!("Processing generated workspace dependency: {}", dep.name);
-        }
-        let mut dep_string = format!("{} = {{ ", dep.name);
-
-        let mut parts = Vec::new();
-
-        if let Some(version) = &dep.version {
-            parts.push(format!("version = \"{}\"", version));
-        }
-
-        if let Some(project_root_path) = &dep.project_root_path {
-            // Calculate relative path from output_dir to the dependency's project_root_path
-            let full_dep_path = scan_root.join(project_root_path); // Use scan_root as base
-            let relative_path = path_diff(output_dir, &full_dep_path)
-                .context(format!("Failed to calculate relative path from {} to {}", output_dir.display(), full_dep_path.display()))?;
-            parts.push(format!("path = \"{}\"", relative_path.display()));
-        }
-
-        if let Some(features) = &dep.features {
-            parts.push(format!("features = [\"{}\"]", features.join("\", \"")));
-        }
-
-        if let Some(package) = &dep.package {
-            parts.push(format!("package = \"{}\"", package));
-        }
-
-        dep_string.push_str(&parts.join(", "));
-        dep_string.push_str(" }\n");
-
-        if dep.is_patch.unwrap_or(false) {
-            patch_crates_io_content.push_str(&dep_string);
+        if let Ok(cargo_tomls) = find_all_cargo_tomls(scan_root, verbose) {
+            if verbose {
+                println!("Found {} Cargo.toml files in scan root", cargo_tomls.len());
+            }
+            for cargo_path in cargo_tomls.iter() {
+                if verbose {
+                    println!("  Extracting crate info from: {}", cargo_path.display());
+                }
+                if let Ok(Some(crate_info)) = extract_crate_info_simple(&cargo_path) {
+                    let relative_path = cargo_path.parent().unwrap()
+                        .strip_prefix(scan_root)
+                        .unwrap_or(Path::new("."))
+                        .to_string_lossy();
+                    
+                    // No longer need to push to deps_to_add directly here as we're building the workspace TOML
+                    workspace_members_content.push(format!("\"{}\"", relative_path));
+                    if verbose {
+                        println!("    Added crate {} as workspace member and dependency candidate.", crate_info.name);
+                    }
+                }
+            }
+            if verbose {
+                println!("Generated {} workspace members from scan root", workspace_members_content.len());
+            }
         } else {
-            workspace_dependencies_content.push_str(&dep_string);
+            if verbose {
+                println!("Failed to find any Cargo.toml files in scan root: {}", scan_root.display());
+            }
         }
-    }
 
-    let mut workspace_cargo_toml_content = format!(
-        r#"[workspace]
+        // Process generated_workspace_member from patch_config
+        for member in &patch_config.generated_workspace_member {
+            if verbose {
+                println!("Processing generated workspace member: {}", member.name);
+            }
+            workspace_members_content.push(format!("\"{}\"", member.path.display()));
+            
+            // Call generate_wrapped_crate for each member
+            let original_crate_location = scan_root.join(&member.path);
+            
+            if verbose {
+                println!("  Calling generate_wrapped_crate for member '{}' at '{}'", member.name, original_crate_location.display());
+            }
+            // This is where individual members are processed and their generated content written
+            generate_wrapped_crate::generate_wrapped_crate(
+                output_dir,
+                &member.name,
+                &original_crate_location,
+                global_config,
+                patch_config,
+                dry_run,
+            )?;
+            if verbose {
+                println!("  Finished generate_wrapped_crate for member: {}", member.name);
+            }
+        }
+        
+        // Process generated_workspace_dependency from patch_config
+        for dep in &patch_config.generated_workspace_dependency {
+            if verbose {
+                println!("Processing generated workspace dependency: {}", dep.name);
+            }
+            let mut dep_string = format!("{} = {{ ", dep.name);
+
+            let mut parts = Vec::new();
+
+            if let Some(version) = &dep.version {
+                parts.push(format!("version = \"{}\"", version));
+            }
+
+            if let Some(project_root_path) = &dep.project_root_path {
+                let full_dep_path = scan_root.join(project_root_path);
+                let relative_path = path_diff(output_dir, &full_dep_path)
+                    .ok_or_else(|| anyhow::anyhow!(format!("Failed to calculate relative path for workspace dep '{}'", dep.name)))?;
+                parts.push(format!("path = \"{}\"", relative_path.display()));
+            }
+
+            if let Some(features) = &dep.features {
+                parts.push(format!("features = [\"{}\"]", features.join("\", \"")));
+            }
+
+            if let Some(package) = &dep.package {
+                parts.push(format!("package = \"{}\"", package));
+            }
+
+            dep_string.push_str(&parts.join(", "));
+            dep_string.push_str(" }\n");
+
+            if dep.is_patch.unwrap_or(false) {
+                patch_crates_io_content_str.push_str(&dep_string);
+            } else {
+                workspace_dependencies_content_str.push_str(&dep_string);
+            }
+        }
+
+        // Construct final workspace Cargo.toml content
+        final_cargo_toml_content = format!(
+            r#"[workspace]
 resolver = "2"
 members = [
     {}
 ]
 
 [workspace.dependencies]
+introspector_decl2_macros = {{ path = "../../submodules/patch-build-rs/introspector_decl2_macros" }} # Explicitly keep this one if it's always needed
 {}"#,
-        workspace_members_content.join(",\n    "),
-        workspace_dependencies_content
-    );
+            workspace_members_content.join(",\n    "),
+            workspace_dependencies_content_str
+        );
 
-    if !patch_crates_io_content.is_empty() {
-        workspace_cargo_toml_content.push_str("\n[patch.crates-io]\n");
-        workspace_cargo_toml_content.push_str(&patch_crates_io_content);
-    }
+        if !patch_crates_io_content_str.is_empty() {
+            final_cargo_toml_content.push_str("\n[patch.crates-io]\n");
+            final_cargo_toml_content.push_str(&patch_crates_io_content_str);
+        }
+    } // End of else (workspace generation)
     
-    let workspace_cargo_toml_path = output_dir.join("Cargo.toml");
-    if !dry_run {
-        fs::write(&workspace_cargo_toml_path, workspace_cargo_toml_content)
-            .context(format!("Failed to write Cargo.toml for wrapped workspace: {}", workspace_cargo_toml_path.display()))?;
-    }
-    if verbose {
-        println!("Generated workspace Cargo.toml at: {}", workspace_cargo_toml_path.display());
+            let workspace_cargo_toml_path = output_dir.join("Cargo.toml");
+            if !dry_run {
+                add_generated_header!(&workspace_cargo_toml_path, final_cargo_toml_content.as_str())
+                    .context(format!("Failed to write Cargo.toml for single crate: {}", workspace_cargo_toml_path.display()))?;
+                format_generated_rust_files(output_dir, verbose)?;
+            }    if verbose {
+        println!("Generated Cargo.toml at: {}", workspace_cargo_toml_path.display());
         println!("DEBUG: Exiting generate_wrapped_workspace.");
     }
 

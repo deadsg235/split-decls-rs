@@ -1,1 +1,1 @@
- use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; fn should_skip_dir (path : & Path) -> bool { let name = path . file_name () . unwrap () . to_string_lossy () ; matches ! (name . as_ref () , "target" | ".git" | "node_modules" | ".cargo") }
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; pub fn should_skip_dir (path : & Path) -> bool { let name = path . file_name () . unwrap () . to_string_lossy () ; matches ! (name . as_ref () , "target" | ".git" | "node_modules" | ".cargo") }
