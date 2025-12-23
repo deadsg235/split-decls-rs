@@ -531,6 +531,9 @@ pub fn split_and_generate_decls(
     )?;
 
     // Generate decl_module! invocation
+    if verbose { // Use config.verbose here, as verbose flag is passed through config
+        println!("DEBUG: Collected module names for decl_module!: {:?}", collected_module_names.iter().map(|i| i.to_string()).collect::<Vec<_>>());
+    }
     invocation_generator::generate_decl_module_invocation(collected_module_names, paths, dry_run)?;
 
     println!(); // Add newline after declaration list
