@@ -27,4 +27,4 @@ transformation_focus = "From describing 'keys and types' to describing 'patterns
 [meta_meta_schema.principle.pattern_reification]
 name = "Description by Pattern Application"
 description = "Meta-schemas are constructed by applying a finite set of descriptive patterns (e.g., how to describe a table, how to describe a key-value pair) recursively or compositionally."
-compositional_units_reference = ["structural_item_pattern", "key_value_description_pattern"] # References the patterns defined in goal3.toml
+compositional_units_reference = ["structural_item_pattern", "key_value_description_pattern"] # References the patterns defined in goal3.toml 

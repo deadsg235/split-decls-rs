@@ -54,8 +54,8 @@ contains = [
     { key = "function", type = "string", description = "Function name (for 'function_call'). Required if type is 'function_call'." },
     { key = "args", type = "array<string>", description = "Arguments for the function call." },
     { key = "recursive", type = "boolean", description = "Whether the operation should be recursive (if applicable)." },
-    { key = "over", type = "string", description = "The variable to iterate over (for 'loop'). Required if type is 'loop'." },
-    { key = "loop_var", type = "string", description = "The name of the loop variable (for 'loop'). Required if type is 'loop'." },
+    { key = "over", type = "string", description = "Variable to iterate over (for 'loop'). Required if type is 'loop'." },
+    { key = "loop_var", type = "string", description = "Name of the loop variable (for 'loop'). Required if type is 'loop'." },
     { key = "tasks", type = "array<table>", description = "Nested tasks (for 'loop' or 'sequence'). See 'task_item' schema." },
     { key = "output_base", type = "string", description = "Base directory for output (for certain operations)." }
 ]

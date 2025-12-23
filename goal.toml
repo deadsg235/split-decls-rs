@@ -1,4 +1,5 @@
 # goal.toml
+original-goal = "process all of ../../ cargo.tomls and extract all the decsl and copy them to output/ and generate a new cargo.toml workspace root and cargo tomls for them"
 
 # Ansible-like playbook definition for a declaration processing workflow
 [workflow]
@@ -52,3 +53,6 @@ operation = { type = "sequence" }
     name = "Generate Crate Cargo.toml"
     operation = { type = "function_call", function = "generate_crate_toml", args = ["output/{{ crate_info.name }}/", "{{ crate_info }}"] }
     # Lisp-like: (generate-crate-toml (path output-dir crate-name) crate-info)
+
+
+

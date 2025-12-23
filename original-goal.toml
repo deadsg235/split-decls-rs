@@ -1,0 +1,1 @@
+goal = "process all of ../../ cargo.tomls and extract all the decsl and copy them to output/ and generate a new cargo.toml workspace root and cargo tomls for them"

@@ -25,7 +25,7 @@ description = "A methodology for capturing the subtle 'electric signals' or 'qua
 
   [[observational_framework.instrumentation_and_capture.tool]]
   name = "Hardware Counters (PMUs)"
-  role = "Directly monitors CPU performance monitoring units (PMUs) to capture micro-architectural events. Hypothesized to detect anomalies or specific patterns in CPU behavior (e.g., instruction retirement, cache coherence events, branch prediction) that correlate with the emission of quantum waves."
+  role = "Directly monitors CPU performance monitoring units (PMUs) to capture micro-architectural events. Hypothesized to detect anomalies or specific patterns in CPU behavior (e.g., instruction retirement, cache coherence events, branch mispredictions) that correlate with the emission of quantum waves."
   observable_data = "Cache misses, CPU cycles, instructions per cycle (IPC), branch mispredictions, floating-point operations, memory bandwidth usage."
 
   [[observational_framework.instrumentation_and_capture.tool]]
