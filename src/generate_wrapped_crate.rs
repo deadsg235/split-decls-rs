@@ -9,6 +9,7 @@ use crate::generate_new_cargotoml::generate_new_cargotoml;
 use crate::generate_new_lib_rs::generate_new_lib_rs;
 use crate::generate_new_build_rs::generate_new_build_rs;
 use crate::apply_patches_to_syntax_tree::apply_patches_to_syntax_tree;
+use std::collections::HashMap;
 use crate::rustfmt_utils::format_rust_file;
 use crate::add_generated_rust_header;
 use crate::eager_splitter;

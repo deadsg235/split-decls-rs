@@ -30,6 +30,7 @@ pub mod crate_finder;
 pub mod workflow_executor;
 pub mod process_crates_in_path;
 pub mod goal_parser;
+pub mod rustfmt_utils;
 pub use extracted_decl::*;
 
 pub use crate::paths::{CratePaths, setup_crate_paths}; // Re-export from paths module
