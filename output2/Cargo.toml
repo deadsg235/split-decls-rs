@@ -1,8 +1,63 @@
-[workspace]
-resolver = "2"
-members = [
-    ""
-]
+[package]
+authors = []
+build = "build.rs"
+edition = "2024"
+name = "split-decls-rs"
+version = "0.1.0"
 
-[workspace.dependencies]
-introspector_decl2_macros = { path = "introspector_decl2_macros" }
+[dependencies]
+anyhow = { workspace = true }
+cargo-toml-generator-macros = { workspace = true }
+cargo-toml-generator-types = { workspace = true }
+cargo-toml-parts = { path = ".././build_helpers/cargo_toml_parts" }
+chrono = "0.4"
+clap = { features = ["derive"], workspace = true }
+pagerank_rs = { path = ".././submodules/pagerank_rs" }
+proc-macro2 = { features = ["span-locations"], workspace = true }
+quote = { workspace = true }
+rayon = { workspace = true }
+serde = { workspace = true }
+serde_derive = { workspace = true }
+serde_json = { workspace = true }
+sha2 = "0.10"
+split-decls-types = { workspace = true }
+syn = { features = ["full", "visit", "visit-mut", "extra-traits"], workspace = true }
+tempfile = { workspace = true }
+toml = { workspace = true }
+url = { workspace = true }
+walkdir = { workspace = true }
+
+[build-dependencies]
+cargo-toml-generator-macros = { workspace = true }
+cargo-toml-generator-types = { workspace = true }
+cargo-toml-parts = { path = ".././build_helpers/cargo_toml_parts" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
+
+[[bin]]
+name = "rustmacrodoc"
+path = ".././src/bin/rustmacrodoc.rs"
+
+[[bin]]
+name = "testbuild"
+path = ".././src/bin/testbuild.rs"
+
+[[bin]]
+name = "macro_analyzer"
+path = ".././src/bin/macro_analyzer.rs"
+
+[[bin]]
+name = "test_splitter"
+path = ".././src/bin/test_splitter.rs"
+
+[[bin]]
+name = "submodule_decl_report"
+path = ".././src/bin/submodule_decl_report.rs"
+
+[[bin]]
+name = "eigenmatrix_analyzer"
+path = ".././src/bin/eigenmatrix_analyzer.rs"
+
+[patch.crates-io]
+proc-macro2 = { path = ".././../proc-macro2" }

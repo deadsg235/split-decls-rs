@@ -16,31 +16,38 @@ workspace: /mnt/data1/nix/vendor/rust/cargo2nix/Cargo.toml
 warning: patch for the non root package will be ignored, specify patch at the workspace root:
 package:   /mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/Cargo.toml
 workspace: /mnt/data1/nix/vendor/rust/cargo2nix/Cargo.toml
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/arbitrary/Cargo.toml: unused manifest key: test.0.members
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/git2-rs/Cargo.toml: unused manifest key: examples
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/glob/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/equivalent/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/camino/Cargo.toml: unused manifest key: members
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/regex/Cargo.toml: unused manifest key: package.members
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/quickcheck/Cargo.toml: unused manifest key: package.members
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/itertools/Cargo.toml: `default-features` is ignored for either, since `default-features` was not specified for `workspace.dependencies.either`, this could become a hard error in the future
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/defmac/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/text-size/Cargo.toml: `default_features` is deprecated in favor of `default-features` and will not work in the 2024 edition
 (in the `serde` dependency)
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/chrono/Cargo.toml: `default-features` is ignored for serde_derive, since `default-features` was not specified for `workspace.dependencies.serde_derive`, this could become a hard error in the future
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/tracing-tree/Cargo.toml: `default-features` is ignored for tracing-log, since `default-features` was not specified for `workspace.dependencies.tracing-log`, this could become a hard error in the future
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/tracing-tree/Cargo.toml: `default-features` is ignored for tracing-subscriber, since `default-features` was not specified for `workspace.dependencies.tracing-subscriber`, this could become a hard error in the future
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/lazy-static/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/ahash/Cargo.toml: file `/mnt/data1/nix/vendor/rust/cargo2nix/submodules/ahash/tests/bench.rs` found to be present in multiple build targets:
+  * `integration-test` target `bench`
+  * `bench` target `ahash`
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/ahash/Cargo.toml: file `/mnt/data1/nix/vendor/rust/cargo2nix/submodules/ahash/tests/map_tests.rs` found to be present in multiple build targets:
+  * `integration-test` target `map_tests`
+  * `bench` target `map`
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.anstream.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.anstyle.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.backtrace.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.strsim.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.terminal_size.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.unicase.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dev-dependencies.snapbox.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/pin-project-lite/Cargo.toml: unused manifest key: dev-dependencies.macrotest.branch
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/pin-project-lite/Cargo.toml: unused manifest key: dev-dependencies.trybuild.branch
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/glob/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/io-uring/Cargo.toml: unused manifest key: package.members
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/nix/Cargo.toml: unused manifest key: dependencies.memoffset.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/nix/Cargo.toml: unused manifest key: dependencies.pin-utils.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/scoped-tls/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/crossbeam/crossbeam-utils/Cargo.toml: unused manifest key: dependencies.atomic-maybe-uninit.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/odds/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/zstd-rs/ruzstd/Cargo.toml: `default-features` is ignored for twox-hash, since `default-features` was not specified for `workspace.dependencies.twox-hash`, this could become a hard error in the future
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/zstd-rs/ruzstd/Cargo.toml: unused manifest key: dependencies.fastrand.version
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/zstd-rs/ruzstd/Cargo.toml: unused manifest key: dependencies.twox-hash.version
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/zstd-rs/ruzstd/Cargo.toml: unused manifest key: dev-dependencies.rand.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/fxhash/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/include-dir-macro-rs/Cargo.toml: `edition` is set on example `poems` which is deprecated
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/include-dir-macro-rs/Cargo.toml: `edition` is set on example `web` which is deprecated
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/rustc-demangle/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/rustc-demangle/Cargo.toml: unused manifest key: package.members
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/static-assertions-rs/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/static-assertions-rs/proc/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/chrono/Cargo.toml: `default-features` is ignored for serde_derive, since `default-features` was not specified for `workspace.dependencies.serde_derive`, this could become a hard error in the future
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/camino/Cargo.toml: unused manifest key: members
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/tokio/tokio/Cargo.toml: `default-features` is ignored for mio, since `default-features` was not specified for `workspace.dependencies.mio`, this could become a hard error in the future
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/tokio/tokio/Cargo.toml: `default-features` is ignored for io-uring, since `default-features` was not specified for `workspace.dependencies.io-uring`, this could become a hard error in the future
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/tokio/tokio/Cargo.toml: `default-features` is ignored for mio, since `default-features` was not specified for `workspace.dependencies.mio`, this could become a hard error in the future
@@ -67,13 +74,26 @@ warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/tokio/tokio/Cargo.toml:
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/tokio/tokio/Cargo.toml: unused manifest key: target.cfg(unix).dev-dependencies.nix.version
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/tokio/tokio/Cargo.toml: unused manifest key: target.cfg(windows).dependencies.windows-sys.version
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/tokio/tokio/Cargo.toml: unused manifest key: target.cfg(windows).dev-dependencies.windows-sys.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/pin-project-lite/Cargo.toml: unused manifest key: dev-dependencies.macrotest.branch
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/pin-project-lite/Cargo.toml: unused manifest key: dev-dependencies.trybuild.branch
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/static-assertions-rs/proc/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/lazy-static/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/include-dir-macro-rs/Cargo.toml: `edition` is set on example `poems` which is deprecated
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/include-dir-macro-rs/Cargo.toml: `edition` is set on example `web` which is deprecated
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/equivalent/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/regex/Cargo.toml: unused manifest key: package.members
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/fxhash/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/defmac/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/arbitrary/Cargo.toml: unused manifest key: test.0.members
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/indexmap/Cargo.toml: unused manifest key: dependencies.serde.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/indexmap/Cargo.toml: unused manifest key: dependencies.serde_core.version
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/assert-impl/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/tracing-tree/Cargo.toml: `default-features` is ignored for tracing-log, since `default-features` was not specified for `workspace.dependencies.tracing-log`, this could become a hard error in the future
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/tracing-tree/Cargo.toml: `default-features` is ignored for tracing-subscriber, since `default-features` was not specified for `workspace.dependencies.tracing-subscriber`, this could become a hard error in the future
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/git2-rs/Cargo.toml: unused manifest key: examples
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/quickcheck/Cargo.toml: unused manifest key: package.members
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/nix/Cargo.toml: unused manifest key: dependencies.memoffset.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/nix/Cargo.toml: unused manifest key: dependencies.pin-utils.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: dependencies.cpp_demangle.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: dependencies.serde.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: target.cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp")))).dependencies.addr2line.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: target.cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp")))).dependencies.libc.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: target.cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp")))).dependencies.miniz_oxide.version
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: target.cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp")))).dependencies.ruzstd.version
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/petgraph/Cargo.toml: unused manifest key: dependencies.dot-parser.version
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/petgraph/Cargo.toml: unused manifest key: dependencies.dot-parser-macros.version
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/petgraph/Cargo.toml: unused manifest key: dependencies.fixedbitset.version
@@ -85,32 +105,12 @@ warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/petgraph/Cargo.toml: un
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/petgraph/Cargo.toml: unused manifest key: dependencies.serde_derive.version
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/petgraph/Cargo.toml: unused manifest key: dev-dependencies.itertools.version
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/petgraph/Cargo.toml: unused manifest key: dev-dependencies.odds.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/memoffset/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/indexmap/Cargo.toml: unused manifest key: dependencies.serde.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/indexmap/Cargo.toml: unused manifest key: dependencies.serde_core.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/scoped-tls/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/ahash/Cargo.toml: file `/mnt/data1/nix/vendor/rust/cargo2nix/submodules/ahash/tests/bench.rs` found to be present in multiple build targets:
-  * `integration-test` target `bench`
-  * `bench` target `ahash`
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/ahash/Cargo.toml: file `/mnt/data1/nix/vendor/rust/cargo2nix/submodules/ahash/tests/map_tests.rs` found to be present in multiple build targets:
-  * `integration-test` target `map_tests`
-  * `bench` target `map`
 warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/signal-hook/signal-hook-registry/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/crossbeam/crossbeam-utils/Cargo.toml: unused manifest key: dependencies.atomic-maybe-uninit.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: dependencies.cpp_demangle.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: dependencies.serde.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: target.cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp")))).dependencies.addr2line.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: target.cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp")))).dependencies.libc.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: target.cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp")))).dependencies.miniz_oxide.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs/Cargo.toml: unused manifest key: target.cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp")))).dependencies.ruzstd.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.anstream.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.anstyle.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.backtrace.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.strsim.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.terminal_size.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dependencies.unicase.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder/Cargo.toml: unused manifest key: dev-dependencies.snapbox.version
-warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/odds/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/rustc-demangle/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/rustc-demangle/Cargo.toml: unused manifest key: package.members
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/memoffset/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/static-assertions-rs/Cargo.toml: no edition set: defaulting to the 2015 edition while the latest is 2024
+warning: /mnt/data1/nix/vendor/rust/cargo2nix/submodules/itertools/Cargo.toml: `default-features` is ignored for either, since `default-features` was not specified for `workspace.dependencies.either`, this could become a hard error in the future
 warning: Patch `allocator-api2 v0.3.1 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/allocator-api2)` was not used in the crate graph.
 Patch `annotate-snippets v0.12.8 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/annotate-snippets-rs)` was not used in the crate graph.
 Patch `arc-swap v1.7.1 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/arc-swap)` was not used in the crate graph.
@@ -1282,8 +1282,8 @@ warning: unexpected `cfg` condition name: `crossbeam_loom`
    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
 
    Compiling foldhash v0.2.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/foldhash)
-   Compiling arbitrary v1.4.2 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/arbitrary)
    Compiling sval v2.16.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/sval)
+   Compiling arbitrary v1.4.2 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/arbitrary)
    Compiling strsim v0.11.1 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/strsim-rs)
 warning: `crossbeam-utils` (lib) generated 128 warnings (84 duplicates)
 warning: unexpected `cfg` condition name: `crossbeam_loom`
@@ -9907,17 +9907,6 @@ warning: unexpected `cfg` condition name: `tokio_unstable`
     = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(tokio_unstable)");` to the top of the `build.rs`
     = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
 
-warning: `crossbeam-epoch` (lib) generated 20 warnings
-warning: `tokio` (lib) generated 562 warnings
-warning: type alias `StyledValue` is never used
-   --> submodules/env_logger/src/fmt/mod.rs:276:6
-    |
-276 | type StyledValue<T> = T;
-    |      ^^^^^^^^^^^
-    |
-    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
-
-   Compiling adler2 v2.0.1 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/adler2)
 warning: unexpected `cfg` condition name: `tracing_unstable`
    --> submodules/tracing/tracing-core/src/field.rs:380:11
     |
@@ -9998,8 +9987,19 @@ warning: unexpected `cfg` condition name: `tracing_unstable`
     = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(tracing_unstable)");` to the top of the `build.rs`
     = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
 
-warning: `env_logger` (lib) generated 1 warning
+warning: `crossbeam-epoch` (lib) generated 20 warnings
+warning: `tokio` (lib) generated 562 warnings
 warning: `tracing-core` (lib) generated 6 warnings
+warning: type alias `StyledValue` is never used
+   --> submodules/env_logger/src/fmt/mod.rs:276:6
+    |
+276 | type StyledValue<T> = T;
+    |      ^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+   Compiling adler2 v2.0.1 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/adler2)
+warning: `env_logger` (lib) generated 1 warning
 warning: unexpected `cfg` condition name: `loom`
  --> submodules/tokio/tokio-util/src/loom.rs:5:21
   |
@@ -10191,15 +10191,13 @@ help: use `'_` for type paths
      |                                                  ++++
 
 warning: `encoding_rs` (lib) generated 6 warnings (run `cargo fix --lib -p encoding_rs` to apply 6 suggestions)
-   Compiling miniz_oxide v0.8.9 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/miniz_oxide/miniz_oxide)
-   Compiling clap_builder v4.5.53 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder)
    Compiling proc-macro2 v1.0.103 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/proc-macro2)
+   Compiling miniz_oxide v0.8.9 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/miniz_oxide/miniz_oxide)
    Compiling parking_lot_core v0.9.13 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/parking_lot/core)
    Compiling idna v1.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/rust-url/idna)
+   Compiling clap_builder v4.5.53 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_builder)
    Compiling rand_chacha v0.9.0
    Compiling rand_chacha v0.3.1
-   Compiling quote v1.0.42 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/quote)
-   Compiling flate2 v1.1.5
 warning: type `word_lock::ThreadData` is more private than the item `word_lock::with_thread_data`
   --> submodules/parking_lot/core/src/word_lock.rs:51:1
    |
@@ -10214,13 +10212,17 @@ note: but type `word_lock::ThreadData` is only usable at visibility `pub(self)`
    = note: `#[warn(private_bounds)]` on by default
 
    Compiling hashbrown v0.16.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/hashbrown)
-   Compiling generic-array v0.14.7
+   Compiling quote v1.0.42 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/quote)
+   Compiling flate2 v1.1.5
+warning: `parking_lot_core` (lib) generated 1 warning
    Compiling rand v0.9.2
-   Compiling rand v0.8.5
    Compiling syn v2.0.110 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/syn)
    Compiling syn v1.0.109
-warning: `parking_lot_core` (lib) generated 1 warning
    Compiling proc-macro-error-attr v1.0.4
+   Compiling rand v0.8.5
+   Compiling generic-array v0.14.7
+   Compiling quickcheck v1.0.3 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/quickcheck)
+   Compiling twox-hash v2.1.2 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/twox-hash)
 warning: unused import: `pro::*`
    --> submodules/syn/src/level_macros.rs:211:9
     |
@@ -10235,99 +10237,8 @@ warning: unused import: `hacker::*`
 212 | pub use hacker::*;
     |         ^^^^^^^^^
 
-   Compiling crypto-common v0.1.7
-   Compiling block-buffer v0.10.4
-   Compiling introspector_macro_helpers v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_macro_helpers)
-   Compiling darling_core v0.20.11
-   Compiling quickcheck v1.0.3 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/quickcheck)
-   Compiling twox-hash v2.1.2 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/twox-hash)
-   Compiling introspector_decl_core v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl_core)
    Compiling ruzstd v0.8.2 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/zstd-rs/ruzstd)
-   Compiling digest v0.10.7
    Compiling indexmap v2.12.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/indexmap)
-warning: unused import: `generate_decl_registration`
- --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:7:34
-  |
-7 | use introspector_macro_helpers::{generate_decl_registration, parse_decl_args, dispatch_wrap_logic};
-  |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  |
-  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
-
-warning: unreachable pattern
-  --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:82:9
-   |
-82 |         _ => "unknown_visibility",
-   |         ^ no value can reach this
-   |
-note: multiple earlier patterns match some of the same values
-  --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:82:9
-   |
-79 |         Visibility::Public(_) => "pub",
-   |         --------------------- matches some of the same values
-80 |         Visibility::Restricted(_) => "pub(restricted)",
-   |         ------------------------- matches some of the same values
-81 |         Visibility::Inherited => "private",
-   |         --------------------- matches some of the same values
-82 |         _ => "unknown_visibility",
-   |         ^ collectively making this unreachable
-   = note: `#[warn(unreachable_patterns)]` (part of `#[warn(unused)]`) on by default
-
-warning: unreachable pattern
-   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:119:9
-    |
-119 |         _ => "unknown_visibility",
-    |         ^ no value can reach this
-    |
-note: multiple earlier patterns match some of the same values
-   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:119:9
-    |
-116 |         Visibility::Public(_) => "pub",
-    |         --------------------- matches some of the same values
-117 |         Visibility::Restricted(_) => "pub(restricted)",
-    |         ------------------------- matches some of the same values
-118 |         Visibility::Inherited => "private",
-    |         --------------------- matches some of the same values
-119 |         _ => "unknown_visibility",
-    |         ^ collectively making this unreachable
-
-warning: unreachable pattern
-   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:156:9
-    |
-156 |         _ => "unknown_visibility",
-    |         ^ no value can reach this
-    |
-note: multiple earlier patterns match some of the same values
-   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:156:9
-    |
-153 |         Visibility::Public(_) => "pub",
-    |         --------------------- matches some of the same values
-154 |         Visibility::Restricted(_) => "pub(restricted)",
-    |         ------------------------- matches some of the same values
-155 |         Visibility::Inherited => "private",
-    |         --------------------- matches some of the same values
-156 |         _ => "unknown_visibility",
-    |         ^ collectively making this unreachable
-
-warning: unreachable pattern
-   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:193:9
-    |
-193 |         _ => "unknown_visibility",
-    |         ^ no value can reach this
-    |
-note: multiple earlier patterns match some of the same values
-   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:193:9
-    |
-190 |         Visibility::Public(_) => "pub",
-    |         --------------------- matches some of the same values
-191 |         Visibility::Restricted(_) => "pub(restricted)",
-    |         ------------------------- matches some of the same values
-192 |         Visibility::Inherited => "private",
-    |         --------------------- matches some of the same values
-193 |         _ => "unknown_visibility",
-    |         ^ collectively making this unreachable
-
-warning: `introspector_decl_core` (lib) generated 5 warnings (1 duplicate)
-warning: `introspector_decl_core` (lib) generated 5 warnings (4 duplicates) (run `cargo fix --lib -p introspector_decl_core` to apply 1 suggestion)
 warning: unexpected `cfg` condition value: `borsh`
    --> submodules/indexmap/src/lib.rs:111:7
     |
@@ -10429,7 +10340,6 @@ warning: unexpected `cfg` condition value: `rayon`
    = help: consider adding `rayon` as a feature in `Cargo.toml`
    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
 
-   Compiling sha2 v0.10.9
 warning: use of deprecated method `hashbrown::HashTable::<T, A>::get_many_mut`: use `get_disjoint_mut` instead
    --> submodules/indexmap/src/map/core.rs:744:28
     |
@@ -10441,23 +10351,118 @@ warning: use of deprecated method `hashbrown::HashTable::<T, A>::get_many_mut`: 
    Compiling h2 v0.3.27
    Compiling gimli v0.32.3
    Compiling object v0.37.3 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/object)
+warning: `indexmap` (lib) generated 11 warnings
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling introspector_macro_helpers v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_macro_helpers)
+   Compiling darling_core v0.20.11
+   Compiling digest v0.10.7
+   Compiling introspector_decl_core v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl_core)
+   Compiling sha2 v0.10.9
+warning: unused import: `generate_decl_registration`
+ --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:7:34
+  |
+7 | use introspector_macro_helpers::{generate_decl_registration, parse_decl_args, dispatch_wrap_logic};
+  |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unreachable pattern
+  --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:82:9
+   |
+82 |         _ => "unknown_visibility",
+   |         ^ no value can reach this
+   |
+note: multiple earlier patterns match some of the same values
+  --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:82:9
+   |
+79 |         Visibility::Public(_) => "pub",
+   |         --------------------- matches some of the same values
+80 |         Visibility::Restricted(_) => "pub(restricted)",
+   |         ------------------------- matches some of the same values
+81 |         Visibility::Inherited => "private",
+   |         --------------------- matches some of the same values
+82 |         _ => "unknown_visibility",
+   |         ^ collectively making this unreachable
+   = note: `#[warn(unreachable_patterns)]` (part of `#[warn(unused)]`) on by default
+
+warning: unreachable pattern
+   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:119:9
+    |
+119 |         _ => "unknown_visibility",
+    |         ^ no value can reach this
+    |
+note: multiple earlier patterns match some of the same values
+   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:119:9
+    |
+116 |         Visibility::Public(_) => "pub",
+    |         --------------------- matches some of the same values
+117 |         Visibility::Restricted(_) => "pub(restricted)",
+    |         ------------------------- matches some of the same values
+118 |         Visibility::Inherited => "private",
+    |         --------------------- matches some of the same values
+119 |         _ => "unknown_visibility",
+    |         ^ collectively making this unreachable
+
+warning: unreachable pattern
+   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:156:9
+    |
+156 |         _ => "unknown_visibility",
+    |         ^ no value can reach this
+    |
+note: multiple earlier patterns match some of the same values
+   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:156:9
+    |
+153 |         Visibility::Public(_) => "pub",
+    |         --------------------- matches some of the same values
+154 |         Visibility::Restricted(_) => "pub(restricted)",
+    |         ------------------------- matches some of the same values
+155 |         Visibility::Inherited => "private",
+    |         --------------------- matches some of the same values
+156 |         _ => "unknown_visibility",
+    |         ^ collectively making this unreachable
+
+warning: unreachable pattern
+   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:193:9
+    |
+193 |         _ => "unknown_visibility",
+    |         ^ no value can reach this
+    |
+note: multiple earlier patterns match some of the same values
+   --> submodules/patch-build-rs/introspector_decl_core/src/lib.rs:193:9
+    |
+190 |         Visibility::Public(_) => "pub",
+    |         --------------------- matches some of the same values
+191 |         Visibility::Restricted(_) => "pub(restricted)",
+    |         ------------------------- matches some of the same values
+192 |         Visibility::Inherited => "private",
+    |         --------------------- matches some of the same values
+193 |         _ => "unknown_visibility",
+    |         ^ collectively making this unreachable
+
+warning: `introspector_decl_core` (lib) generated 5 warnings (5 duplicates)
+warning: `introspector_decl_core` (lib) generated 5 warnings (run `cargo fix --lib -p introspector_decl_core` to apply 1 suggestion)
+   Compiling proc-macro-error v1.0.4
 warning: `syn` (lib) generated 2 warnings (run `cargo fix --lib -p syn` to apply 2 suggestions)
    Compiling serde_derive v1.0.228 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/serde/serde_derive)
    Compiling introspector_decl2_macros v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/patch-build-rs/introspector_decl2_macros)
-   Compiling thiserror-impl v2.0.17 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/thiserror/impl)
-   Compiling thiserror-impl v1.0.65
-   Compiling clap_derive v4.5.49 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_derive)
-warning: `indexmap` (lib) generated 11 warnings
    Compiling darling_macro v0.20.11
-   Compiling proc-macro-error v1.0.4
+   Compiling thiserror-impl v1.0.65
+   Compiling thiserror-impl v2.0.17 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/thiserror/impl)
+   Compiling clap_derive v4.5.49 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap/clap_derive)
 warning: `syn` (lib) generated 2 warnings (2 duplicates)
-   Compiling thiserror v2.0.17 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/thiserror)
-   Compiling darling v0.20.11
-   Compiling clap v4.5.53 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap)
-   Compiling thiserror v1.0.65
    Compiling clap_derive v3.2.25
    Compiling prost-derive v0.11.9
+   Compiling hyper v0.14.32
+   Compiling darling v0.20.11
+   Compiling thiserror v2.0.17 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/thiserror)
+   Compiling clap v4.5.53 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/clap)
+   Compiling thiserror v1.0.65
+   Compiling addr2line v0.25.1 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/addr2line)
+   Compiling backtrace v0.3.76 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs)
+   Compiling pprof2 v0.13.1
    Compiling serde v1.0.228 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/serde/serde)
+   Compiling prost v0.11.9
    Compiling serde_urlencoded v0.7.1
    Compiling url v2.5.7
    Compiling cargo-toml-generator-types v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/cargo-toml-generator-types)
@@ -10556,8 +10561,8 @@ warning: function `parse_dependencies_map` is never used
 248 | pub fn parse_dependencies_map(
     |        ^^^^^^^^^^^^^^^^^^^^^^
 
+   Compiling clap v3.2.25
 warning: `cargo-toml-generator-macros` (lib) generated 14 warnings (run `cargo fix --lib -p cargo-toml-generator-macros` to apply 2 suggestions)
-   Compiling prost v0.11.9
 warning: unused macro definition: `define_package_config`
  --> submodules/split-decls-rs/build_helpers/cargo_toml_parts/src/lib.rs:3:14
   |
@@ -10608,20 +10613,15 @@ warning: unused macro definition: `define_workspace_dependencies_part5`
 386 | macro_rules! define_workspace_dependencies_part5 {
     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+warning: `cargo-toml-parts` (lib) generated 8 warnings (5 duplicates)
 warning: `cargo-toml-parts` (lib) generated 8 warnings (3 duplicates)
    Compiling split-decls-rs v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs)
-warning: `cargo-toml-parts` (lib) generated 8 warnings (5 duplicates)
-   Compiling clap v3.2.25
-   Compiling hyper v0.14.32
+   Compiling hyper-rustls v0.23.2
 warning: split-decls-rs@0.1.0: Running build logic from example_module!
 warning: split-decls-rs@0.1.0: Running OS-specific build logic wrapper.
 warning: split-decls-rs@0.1.0: Running build logic for Linux!
-   Compiling addr2line v0.25.1 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/addr2line)
-   Compiling backtrace v0.3.76 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/backtrace-rs)
-   Compiling pprof2 v0.13.1
-   Compiling names v0.14.0
-   Compiling hyper-rustls v0.23.2
    Compiling reqwest v0.11.15
+   Compiling names v0.14.0
    Compiling pyroscope v0.5.7
    Compiling pyroscope_pprofrs v0.2.10
    Compiling pagerank_rs v0.1.0 (/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/submodules/pagerank_rs)
@@ -10661,6 +10661,12 @@ warning: unused import: `std::collections::HashMap`
  --> submodules/split-decls-rs/src/extracted_decl.rs:3:5
   |
 3 | use std::collections::HashMap; // Needed for future metadata fields
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> submodules/split-decls-rs/src/generate_wrapped_workspace.rs:2:5
+  |
+2 | use std::collections::HashMap; // Add this import
   |     ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 warning: unused import: `CratePaths`
@@ -10749,14 +10755,14 @@ warning: unused variable: `inputs`
     |                                                                     ^^^^^^ help: if this is intentional, prefix it with an underscore: `_inputs`
 
 warning: function `should_skip_dir` is never used
-  --> submodules/split-decls-rs/src/generate_wrapped_workspace.rs:36:4
+  --> submodules/split-decls-rs/src/generate_wrapped_workspace.rs:37:4
    |
-36 | fn should_skip_dir(path: &Path) -> bool {
+37 | fn should_skip_dir(path: &Path) -> bool {
    |    ^^^^^^^^^^^^^^^
    |
    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
 
-warning: `split-decls-rs` (lib) generated 20 warnings (run `cargo fix --lib -p split-decls-rs` to apply 16 suggestions)
+warning: `split-decls-rs` (lib) generated 21 warnings (run `cargo fix --lib -p split-decls-rs` to apply 17 suggestions)
 warning: unused import: `CratePaths`
  --> submodules/split-decls-rs/src/main.rs:8:29
   |
@@ -10798,9 +10804,14 @@ warning: unused variable: `workspace_root`
     |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_workspace_root`
 
 warning: `split-decls-rs` (bin "split-decls-rs") generated 6 warnings (run `cargo fix --bin "split-decls-rs"` to apply 4 suggestions)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.28s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.96s
      Running `/mnt/data1/nix/vendor/rust/cargo2nix/target/debug/split-decls-rs bootstrap`
-Error: Command 'cargo build --workspace' failed with status 101. Stderr: error: manifest path `/mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/output2` contains no package: The manifest is virtual, and the workspace has no members.
+Error: Command 'cargo build' failed with status 101. Stderr: error: current package believes it's in a workspace when it's not:
+current:   /mnt/data1/nix/vendor/rust/cargo2nix/submodules/split-decls-rs/output2/Cargo.toml
+workspace: /mnt/data1/nix/vendor/rust/cargo2nix/Cargo.toml
+
+this may be fixable by adding `submodules/split-decls-rs/output2` to the `workspace.members` array of the manifest located at: /mnt/data1/nix/vendor/rust/cargo2nix/Cargo.toml
+Alternatively, to keep it out of the workspace, add the package to the `workspace.exclude` array, or add an empty `[workspace]` table to the package's manifest.
 
 
 Stack backtrace:

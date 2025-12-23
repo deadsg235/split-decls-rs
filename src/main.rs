@@ -312,7 +312,7 @@ fn run_bootstrap_mode(
                 operation: split_decls_rs::goal_parser::Operation::Shell(
                     split_decls_rs::goal_parser::ShellCommandOperation {
                         op_type: "shell".to_string(),
-                        command: "cargo build --workspace".to_string(),
+                        command: "cargo build".to_string(),
                         working_dir: Some(wrapped_workspace_output_dir.to_string_lossy().to_string()),
                         capture_output: true,
                         error_on_failure: true,
