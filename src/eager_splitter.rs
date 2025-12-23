@@ -113,8 +113,14 @@ fn process_all_rust_files(
 
                 let decl_file_path = paths.decls_output_dir.join(format!("{}.rs", error_module_name_str));
                 if !dry_run {
-                    fs::write(&decl_file_path, error_output_tokens.to_string())
-                        .context(format!("Failed to write error declaration to {}", decl_file_path.display()))?;
+                    add_generated_rust_header!(
+                        &decl_file_path,
+                        error_output_tokens.to_string().as_str(),
+                        file!(),
+                        line!()
+                    )
+                    .context(format!("Failed to write error declaration to {}", decl_file_path.display()))?;
+                    format_rust_file(&decl_file_path)?;
                 } else {
                     println!("Dry-run: Would write error declaration to {}", decl_file_path.display());
                 }
@@ -222,8 +228,14 @@ fn process_module_recursively(
 
             let decl_file_path = paths.decls_output_dir.join(format!("{}.rs", error_module_name_str));
             if !dry_run {
-                fs::write(&decl_file_path, error_output_tokens.to_string())
-                    .context(format!("Failed to write error declaration to {}", decl_file_path.display()))?;
+                add_generated_rust_header!(
+                    &decl_file_path,
+                    error_output_tokens.to_string().as_str(),
+                    file!(),
+                    line!()
+                )
+                .context(format!("Failed to write error declaration to {}", decl_file_path.display()))?;
+                format_rust_file(&decl_file_path)?;
             } else {
                 println!("Dry-run: Would write error declaration to {}", decl_file_path.display());
             }
@@ -288,6 +300,8 @@ fn process_module_recursively(
 }
 
 use std::collections::HashMap; // Added for HashMap
+use crate::rustfmt_utils::format_rust_file;
+use crate::add_generated_rust_header;
 
 /// Extracts declarations from a crate's lib.rs and returns them as a map.
 pub fn extract_declarations_to_map(paths: &CratePaths) -> Result<HashMap<String, TokenStream>> {

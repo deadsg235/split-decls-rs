@@ -1,1 +1,240 @@
- use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; fn main () -> Result < () > { let cli = Cli :: parse () ; match cli . command { Commands :: Scan { path , workspace , output , } => { let mut paths_to_scan : Vec < PathBuf > = Vec :: new () ; let mut scanned_paths : HashSet < PathBuf > = HashSet :: new () ; if workspace { println ! ("Scanning workspace...") ; let mut current_dir = std :: env :: current_dir () ? ; let mut workspace_root = None ; loop { let cargo_toml_path = current_dir . join ("Cargo.toml") ; if cargo_toml_path . exists () { let content = fs :: read_to_string (& cargo_toml_path) ? ; let toml_val : toml :: Value = toml :: from_str (& content) ? ; if toml_val . get ("workspace") . is_some () { workspace_root = Some (current_dir) ; break ; } } if ! current_dir . pop () { break ; } } if let Some (root) = workspace_root { println ! ("Found workspace root at: {}" , root . display ()) ; let cargo_toml : toml :: Value = toml :: from_str (& fs :: read_to_string (root . join ("Cargo.toml")) ?) ? ; if let Some (workspace_table) = cargo_toml . get ("workspace") . and_then (| w | w . as_table ()) { if let Some (members) = workspace_table . get ("members") . and_then (| m | m . as_array ()) { for member in members { if let Some (member_str) = member . as_str () { let member_path = root . join (member_str) ; if member_path . exists () { paths_to_scan . push (member_path) ; } else { println ! ("Warning: workspace member path does not exist: {}" , member_path . display ()) ; } } } } } } else { println ! ("Warning: Could not find workspace root. Scanning current directory only.") ; paths_to_scan . push (PathBuf :: from (".")) ; } } else if let Some (path) = path { paths_to_scan . push (path) ; } else { paths_to_scan . push (PathBuf :: from (".")) ; } let mut all_files_metadata : Vec < FileMetadata > = Vec :: new () ; while let Some (path_to_scan) = paths_to_scan . pop () { let canonical_path_to_scan = match path_to_scan . canonicalize () { Ok (p) => p , Err (_) => { println ! ("Warning: could not canonicalize path: {}" , path_to_scan . display ()) ; continue ; } } ; if ! scanned_paths . insert (canonical_path_to_scan . clone ()) { continue ; } println ! ("Scanning: {}" , path_to_scan . display ()) ; for entry in WalkDir :: new (& path_to_scan) . into_iter () . filter_map (| e | e . ok ()) { let path = entry . path () ; if path . is_file () && path . extension () . map_or (false , | ext | ext == "rs") { let canonical_path = match path . canonicalize () { Ok (p) => p , Err (_) => continue , } ; if ! scanned_paths . insert (canonical_path) { continue ; } let file_content_bytes = match fs :: read (path) { Ok (bytes) => bytes , Err (_) => continue , } ; let content_hash = format ! ("{:x}" , Sha256 :: digest (& file_content_bytes)) ; let file_content = match String :: from_utf8 (file_content_bytes) { Ok (content) => content , Err (_) => continue , } ; let mut file_metadata = FileMetadata { file_path : path . display () . to_string () , content_hash , status : FileStatus :: Ok , macros : None , error : None , } ; let syntax_tree = match syn :: parse_file (& file_content) { Ok (tree) => tree , Err (err) => { file_metadata . status = FileStatus :: ParsingError ; file_metadata . error = Some (err . to_string ()) ; all_files_metadata . push (file_metadata) ; continue ; } } ; let mut macro_visitor = MacroVisitor { macros : Vec :: new () , file_path : path . to_path_buf () , } ; macro_visitor . visit_file (& syntax_tree) ; let mut updated_macros = Vec :: new () ; for mut macro_info in macro_visitor . macros { if let Some (signature) = & macro_info . signature { if let Ok (item) = syn :: parse_str :: < syn :: Item > (signature) { let mut categorization_visitor = CategorizationVisitor { analysis : MacroAnalysis :: default () , } ; categorization_visitor . visit_item (& item) ; macro_info . analysis = Some (categorization_visitor . analysis) ; let mut string_visitor = StringLiteralVisitor { strings : Vec :: new () } ; string_visitor . visit_item (& item) ; for s in string_visitor . strings { if s . contains ('/') { let new_path = PathBuf :: from (s) ; if new_path . exists () { paths_to_scan . push (new_path) ; } } } } } updated_macros . push (macro_info) ; } file_metadata . macros = Some (updated_macros) ; let mut include_visitor = IncludeVisitor { includes : Vec :: new () , current_file_path : path . to_path_buf () , } ; include_visitor . visit_file (& syntax_tree) ; paths_to_scan . extend (include_visitor . includes) ; all_files_metadata . push (file_metadata) ; } } } let report = MacroReport { files : all_files_metadata , } ; let json_report = serde_json :: to_string_pretty (& report) . context ("Failed to serialize macro report to JSON") ? ; fs :: write (& output , json_report) ? ; println ! ("Successfully generated report at {}" , output . display ()) ; } Commands :: Split { report_path , output , } => { let report_content = fs :: read_to_string (& report_path) . with_context (| | format ! ("Failed to read report file: {}" , report_path . display ())) ? ; let report : MacroReport = serde_json :: from_str (& report_content) . context ("Failed to deserialize report JSON") ? ; fs :: create_dir_all (& output) . with_context (| | format ! ("Failed to create output directory: {}" , output . display ())) ? ; let mut macros_by_name : HashMap < String , Vec < MacroInfo > > = HashMap :: new () ; for file_metadata in & report . files { if let Some (macros) = & file_metadata . macros { for macro_info in macros { macros_by_name . entry (macro_info . name . clone ()) . or_default () . push (macro_info . clone ()) ; } } } let mut total_macros_split = 0 ; for (name , macros) in macros_by_name { if macros . is_empty () || name . is_empty () { continue ; } if macros . len () == 1 { if let Some (signature) = macros [0] . signature . clone () { let file_name = format ! ("{}.rs" , name) ; let output_path = output . join (& file_name) ; fs :: write (& output_path , signature) . with_context (| | { format ! ("Failed to write macro to file: {}" , output_path . display ()) }) ? ; total_macros_split += 1 ; } } else { for macro_info in macros { if let Some (signature) = macro_info . signature . clone () { let mut hasher = Sha256 :: new () ; hasher . update (signature . as_bytes ()) ; let hash_result = hasher . finalize () ; let short_hash = & format ! ("{:x}" , hash_result) [.. 7] ; let source_module = Path :: new (& macro_info . file) . file_stem () . and_then (| s | s . to_str ()) . unwrap_or ("unknown") . replace ("-" , "_") ; let file_name = format ! ("{}-{}-{}.rs" , name , source_module , short_hash) ; let output_path = output . join (& file_name) ; fs :: write (& output_path , signature) . with_context (| | { format ! ("Failed to write macro to file: {}" , output_path . display ()) }) ? ; total_macros_split += 1 ; } } } } println ! ("Successfully split {} macros into {}." , total_macros_split , output . display ()) ; } } Ok (()) }
+// Generated by add_generated_rust_header! macro at submodules/split-decls-rs/src/eager_splitter/declaration_writer.rs:71 from submodules/split-decls-rs/src/eager_splitter/declaration_writer.rs at 2025-12-23T17:36:48.806842601+00:00
+// Do not edit this file by hand. Your changes will be overwritten.
+
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+fn main() -> Result<()> {
+    let cli = Cli::parse();
+    match cli.command {
+        Commands::Scan {
+            path,
+            workspace,
+            output,
+        } => {
+            let mut paths_to_scan: Vec<PathBuf> = Vec::new();
+            let mut scanned_paths: HashSet<PathBuf> = HashSet::new();
+            if workspace {
+                println!("Scanning workspace...");
+                let mut current_dir = std::env::current_dir()?;
+                let mut workspace_root = None;
+                loop {
+                    let cargo_toml_path = current_dir.join("Cargo.toml");
+                    if cargo_toml_path.exists() {
+                        let content = fs::read_to_string(&cargo_toml_path)?;
+                        let toml_val: toml::Value = toml::from_str(&content)?;
+                        if toml_val.get("workspace").is_some() {
+                            workspace_root = Some(current_dir);
+                            break;
+                        }
+                    }
+                    if !current_dir.pop() {
+                        break;
+                    }
+                }
+                if let Some(root) = workspace_root {
+                    println!("Found workspace root at: {}", root.display());
+                    let cargo_toml: toml::Value =
+                        toml::from_str(&fs::read_to_string(root.join("Cargo.toml"))?)?;
+                    if let Some(workspace_table) =
+                        cargo_toml.get("workspace").and_then(|w| w.as_table())
+                    {
+                        if let Some(members) =
+                            workspace_table.get("members").and_then(|m| m.as_array())
+                        {
+                            for member in members {
+                                if let Some(member_str) = member.as_str() {
+                                    let member_path = root.join(member_str);
+                                    if member_path.exists() {
+                                        paths_to_scan.push(member_path);
+                                    } else {
+                                        println!(
+                                            "Warning: workspace member path does not exist: {}",
+                                            member_path.display()
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    println!(
+                        "Warning: Could not find workspace root. Scanning current directory only."
+                    );
+                    paths_to_scan.push(PathBuf::from("."));
+                }
+            } else if let Some(path) = path {
+                paths_to_scan.push(path);
+            } else {
+                paths_to_scan.push(PathBuf::from("."));
+            }
+            let mut all_files_metadata: Vec<FileMetadata> = Vec::new();
+            while let Some(path_to_scan) = paths_to_scan.pop() {
+                let canonical_path_to_scan = match path_to_scan.canonicalize() {
+                    Ok(p) => p,
+                    Err(_) => {
+                        println!(
+                            "Warning: could not canonicalize path: {}",
+                            path_to_scan.display()
+                        );
+                        continue;
+                    }
+                };
+                if !scanned_paths.insert(canonical_path_to_scan.clone()) {
+                    continue;
+                }
+                println!("Scanning: {}", path_to_scan.display());
+                for entry in WalkDir::new(&path_to_scan)
+                    .into_iter()
+                    .filter_map(|e| e.ok())
+                {
+                    let path = entry.path();
+                    if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
+                        let canonical_path = match path.canonicalize() {
+                            Ok(p) => p,
+                            Err(_) => continue,
+                        };
+                        if !scanned_paths.insert(canonical_path) {
+                            continue;
+                        }
+                        let file_content_bytes = match fs::read(path) {
+                            Ok(bytes) => bytes,
+                            Err(_) => continue,
+                        };
+                        let content_hash = format!("{:x}", Sha256::digest(&file_content_bytes));
+                        let file_content = match String::from_utf8(file_content_bytes) {
+                            Ok(content) => content,
+                            Err(_) => continue,
+                        };
+                        let mut file_metadata = FileMetadata {
+                            file_path: path.display().to_string(),
+                            content_hash,
+                            status: FileStatus::Ok,
+                            macros: None,
+                            error: None,
+                        };
+                        let syntax_tree = match syn::parse_file(&file_content) {
+                            Ok(tree) => tree,
+                            Err(err) => {
+                                file_metadata.status = FileStatus::ParsingError;
+                                file_metadata.error = Some(err.to_string());
+                                all_files_metadata.push(file_metadata);
+                                continue;
+                            }
+                        };
+                        let mut macro_visitor = MacroVisitor {
+                            macros: Vec::new(),
+                            file_path: path.to_path_buf(),
+                        };
+                        macro_visitor.visit_file(&syntax_tree);
+                        let mut updated_macros = Vec::new();
+                        for mut macro_info in macro_visitor.macros {
+                            if let Some(signature) = &macro_info.signature {
+                                if let Ok(item) = syn::parse_str::<syn::Item>(signature) {
+                                    let mut categorization_visitor = CategorizationVisitor {
+                                        analysis: MacroAnalysis::default(),
+                                    };
+                                    categorization_visitor.visit_item(&item);
+                                    macro_info.analysis = Some(categorization_visitor.analysis);
+                                    let mut string_visitor = StringLiteralVisitor {
+                                        strings: Vec::new(),
+                                    };
+                                    string_visitor.visit_item(&item);
+                                    for s in string_visitor.strings {
+                                        if s.contains('/') {
+                                            let new_path = PathBuf::from(s);
+                                            if new_path.exists() {
+                                                paths_to_scan.push(new_path);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            updated_macros.push(macro_info);
+                        }
+                        file_metadata.macros = Some(updated_macros);
+                        let mut include_visitor = IncludeVisitor {
+                            includes: Vec::new(),
+                            current_file_path: path.to_path_buf(),
+                        };
+                        include_visitor.visit_file(&syntax_tree);
+                        paths_to_scan.extend(include_visitor.includes);
+                        all_files_metadata.push(file_metadata);
+                    }
+                }
+            }
+            let report = MacroReport {
+                files: all_files_metadata,
+            };
+            let json_report = serde_json::to_string_pretty(&report)
+                .context("Failed to serialize macro report to JSON")?;
+            fs::write(&output, json_report)?;
+            println!("Successfully generated report at {}", output.display());
+        }
+        Commands::Split {
+            report_path,
+            output,
+        } => {
+            let report_content = fs::read_to_string(&report_path).with_context(|| {
+                format!("Failed to read report file: {}", report_path.display())
+            })?;
+            let report: MacroReport = serde_json::from_str(&report_content)
+                .context("Failed to deserialize report JSON")?;
+            fs::create_dir_all(&output).with_context(|| {
+                format!("Failed to create output directory: {}", output.display())
+            })?;
+            let mut macros_by_name: HashMap<String, Vec<MacroInfo>> = HashMap::new();
+            for file_metadata in &report.files {
+                if let Some(macros) = &file_metadata.macros {
+                    for macro_info in macros {
+                        macros_by_name
+                            .entry(macro_info.name.clone())
+                            .or_default()
+                            .push(macro_info.clone());
+                    }
+                }
+            }
+            let mut total_macros_split = 0;
+            for (name, macros) in macros_by_name {
+                if macros.is_empty() || name.is_empty() {
+                    continue;
+                }
+                if macros.len() == 1 {
+                    if let Some(signature) = macros[0].signature.clone() {
+                        let file_name = format!("{}.rs", name);
+                        let output_path = output.join(&file_name);
+                        fs::write(&output_path, signature).with_context(|| {
+                            format!("Failed to write macro to file: {}", output_path.display())
+                        })?;
+                        total_macros_split += 1;
+                    }
+                } else {
+                    for macro_info in macros {
+                        if let Some(signature) = macro_info.signature.clone() {
+                            let mut hasher = Sha256::new();
+                            hasher.update(signature.as_bytes());
+                            let hash_result = hasher.finalize();
+                            let short_hash = &format!("{:x}", hash_result)[..7];
+                            let source_module = Path::new(&macro_info.file)
+                                .file_stem()
+                                .and_then(|s| s.to_str())
+                                .unwrap_or("unknown")
+                                .replace("-", "_");
+                            let file_name = format!("{}-{}-{}.rs", name, source_module, short_hash);
+                            let output_path = output.join(&file_name);
+                            fs::write(&output_path, signature).with_context(|| {
+                                format!("Failed to write macro to file: {}", output_path.display())
+                            })?;
+                            total_macros_split += 1;
+                        }
+                    }
+                }
+            }
+            println!(
+                "Successfully split {} macros into {}.",
+                total_macros_split,
+                output.display()
+            );
+        }
+    }
+    Ok(())
+}
