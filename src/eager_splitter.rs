@@ -220,8 +220,7 @@ pub fn copy_declarations_to_output(
 
 /// Main entry point for eager splitting of a crate
 pub fn eager_split_crate(paths: &CratePaths, config: &SplitDeclsConfig) -> Result<()> {
-    // 1. Backup original files
-    backup_original_files(paths)?;
+    // 1. We no longer backup original files, as we are writing to a new location.
     
     // 2. Parse the original lib.rs
     println!("📖 Parsing lib.rs...");
@@ -312,10 +311,14 @@ pub use decls::*;
 pub use introspector_decl2_macros::*;
 "#);
     
-    fs::write(&paths.lib_rs_path, new_lib_content)
-        .context(format!("Failed to write new lib.rs at {}", paths.lib_rs_path.display()))?;
+    let output_lib_path = paths.output_crate_path.join("src").join("lib.rs");
+    fs::create_dir_all(output_lib_path.parent().unwrap())
+        .context(format!("Failed to create output src directory for lib.rs at {}", output_lib_path.display()))?;
+
+    fs::write(&output_lib_path, new_lib_content)
+        .context(format!("Failed to write new lib.rs at {}", output_lib_path.display()))?;
     
-    println!("Generated new lib.rs");
+    println!("Generated new lib.rs at {}", output_lib_path.display());
     Ok(())
 }
 
@@ -336,10 +339,14 @@ fn main() -> Result<()> {{
 }}
 "#);
     
-    fs::write(&paths.build_rs_path, build_content)
-        .context(format!("Failed to write new build.rs at {}", paths.build_rs_path.display()))?;
+    let output_build_path = paths.output_crate_path.join("build.rs");
+    fs::create_dir_all(output_build_path.parent().unwrap())
+        .context(format!("Failed to create output directory for build.rs at {}", output_build_path.display()))?;
+
+    fs::write(&output_build_path, build_content)
+        .context(format!("Failed to write new build.rs at {}", output_build_path.display()))?;
     
-    println!("Generated new build.rs");
+    println!("Generated new build.rs at {}", output_build_path.display());
     Ok(())
 }
 

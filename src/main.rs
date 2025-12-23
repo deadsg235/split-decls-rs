@@ -66,6 +66,16 @@ enum Commands {
         #[arg(short, long)]
         dry_run: bool,
     },
+    /// Bootstrap command: Scans the project itself into output2, builds the generated code, and reports errors.
+    #[command(name = "bootstrap")]
+    Bootstrap {
+        /// Optional: Directory to output the wrapped workspace
+        #[arg(short, long, value_name = "DIR")]
+        output_dir: Option<PathBuf>,
+        /// Run in dry-run mode, no files will be modified
+        #[arg(short, long)]
+        dry_run: bool,
+    },
 }
 
 // Placeholder functions for modes
@@ -196,6 +206,14 @@ fn run_wrapped_workspace_mode(
     let mut crate_count = 0;
     for entry in walkdir::WalkDir::new(&workspace_root)
         .into_iter()
+        .filter_entry(|e| {
+            if e.file_type().is_dir() {
+                let dir_name = e.file_name().to_string_lossy();
+                !(dir_name == "output" || dir_name == "output2" || dir_name == "target" || dir_name == ".git")
+            } else {
+                true
+            }
+        })
         .filter_map(|e| e.ok())
         .filter(|e| e.file_name() == "Cargo.toml")
     {
@@ -226,6 +244,11 @@ fn run_wrapped_workspace_mode(
         for entry in fs::read_dir(&submodules_dir)? {
             let entry = entry?;
             if entry.file_type()?.is_dir() {
+                let dir_name = entry.file_name().to_string_lossy().into_owned();
+                if dir_name == "output" || dir_name == "output2" || dir_name == "target" || dir_name == ".git" {
+                    continue;
+                }
+                
                 let crate_path = entry.path();
                 let lib_rs = crate_path.join("src/lib.rs");
                 let cargo_toml = crate_path.join("Cargo.toml");
@@ -288,6 +311,87 @@ fn run_execute_goal_workflow_mode(
     Ok(())
 }
 
+fn run_bootstrap_mode(
+    verbose: bool,
+    dry_run: bool,
+    output_dir_override: Option<&PathBuf>,
+    global_config: &SplitDeclsConfig,
+) -> Result<()> {
+    if verbose {
+        if dry_run {
+            println!("*** Running in DRY-RUN mode. No files will be modified. ***");
+        }
+        println!("Running bootstrap mode.");
+    }
+
+    let wrapped_workspace_output_dir = output_dir_override
+        .map(|p| p.to_path_buf())
+        .unwrap_or_else(|| PathBuf::from("output2"));
+
+    // Define the workflow programmatically for the build stage
+    let build_workflow = Workflow {
+        name: "Bootstrap Build Stage".to_string(),
+        description: "Builds the generated code in the output directory.".to_string(),
+        style_influences: vec![],
+        stages: vec![
+            split_decls_rs::goal_parser::Stage {
+                name: "Build Generated Code".to_string(),
+                description: format!("Runs 'cargo build' in the generated workspace at {}.", wrapped_workspace_output_dir.display()),
+                processor_hint: None,
+                inputs: vec![],
+                outputs: vec![
+                    split_decls_rs::goal_parser::Output {
+                        name: "stdout".to_string(),
+                        output_type: "string".to_string(),
+                        description: "Standard output of the build command.".to_string(),
+                    },
+                    split_decls_rs::goal_parser::Output {
+                        name: "stderr".to_string(),
+                        output_type: "string".to_string(),
+                        description: "Standard error of the build command.".to_string(),
+                    },
+                    split_decls_rs::goal_parser::Output {
+                        name: "status".to_string(),
+                        output_type: "integer".to_string(),
+                        description: "Exit status code of the build command.".to_string(),
+                    },
+                ],
+                operation: split_decls_rs::goal_parser::Operation::Shell(
+                    split_decls_rs::goal_parser::ShellCommandOperation {
+                        op_type: "shell".to_string(),
+                        command: "cargo build --workspace".to_string(),
+                        working_dir: Some(wrapped_workspace_output_dir.to_string_lossy().to_string()),
+                        capture_output: true,
+                        error_on_failure: true,
+                    },
+                ),
+                tasks: vec![],
+            },
+        ],
+    };
+
+    // First, run the wrapped workspace generation directly
+    run_wrapped_workspace_mode(verbose, dry_run, output_dir_override, global_config)?;
+
+    // Then, execute the build workflow using the WorkflowExecutor
+    let mut workflow_executor = WorkflowExecutor::new(verbose, dry_run, global_config.clone());
+    workflow_executor.execute(&build_workflow)?;
+
+    // After the workflow execution, we can check the results, e.g., the build status
+    if verbose {
+        if let Some(status_value) = workflow_executor.get_context_value("status") {
+            if let Some(status) = status_value.as_integer() {
+                println!("Build command exited with status: {}", status);
+                if status != 0 {
+                    println!("Build failed. See 'stderr' in context for details.");
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+
 /// Helper function to convert an iterator of (String, cargo_toml_generator_types::Dependency)
 /// to an iterator of (String, toml::Value).
 fn dep_to_toml_value_iter<'a>(
@@ -345,6 +449,9 @@ fn main() -> Result<()> {
         }
         Commands::ExecuteGoalWorkflow { goal_file, dry_run } => {
             run_execute_goal_workflow_mode(cli.verbose, *dry_run, goal_file, &global_config)?;
+        }
+        Commands::Bootstrap { output_dir, dry_run } => {
+            run_bootstrap_mode(cli.verbose, *dry_run, output_dir.as_ref(), &global_config)?;
         }
     }
 
