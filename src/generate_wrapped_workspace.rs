@@ -8,19 +8,25 @@ use split_decls_types::SplitDeclsConfig;
 
 use crate::generate_wrapped_crate;
 
-fn find_all_cargo_tomls(dir: &Path) -> Result<Vec<PathBuf>> {
+fn find_all_cargo_tomls(dir: &Path, verbose: bool) -> Result<Vec<PathBuf>> {
     let mut cargo_tomls = Vec::new();
     
     if dir.is_dir() {
+        if verbose {
+            println!("  Scanning directory: {}", dir.display());
+        }
         for entry in fs::read_dir(dir)? {
             let entry = entry?;
             let path = entry.path();
             
             if path.is_file() && path.file_name() == Some("Cargo.toml".as_ref()) {
+                if verbose {
+                    println!("    Found Cargo.toml: {}", path.display());
+                }
                 cargo_tomls.push(path);
-            } else if path.is_dir() && !should_skip_dir(&path) {
-                cargo_tomls.extend(find_all_cargo_tomls(&path)?);
-            }
+            } 
+            // Removed the recursive call to find_all_cargo_tomls to only scan the immediate directory
+            // and removed the should_skip_dir check as it's not recursive anymore.
         }
     }
     
@@ -91,27 +97,22 @@ pub fn generate_wrapped_workspace(
     output_dir: &Path,
     patch_config: &patch_config::PatchConfig,
     global_config: &SplitDeclsConfig,
-    _current_crate_name: &str, // Name of the split-decls-rs tool crate (unused in new logic)
+    scan_root: &Path,
     dry_run: bool,
+    verbose: bool,
 ) -> Result<()> {
-    println!("DEBUG: generate_wrapped_workspace called with output_dir: {}", output_dir.display());
-    // Project root is assumed to be two levels up from split-decls-rs,
-    // i.e., /mnt/data1/nix/vendor/rust/cargo2nix
-    let current_pathbuf = PathBuf::from("./").canonicalize()?;
-    let parent1_pathbuf = current_pathbuf
-        .parent()
-        .ok_or_else(|| anyhow::anyhow!("Failed to get parent of current directory."))?
-        .to_path_buf(); // Convert to owned PathBuf
-    let project_root = parent1_pathbuf
-        .parent()
-        .ok_or_else(|| anyhow::anyhow!("Failed to get parent of submodule directory (expected project root)."))?
-        .to_path_buf(); // Convert to owned PathBuf
-
+    if verbose {
+        println!("DEBUG: generate_wrapped_workspace called with output_dir: {}", output_dir.display());
+        println!("DEBUG: Scanning root for Cargo.tomls: {}", scan_root.display());
+    }
+    
     if !dry_run {
         fs::create_dir_all(output_dir)
             .context(format!("Failed to create wrapped workspace directory: {}", output_dir.display()))?;
     }
-    println!("Wrapped workspace directory: {}", output_dir.display());
+    if verbose {
+        println!("Wrapped workspace directory: {}", output_dir.display());
+    }
 
     let mut workspace_members_content = Vec::new();
     let mut workspace_dependencies_content = String::from("introspector_decl2_macros = { path = \"introspector_decl2_macros\" }\n");
@@ -120,14 +121,22 @@ pub fn generate_wrapped_workspace(
     // Auto-generate workspace deps from project root using workspace manager
     let mut deps_to_add = Vec::new();
     
+    if verbose {
+        println!("Calling find_all_cargo_tomls in scan root: {}", scan_root.display());
+    }
     // Find all Cargo.toml files and extract crate info
-    if let Ok(cargo_tomls) = find_all_cargo_tomls(&project_root) {
-        println!("Found {} Cargo.toml files in project root", cargo_tomls.len());
+    if let Ok(cargo_tomls) = find_all_cargo_tomls(scan_root, verbose) {
+        if verbose {
+            println!("Found {} Cargo.toml files in scan root", cargo_tomls.len());
+        }
         
-        for cargo_path in cargo_tomls.iter().take(20) { // Limit to first 20 for testing
+        for cargo_path in cargo_tomls.iter() { // Removed .take(20) limit
+            if verbose {
+                println!("  Extracting crate info from: {}", cargo_path.display());
+            }
             if let Ok(Some(crate_info)) = extract_crate_info_simple(&cargo_path) {
                 let relative_path = cargo_path.parent().unwrap()
-                    .strip_prefix(&project_root)
+                    .strip_prefix(scan_root)
                     .unwrap_or(Path::new("."))
                     .to_string_lossy();
                 
@@ -136,38 +145,34 @@ pub fn generate_wrapped_workspace(
                 
                 deps_to_add.push((crate_info.name.clone(), toml::Value::Table(dep_table)));
                 workspace_members_content.push(format!("\"{}\"", relative_path));
-            }
-        }
-        
-        // Add to workspace dependencies content
-        for (name, value) in &deps_to_add {
-            if let toml::Value::Table(table) = value {
-                if let Some(toml::Value::String(path)) = table.get("path") {
-                    workspace_dependencies_content.push_str(&format!("{} = {{ path = \"{}\" }}\n", name, path));
-                    patch_crates_io_content.push_str(&format!("{} = {{ path = \"{}\" }}\n", name, path));
+                if verbose {
+                    println!("    Added crate {} as workspace member and dependency candidate.", crate_info.name);
                 }
             }
         }
         
-        println!("Generated {} workspace dependencies", deps_to_add.len());
+        if verbose {
+            println!("Generated {} workspace dependencies", deps_to_add.len());
+        }
+    } else {
+        if verbose {
+            println!("Failed to find any Cargo.toml files in scan root: {}", scan_root.display());
+        }
     }
 
     // --- 1. Generate [workspace.members] ---
     for member in &patch_config.generated_workspace_member {
+        if verbose {
+            println!("Processing generated workspace member: {}", member.name);
+        }
         workspace_members_content.push(format!("\"{}\"", member.path.display()));
         
         // Call generate_wrapped_crate for each member
-        // This will need a new generate_wrapped_crate signature or a temporary struct
-        let _original_crate_path = project_root.join(&member.path); // THIS IS NOT CORRECT
-        // The member.path here is relative to the output_dir.
-        // We need the original path of the crate relative to the *project_root*.
-
-        // For now, let's assume `member.name` can be used to find the original crate's path.
-        // This is a placeholder and will need to be properly addressed.
-        // For 'unimacro_derive', we know the path is `unimacro_derive` under `project_root`.
-        // This needs to be formalized in `patch.toml` or `global_config`.
-        let original_crate_location = project_root.join(&member.path); // THIS IS A TEMPORARY HACK
+        let original_crate_location = scan_root.join(&member.path); // Use scan_root as base
         
+        if verbose {
+            println!("  Calling generate_wrapped_crate for member '{}' at '{}'", member.name, original_crate_location.display());
+        }
         generate_wrapped_crate::generate_wrapped_crate(
             output_dir,
             &member.name, // The original name of the crate, e.g., "unimacro_derive"
@@ -176,11 +181,17 @@ pub fn generate_wrapped_workspace(
             patch_config, // Pass patch_config here
             dry_run,
         )?;
+        if verbose {
+            println!("  Finished generate_wrapped_crate for member: {}", member.name);
+        }
     }
 
     // --- 2. Generate [workspace.dependencies] and [patch.crates-io] ---
     
     for dep in &patch_config.generated_workspace_dependency {
+        if verbose {
+            println!("Processing generated workspace dependency: {}", dep.name);
+        }
         let mut dep_string = format!("{} = {{ ", dep.name);
 
         let mut parts = Vec::new();
@@ -191,7 +202,7 @@ pub fn generate_wrapped_workspace(
 
         if let Some(project_root_path) = &dep.project_root_path {
             // Calculate relative path from output_dir to the dependency's project_root_path
-            let full_dep_path = project_root.join(project_root_path);
+            let full_dep_path = scan_root.join(project_root_path); // Use scan_root as base
             let relative_path = path_diff(output_dir, &full_dep_path)
                 .context(format!("Failed to calculate relative path from {} to {}", output_dir.display(), full_dep_path.display()))?;
             parts.push(format!("path = \"{}\"", relative_path.display()));
@@ -238,7 +249,10 @@ members = [
         fs::write(&workspace_cargo_toml_path, workspace_cargo_toml_content)
             .context(format!("Failed to write Cargo.toml for wrapped workspace: {}", workspace_cargo_toml_path.display()))?;
     }
-    println!("Generated workspace Cargo.toml at: {}", workspace_cargo_toml_path.display());
+    if verbose {
+        println!("Generated workspace Cargo.toml at: {}", workspace_cargo_toml_path.display());
+        println!("DEBUG: Exiting generate_wrapped_workspace.");
+    }
 
     Ok(())
 }

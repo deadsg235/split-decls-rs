@@ -166,7 +166,7 @@ fn run_wrapped_workspace_mode(
         println!("Patch config loaded: {:?}", patch_config);
     }
 
-    let current_crate_name = "split-decls-rs"; // This tool's crate name
+    let current_dir_as_scan_root = PathBuf::from("./");
 
     // Always generate a wrapped workspace in this mode
     if verbose {
@@ -176,8 +176,9 @@ fn run_wrapped_workspace_mode(
         &wrapped_workspace_output_dir,
         &patch_config,
         &global_config_mut, // Use mutable clone here
-        current_crate_name,
+        &current_dir_as_scan_root, // Pass current directory as scan_root
         dry_run,
+        verbose,
     )?;
 
     // --- NEW: Generate a sample build.rs using the new composer ---
@@ -202,77 +203,28 @@ fn run_wrapped_workspace_mode(
         println!("Processing crates for declaration splitting...");
     }
     
-    // Find all Cargo.toml files recursively
-    let mut crate_count = 0;
-    for entry in walkdir::WalkDir::new(&workspace_root)
-        .into_iter()
-        .filter_entry(|e| {
-            if e.file_type().is_dir() {
-                let dir_name = e.file_name().to_string_lossy();
-                !(dir_name == "output" || dir_name == "output2" || dir_name == "target" || dir_name == ".git")
-            } else {
-                true
-            }
-        })
-        .filter_map(|e| e.ok())
-        .filter(|e| e.file_name() == "Cargo.toml")
-    {
-        let cargo_toml_path = entry.path();
-        let crate_path = cargo_toml_path.parent().unwrap();
-        let lib_rs = crate_path.join("src/lib.rs");
-        
-        if lib_rs.exists() {
-            crate_count += 1;
-            let crate_name = crate_path.file_name()
-                .map(|n| n.to_string_lossy().to_string())
-                .unwrap_or_else(|| format!("unknown_crate_{}", crate_count));
-            if verbose {
-                println!("Processing crate {}: {}", crate_count, crate_name);
-            }
-            let paths = setup_crate_paths(&crate_path)?;
-            eager_splitter::eager_split_crate(&paths, &global_config_mut)?; // Use mutable clone here
+    // The previous walkdir iteration and submodule processing logic is removed
+    // as generate_wrapped_workspace now handles finding Cargo.toml files within the specified scan_root.
+    // However, eager_split_crate is still called for each crate found.
+    // For now, let's assume the current directory holds the crate we want to split.
+    let current_crate_path = PathBuf::from("./");
+    let lib_rs = current_crate_path.join("src/lib.rs");
+
+    if lib_rs.exists() {
+        if verbose {
+            println!("  Processing current crate: {}", current_crate_path.display());
+        }
+        let paths = setup_crate_paths(&current_crate_path)?;
+        eager_splitter::eager_split_crate(&paths, &global_config_mut)?; // Use mutable clone here
+        if verbose {
+            println!("  Finished processing current crate.");
+        }
+    } else {
+        if verbose {
+            println!("  No src/lib.rs found in current directory. Skipping eager_split_crate for current crate.");
         }
     }
-
-    // Process submodules with Rust crates
-    if verbose {
-        println!("Processing submodules for declaration splitting...");
-    }
-    let submodules_dir = workspace_root.join("submodules");
-    if submodules_dir.exists() {
-        let mut processed_count = 0;
-        for entry in fs::read_dir(&submodules_dir)? {
-            let entry = entry?;
-            if entry.file_type()?.is_dir() {
-                let dir_name = entry.file_name().to_string_lossy().into_owned();
-                if dir_name == "output" || dir_name == "output2" || dir_name == "target" || dir_name == ".git" {
-                    continue;
-                }
-                
-                let crate_path = entry.path();
-                let lib_rs = crate_path.join("src/lib.rs");
-                let cargo_toml = crate_path.join("Cargo.toml");
-                
-                if lib_rs.exists() && cargo_toml.exists() {
-                    if verbose {
-                        println!("Processing submodule: {}", crate_path.file_name().unwrap().to_string_lossy());
-                    }
-                    let paths = setup_crate_paths(&crate_path)?;
-                    eager_splitter::eager_split_crate(&paths, &global_config_mut)?; // Use mutable clone here
-                    processed_count += 1;
-                    
-                    // Limit to prevent overwhelming output
-                    if processed_count >= 50 {
-                        if verbose {
-                            println!("Processed 50 submodules, stopping to prevent overflow...");
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
+    
     if verbose {
         println!("\nWrapped workspace generation finished.");
     }
