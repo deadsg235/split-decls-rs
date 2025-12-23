@@ -9,7 +9,7 @@ use crate::add_generated_header;
 
 use crate::patch_config;
 use split_decls_types::SplitDeclsConfig;
-
+use crate::process_dependencies_for_output_crate;
 use crate::generate_wrapped_crate;
 
 fn find_all_cargo_tomls(dir: &Path, verbose: bool) -> Result<Vec<PathBuf>> {
@@ -37,7 +37,7 @@ fn find_all_cargo_tomls(dir: &Path, verbose: bool) -> Result<Vec<PathBuf>> {
     Ok(cargo_tomls)
 }
 
-fn should_skip_dir(path: &Path) -> bool {
+pub fn should_skip_dir(path: &Path) -> bool {
     let name = path.file_name().unwrap().to_string_lossy();
     matches!(name.as_ref(), "target" | ".git" | "node_modules" | ".cargo")
 }
@@ -46,7 +46,7 @@ struct SimpleCrateInfo {
     name: String,
 }
 
-fn extract_crate_info_simple(cargo_path: &Path) -> Result<Option<SimpleCrateInfo>> {
+pub fn extract_crate_info_simple(cargo_path: &Path) -> Result<Option<SimpleCrateInfo>> {
     let content = fs::read_to_string(cargo_path)?;
     let toml: Value = toml::from_str(&content)?;
     
@@ -62,11 +62,11 @@ fn extract_crate_info_simple(cargo_path: &Path) -> Result<Option<SimpleCrateInfo
 }
 
 /// Calculates the relative path from one directory to another.
-fn path_diff(from: &Path, to: &Path) -> Option<PathBuf> {
+pub fn path_diff(from: &Path, to: &Path) -> Option<PathBuf> {
     path_relative_from(to, from)
 }
 
-fn path_relative_from(path: &Path, base: &Path) -> Option<PathBuf> {
+pub fn path_relative_from(path: &Path, base: &Path) -> Option<PathBuf> {
     let mut relativized_path = PathBuf::new();
     let mut common_prefix = 0;
 
@@ -92,61 +92,6 @@ fn path_relative_from(path: &Path, base: &Path) -> Option<PathBuf> {
     } else {
         Some(relativized_path)
     }
-}
-
-
-// New helper function to process dependencies
-fn process_dependencies_for_output_crate(
-    original_deps: &Table,
-    global_config: &SplitDeclsConfig,
-    output_dir: &Path,
-    project_root: &Path, // This will be the original scan_root
-    verbose: bool,
-) -> Result<Table> {
-    let mut new_deps = Table::new();
-    for (dep_name, dep_value) in original_deps.iter() {
-        if let Some(dep_table) = dep_value.as_table() {
-            let mut processed_dep_table = dep_table.clone();
-            
-            // Handle workspace dependencies
-            if dep_table.contains_key("workspace") && dep_table["workspace"].as_bool().unwrap_or(false) {
-                if let Some(resolved_dep_info) = global_config.workspace_dependencies.get(dep_name) {
-                    if let Some(resolved_path_str) = resolved_dep_info.get("path").and_then(|v| v.as_str()) {
-                        let absolute_resolved_path = project_root.join(resolved_path_str);
-                        let relative_path = path_diff(output_dir, &absolute_resolved_path)
-                            .context(format!("Failed to calculate relative path for workspace dep '{}'", dep_name))?;
-                        processed_dep_table.insert("path".to_string(), Value::String(relative_path.display().to_string()));
-                        processed_dep_table.remove("workspace"); // Remove workspace key
-                    } else {
-                        // If 'path' not found in workspace_dependencies, keep original but log warning
-                        if verbose {
-                            println!("Warning: No path found for workspace dependency '{}' in global_config. Keeping original.", dep_name);
-                        }
-                    }
-                } else {
-                    if verbose {
-                        println!("Warning: Workspace dependency '{}' not found in global_config. Keeping original.", dep_name);
-                    }
-                }
-            } 
-            // Handle regular path dependencies
-            else if let Some(original_path_value) = dep_table.get("path") {
-                if let Some(original_path_str) = original_path_value.as_str() {
-                    let absolute_original_path = project_root.join(original_path_str);
-                    let relative_path = path_diff(output_dir, &absolute_original_path)
-                        .context(format!("Failed to calculate relative path for path dep '{}'", dep_name))?;
-                    processed_dep_table.insert("path".to_string(), Value::String(relative_path.display().to_string()));
-                }
-            }
-
-            new_deps.insert(dep_name.clone(), Value::Table(processed_dep_table));
-
-        } else {
-            // Non-table dependency (e.g., version string directly)
-            new_deps.insert(dep_name.clone(), dep_value.clone());
-        }
-    }
-    Ok(new_deps)
 }
 
 
@@ -191,6 +136,8 @@ pub fn generate_wrapped_workspace(
 
         // Construct [package] section
         if let Some(package_section) = root_cargo_toml.get("package").and_then(|v| v.as_table()) {
+            // Add the workspace declaration first for a single crate being wrapped as its own workspace
+            final_cargo_toml_content.push_str("[workspace]\n\n");
             final_cargo_toml_content.push_str("[package]\n");
             for (key, value) in package_section.iter() {
                 // Skip workspace-related keys if they exist in the package section (unlikely but good practice)
@@ -356,7 +303,7 @@ pub fn generate_wrapped_workspace(
             if let Some(project_root_path) = &dep.project_root_path {
                 let full_dep_path = scan_root.join(project_root_path);
                 let relative_path = path_diff(output_dir, &full_dep_path)
-                    .context(format!("Failed to calculate relative path from {} to {}", output_dir.display(), full_dep_path.display()))?;
+                    .ok_or_else(|| anyhow::anyhow!(format!("Failed to calculate relative path for workspace dep '{}'", dep.name)))?;
                 parts.push(format!("path = \"{}\"", relative_path.display()));
             }
 

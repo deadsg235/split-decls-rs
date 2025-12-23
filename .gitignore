@@ -24,3 +24,6 @@ Cargo.lock
 /log2.log
 output2/target
 output2/\#*
+/src/#bad.rs#
+/bootstrap.log
+/output2/b2.log

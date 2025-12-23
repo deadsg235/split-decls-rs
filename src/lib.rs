@@ -33,6 +33,8 @@ pub mod goal_parser;
 pub use extracted_decl::*;
 
 pub use crate::paths::{CratePaths, setup_crate_paths}; // Re-export from paths module
+pub mod process_dependencies_for_output_crate;
+pub use process_dependencies_for_output_crate::*;
 
 // Re-export key functions for tests
 pub use process_crate::process_crate;
