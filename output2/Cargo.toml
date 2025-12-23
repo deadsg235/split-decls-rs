@@ -5,70 +5,68 @@ edition = "2024"
 name = "split-decls-rs"
 version = "0.1.0"
 
-[workspace]
-
 [dependencies]
-anyhow = { path = "../../anyhow" }
-cargo-toml-generator-macros = { path = "../cargo-toml-generator-macros" }
-cargo-toml-generator-types = { path = "../cargo-toml-generator-types" }
-cargo-toml-parts = { path = ".././build_helpers/cargo_toml_parts" }
+anyhow = { path = "../../../anyhow" }
+cargo-toml-generator-macros = { path = "../../cargo-toml-generator-macros" }
+cargo-toml-generator-types = { path = "../../cargo-toml-generator-types" }
+cargo-toml-parts = { path = "../build_helpers/cargo_toml_parts" }
 chrono = "0.4"
-clap = { features = ["derive"], path = "../../clap" }
-pagerank_rs = { path = ".././submodules/pagerank_rs" }
-serde_json = { version = "1.0" }
+clap = { features = ["derive"], path = "../../../clap" }
+pagerank_rs = { path = "../submodules/pagerank_rs" }
+serde_json = { workspace = true }
 sha2 = "0.10"
 split-decls-types = { path = "../split-decls-types" }
-tempfile = { path = "../../tempfile" }
-toml = { path = "../../toml/crates/toml" }
-url = { version = "2.0" }
-walkdir = { version = "2.5" }
-introspector_decl2_macros = { path = "../../patch-build-rs/introspector_decl2_macros" }
-proc-macro2 = { features = ["span-locations"], path = "../../proc-macro2" }
-quote = { path = "../../quote" }
-rayon = { path = "../../rayon" }
-serde = { version = "1.0" }
-serde_derive = { path = "../../serde/serde_derive" }
-syn = { features = ["full", "visit", "visit-mut", "extra-traits"], path = "../../syn" }
+tempfile = { path = "../../../tempfile" }
+toml = { path = "../../../toml/crates/toml" }
+url = { workspace = true }
+walkdir = { workspace = true }
+introspector_decl2_macros = { path = "../../../patch-build-rs/introspector_decl2_macros" }
+proc-macro2 = { features = ["span-locations"], path = "../../../proc-macro2" }
+quote = { path = "../../../quote" }
+rayon = { path = "../../../rayon" }
+serde = { workspace = true }
+serde_derive = { workspace = true }
+syn = { features = ["full", "visit", "visit-mut", "extra-traits"], path = "../../../syn" }
 
 
 [build-dependencies]
-anyhow = { path = "../../anyhow" }
-cargo-toml-generator-macros = { path = "../cargo-toml-generator-macros" }
-cargo-toml-generator-types = { path = "../cargo-toml-generator-types" }
-cargo-toml-parts = { path = ".././build_helpers/cargo_toml_parts" }
-serde = { version = "1.0" }
-serde_json = { version = "1.0" }
-toml = { path = "../../toml/crates/toml" }
+anyhow = { path = "../../../anyhow" }
+cargo-toml-generator-macros = { path = "../../cargo-toml-generator-macros" }
+cargo-toml-generator-types = { path = "../../cargo-toml-generator-types" }
+cargo-toml-parts = { path = "../build_helpers/cargo_toml_parts" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { path = "../../../toml/crates/toml" }
 
 [[bin]]
 name = "rustmacrodoc"
-path = ".././src/bin/rustmacrodoc.rs"
+path = "../src/bin/rustmacrodoc.rs"
 
 [[bin]]
 name = "testbuild"
-path = ".././src/bin/testbuild.rs"
+path = "../src/bin/testbuild.rs"
 
 [[bin]]
 name = "macro_analyzer"
-path = ".././src/bin/macro_analyzer.rs"
+path = "../src/bin/macro_analyzer.rs"
 
 [[bin]]
 name = "test_splitter"
-path = ".././src/bin/test_splitter.rs"
+path = "../src/bin/test_splitter.rs"
 
 [[bin]]
 name = "submodule_decl_report"
-path = ".././src/bin/submodule_decl_report.rs"
+path = "../src/bin/submodule_decl_report.rs"
 
 [[bin]]
 name = "eigenmatrix_analyzer"
-path = ".././src/bin/eigenmatrix_analyzer.rs"
+path = "../src/bin/eigenmatrix_analyzer.rs"
 
 [patch.crates-io]
-proc-macro2 = { path = "../../proc-macro2" }
-rayon = { path = "../../rayon" }
-serde = { path = "../../serde/serde" }
-serde_derive = { path = "../../serde/serde_derive" }
-serde_core = { path = "../../serde/serde_core" }
-quote = { path = "../../quote" }
-syn = { path = "../../syn" }
+proc-macro2 = { path = "../../../proc-macro2" }
+rayon = { path = "../../../rayon" }
+serde = { path = "../../../serde/serde" }
+serde_derive = { path = "../../../serde/serde_derive" }
+serde_core = { path = "../../../serde/serde_core" }
+quote = { path = "../../../quote" }
+syn = { path = "../../../syn" }
