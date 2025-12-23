@@ -160,6 +160,7 @@ pub fn generate_wrapped_workspace(
     if verbose {
         println!("DEBUG: generate_wrapped_workspace called with output_dir: {}", output_dir.display());
         println!("DEBUG: Scanning root for Cargo.tomls: {}", scan_root.display());
+        println!("DEBUG: patch_config.generated_workspace_member.is_empty(): {}", patch_config.generated_workspace_member.is_empty());
     }
     
     if !dry_run {
