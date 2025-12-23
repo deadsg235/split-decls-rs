@@ -1,3 +1,7 @@
+use std::fs;
+use anyhow::{Context, Result};
+use crate::CratePaths;
+
 /// Backs up original Cargo.toml file.
 pub fn backup_original_cargotoml(paths: &CratePaths, dry_run: bool) -> Result<()> {
     if dry_run {

@@ -10,9 +10,6 @@ serde_json =  { workspace = true }
 proc-macro2 = { workspace = true }
 quote = { workspace = true }
 syn = { workspace=true, features = ["full", "extra-traits"] }
-introspector_decl2_macros = { workspace = true }
-introspector_decl_core = { workspace = true }
-introspector_decl_common = { workspace = true }
 
 [build-dependencies]
 anyhow = { workspace = true }

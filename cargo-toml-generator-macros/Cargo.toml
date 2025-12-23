@@ -13,9 +13,6 @@ proc-macro2 = { workspace = true }
 cargo-toml-generator-types = { path = "../cargo-toml-generator-types" }
 darling = { workspace = true }
 serde_json = { workspace = true }
-introspector_decl2_macros = { workspace = true }
-introspector_decl_core = { workspace = true }
-introspector_decl_common = { workspace = true }
 
 [build-dependencies]
 anyhow = { workspace = true }

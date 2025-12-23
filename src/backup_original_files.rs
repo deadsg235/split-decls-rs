@@ -1,3 +1,7 @@
+use std::fs;
+use anyhow::{Context, Result};
+use crate::CratePaths;
+
 /// Backs up original lib.rs and build.rs files.
 pub fn backup_original_files(paths: &CratePaths, dry_run: bool) -> Result<()> {
     if dry_run {
