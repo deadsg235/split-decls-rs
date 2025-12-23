@@ -6,6 +6,12 @@ edition = "2021"
 [workspace]
 # Empty workspace to exclude from parent
 
+[dependencies]
+anyhow = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8"
+walkdir = "2.0"
+
 [build-dependencies]
 anyhow = "1.0"
 syn = { version = "2.0", features = ["full", "visit"] }
