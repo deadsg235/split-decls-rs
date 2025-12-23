@@ -52,12 +52,13 @@ pub fn write_declaration_file(
     // --- End Signature Comment Generation ---
 
 
+    let decl_content_ts = decl.content;
     let file_content = quote! {
         #signature
         use serde::{Deserialize, Serialize};
         use std::collections::HashMap; // Include HashMap for common use in generated types
         #custom_prelude // Include custom prelude if it exists
-        #decl.content
+        #decl_content_ts
     };
     
     if !dry_run {

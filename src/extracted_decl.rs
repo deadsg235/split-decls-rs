@@ -14,7 +14,7 @@ pub struct ExtractedDeclMetadata {
 }
 
 /// Represents a single extracted declaration.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct ExtractedDecl {
     pub name: String,
     pub kind: String, // e.g., "fn", "struct", "enum"
