@@ -20,19 +20,18 @@ pub fn generate_decl_module_invocation(
     };
 
     let decl_invocation_file_path = paths.decls_output_dir.join("_decl_module_invocation.rs");
-    // Temporarily disabled writing to prevent overwriting manual changes
-    // if !dry_run {
-    //     fs::write(&decl_invocation_file_path, final_decl_module_code.to_string())
-    //         .context("Failed to write _decl_module_invocation.rs")?;
-    //     println!(
-    //         "Generated _decl_module_invocation.rs at {}",
-    //         decl_invocation_file_path.display()
-    //     );
-    // } else {
-    //     println!(
-    //         "Dry-run: Would generate _decl_module_invocation.rs at {}",
-    //         decl_invocation_file_path.display()
-    //     );
-    // }
+    if !dry_run {
+        fs::write(&decl_invocation_file_path, final_decl_module_code.to_string())
+            .context("Failed to write _decl_module_invocation.rs")?;
+        println!(
+            "Generated _decl_module_invocation.rs at {}",
+            decl_invocation_file_path.display()
+        );
+    } else {
+        println!(
+            "Dry-run: Would generate _decl_module_invocation.rs at {}",
+            decl_invocation_file_path.display()
+        );
+    }
     Ok(())
 }
