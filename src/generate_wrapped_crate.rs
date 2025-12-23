@@ -9,7 +9,8 @@ use crate::generate_new_cargotoml::generate_new_cargotoml;
 use crate::generate_new_lib_rs::generate_new_lib_rs;
 use crate::generate_new_build_rs::generate_new_build_rs;
 use crate::apply_patches_to_syntax_tree::apply_patches_to_syntax_tree;
-use std::collections::HashMap;
+use crate::rustfmt_utils::format_rust_file;
+use crate::add_generated_rust_header;
 use crate::eager_splitter;
 
 /// Generates a new workspace containing "wrapped" versions of the target crates.
@@ -64,6 +65,9 @@ pub fn generate_wrapped_crate(
     
     // Generate lib.rs for the wrapped crate
     generate_new_lib_rs(&wrapped_crate_paths, dry_run)?;
+    if !dry_run {
+        format_rust_file(&wrapped_crate_paths.lib_rs_path)?;
+    }
 
     // Create a crate-specific config for writing to .split-decls-config.toml
     let mut crate_config = SplitDeclsConfig::default();
@@ -117,6 +121,9 @@ pub fn generate_wrapped_crate(
 
     // Generate build.rs for the wrapped crate (minimal version for monitoring patches)
     generate_new_build_rs(&wrapped_crate_paths, dry_run)?;
+    if !dry_run {
+        format_rust_file(&wrapped_crate_paths.build_rs_path)?;
+    }
 
     Ok(())
 }

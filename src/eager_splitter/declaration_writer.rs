@@ -10,6 +10,8 @@ use serde_json; // For serializing metadata
 use crate::paths::CratePaths;
 use split_decls_types::SplitDeclsConfig;
 use crate::ExtractedDecl;
+use crate::rustfmt_utils::format_rust_file;
+use crate::add_generated_rust_header;
 /// Generates the file content for a single declaration and writes it to disk.
 pub fn write_declaration_file(
     decl: ExtractedDecl,
@@ -62,8 +64,14 @@ pub fn write_declaration_file(
     };
     
     if !dry_run {
-        fs::write(&decl_file_path, file_content.to_string())
-            .context(format!("Failed to write to {}", decl_file_path.display()))?;
+        add_generated_rust_header!(
+            &decl_file_path,
+            file_content.to_string().as_str(),
+            file!(),
+            line!()
+        )
+        .context(format!("Failed to write to {}", decl_file_path.display()))?;
+        format_rust_file(&decl_file_path)?;
         println!("Split '{} {}' to {}", decl.kind, decl.name, decl_file_path.display());
     } else {
         println!(

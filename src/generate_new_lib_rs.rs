@@ -2,6 +2,7 @@ use std::fs;
 use anyhow::{Context, Result};
 use quote::quote;
 use crate::paths::CratePaths;
+use crate::add_generated_rust_header;
 
 /// Generates the new, minimal src/lib.rs for the crate.
 pub fn generate_new_lib_rs(paths: &CratePaths, dry_run: bool) -> Result<()> {
@@ -54,12 +55,22 @@ pub fn generate_new_lib_rs(paths: &CratePaths, dry_run: bool) -> Result<()> {
 
     if dry_run {
         let new_path = paths.lib_rs_path.with_extension("new");
-        fs::write(&new_path, new_lib_rs_content.to_string())
-            .context(format!("Failed to write new lib.rs to {}", new_path.display()))?;
+        add_generated_rust_header!(
+            &new_path,
+            new_lib_rs_content.to_string().as_str(),
+            file!(),
+            line!()
+        )
+        .context(format!("Failed to write new lib.rs to {}", new_path.display()))?;
         println!("Dry-run: Generated new src/lib.rs content to {} for crate {}", new_path.display(), paths.crate_name);
     } else {
-        fs::write(&paths.lib_rs_path, new_lib_rs_content.to_string())
-            .context(format!("Failed to write new lib.rs to {}", paths.lib_rs_path.display()))?;
+        add_generated_rust_header!(
+            &paths.lib_rs_path,
+            new_lib_rs_content.to_string().as_str(),
+            file!(),
+            line!()
+        )
+        .context(format!("Failed to write new lib.rs to {}", paths.lib_rs_path.display()))?;
         println!("Generated new src/lib.rs for crate {}", paths.crate_name);
     }
     Ok(())
