@@ -2,10 +2,9 @@
 // Re-exports all split declarations
 
 pub mod decls {
-    include!("decls/_decl_module_invocation.rs");
+    // include!("decls/_decl_module_invocation.rs");
 }
 pub use decls::*;
 
 // Re-export prelude macros if available
-
-pub use introspector_decl2_macros::*;
+// pub use introspector_decl2_macros::*;

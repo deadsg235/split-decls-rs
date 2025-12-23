@@ -1,0 +1,1 @@
+c:\Users\deads\OneDrive\Documents\AGI\split-decls-rs\output2\target\debug\libsplit_decls_rs_output.rlib: c:\Users\deads\OneDrive\Documents\AGI\split-decls-rs\output2\.split-decls-config.toml c:\Users\deads\OneDrive\Documents\AGI\split-decls-rs\output2\build.rs c:\Users\deads\OneDrive\Documents\AGI\split-decls-rs\output2\src\lib.rs

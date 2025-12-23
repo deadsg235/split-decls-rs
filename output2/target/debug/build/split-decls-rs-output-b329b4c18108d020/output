@@ -1,0 +1,3 @@
+cargo:rerun-if-changed=build.rs
+cargo:rerun-if-changed=.split-decls-config.toml
+cargo:note=build.rs finished. If split-decls-rs needs to be re-run, changes will be detected.

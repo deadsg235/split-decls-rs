@@ -1,0 +1,1 @@
+{"rustc":3062648155896360161,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[1209306328234187714,"build_script_build",false,2505757719210168958]],"local":[{"RerunIfChanged":{"output":"debug\\build\\split-decls-rs-output-b329b4c18108d020\\output","paths":["build.rs",".split-decls-config.toml"]}}],"rustflags":[],"config":0,"compile_kind":0}
