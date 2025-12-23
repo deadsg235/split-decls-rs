@@ -1,0 +1,1 @@
+ use serde :: { Deserialize , Serialize } ; use std :: collections :: HashMap ; fn simple_process_crate (crate_path : & Path , _global_config : & SplitDeclsConfig , dry_run : bool) -> Result < () > { if dry_run { println ! ("DRY RUN: Would process crate at {}" , crate_path . display ()) ; } else { println ! ("Processing crate at {}" , crate_path . display ()) ; } Ok (()) }

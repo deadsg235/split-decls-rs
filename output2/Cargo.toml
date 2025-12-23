@@ -1,8 +1,7 @@
-[workspace]
-resolver = "2"
-members = [
-    ""
-]
+[package]
+name = "split-decls-rs-output"
+version = "0.1.0"
+edition = "2021"
 
-[workspace.dependencies]
-introspector_decl2_macros = { path = "introspector_decl2_macros" }
+[workspace]
+# Empty workspace to exclude from parent
