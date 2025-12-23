@@ -4,12 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-serde = { version = "1.0", features = ["derive"] }
-toml = "0.8"
-serde_json = "1.0"
+serde = { workspace=true, features = ["derive"] }
+toml = { workspace = true }
+serde_json =  { workspace = true }
 proc-macro2 = { workspace = true }
-quote = "1.0"
-syn = { version = "2.0", features = ["full", "extra-traits"] }
+quote = { workspace = true }
+syn = { workspace=true, features = ["full", "extra-traits"] }
 introspector_decl2_macros = { workspace = true }
 introspector_decl_core = { workspace = true }
 introspector_decl_common = { workspace = true }

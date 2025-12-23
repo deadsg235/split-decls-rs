@@ -7,12 +7,12 @@ edition = "2021"
 proc-macro = true
 
 [dependencies]
-syn = { version = "2.0", features = ["full"] }
-quote = "1.0"
+syn = { workspace = true, features = ["full", "visit"] }
+quote = { workspace = true }
 proc-macro2 = { workspace = true }
 cargo-toml-generator-types = { path = "../cargo-toml-generator-types" }
-darling = "0.20" # A helper for parsing macro inputs
-serde_json = "1.0"
+darling = { workspace = true }
+serde_json = { workspace = true }
 introspector_decl2_macros = { workspace = true }
 introspector_decl_core = { workspace = true }
 introspector_decl_common = { workspace = true }

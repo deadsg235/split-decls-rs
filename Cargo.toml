@@ -5,44 +5,44 @@ edition = "2024"
 authors = []
 build = "build.rs"
 
-[workspace]
-members = [
-    ".", # This crate itself
-    "cargo-toml-generator-macros",
-    "cargo-toml-generator-types", 
-    "split-decls-types",
-]
-exclude = [
-    "cargo-toml-generator-macros",
-    "cargo-toml-generator-types",
-]
+# [workspace]
+# members = [
+#     ".", # This crate itself
+#     "cargo-toml-generator-macros",
+#     "cargo-toml-generator-types", 
+#     "split-decls-types",
+# ]
+# exclude = [
+#     "cargo-toml-generator-macros",
+#     "cargo-toml-generator-types",
+# ]
 
-[workspace.dependencies]
-anyhow = "1.0"
-toml = "0.8"
-serde = { version = "1.0", features = ["derive"] }
-serde_derive = "1.0"
-serde_json = "1.0"
-url = "2.0"
-quote = "1.0"
-syn = { version = "2.0", features = ["full", "visit", "visit-mut", "extra-traits"] }
-walkdir = "2.0"
-proc-macro2 = "1.0"
-tempfile = "3.0"
-clap = { version = "4.0", features = ["derive"] }
-split-decls-types = { path = "split-decls-types" }
-cargo-toml-generator-types = { path = "cargo-toml-generator-types" }
-cargo-toml-generator-macros = { path = "cargo-toml-generator-macros" }
-introspector_decl2_macros = { path = "../../submodules/patch-build-rs/introspector_decl2_macros" }
-introspector_decl_core = { path = "../../submodules/patch-build-rs/introspector_decl_core" }
-introspector_decl_common = { path = "../../submodules/patch-build-rs/introspector_decl_common" }
+# [workspace.dependencies]
+# anyhow = "1.0"
+# toml = "0.8"
+# serde = { version = "1.0", features = ["derive"] }
+# serde_derive = "1.0"
 # serde_json = "1.0"
 # url = "2.0"
 # quote = "1.0"
 # syn = { version = "2.0", features = ["full", "visit", "visit-mut", "extra-traits"] }
-# walkdir = "2.3"
+# walkdir = "2.0"
 # proc-macro2 = "1.0"
 # tempfile = "3.0"
+# clap = { version = "4.0", features = ["derive"] }
+# split-decls-types = { path = "split-decls-types" }
+# cargo-toml-generator-types = { path = "cargo-toml-generator-types" }
+# cargo-toml-generator-macros = { path = "cargo-toml-generator-macros" }
+# introspector_decl2_macros = { path = "../../submodules/patch-build-rs/introspector_decl2_macros" }
+# introspector_decl_core = { path = "../../submodules/patch-build-rs/introspector_decl_core" }
+# introspector_decl_common = { path = "../../submodules/patch-build-rs/introspector_decl_common" }
+# # serde_json = "1.0"
+# # url = "2.0"
+# # quote = "1.0"
+# # syn = { version = "2.0", features = ["full", "visit", "visit-mut", "extra-traits"] }
+# # walkdir = "2.3"
+# # proc-macro2 = "1.0"
+# # tempfile = "3.0"
 
 [dependencies]
 anyhow = { workspace = true }
@@ -63,7 +63,7 @@ clap = { workspace = true, features = ["derive"] }
 cargo-toml-generator-macros = { workspace = true }
 cargo-toml-parts = { path = "build_helpers/cargo_toml_parts" }
 pagerank_rs = { path = "submodules/pagerank_rs" }
-chrono = { version = "0.4", features = ["local"] }
+chrono = "0.4"
 
 
 
