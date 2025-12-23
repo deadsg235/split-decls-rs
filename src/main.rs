@@ -9,6 +9,250 @@ use toml;
 use std::fs;
 use cargo_toml_generator_types::{CargoToml, Dependency};
 use walkdir;
+use clap::{Parser, Subcommand}; // Added clap imports
+use std::time::Instant; // Added for ecosystem_scan_mode
+use std::path::Path; // Added for ecosystem_scan_mode (Path type)
+mod ecosystem_processor; // New module for ecosystem processing
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    /// Turn on verbose output
+    #[arg(short, long)]
+    verbose: bool,
+
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand, Debug)]
+enum Commands {
+    /// Generates a wrapped workspace for given crates
+    #[command(name = "wrapped-workspace")]
+    WrappedWorkspace {
+        /// Optional: Directory to output the wrapped workspace
+        #[arg(short, long, value_name = "DIR")]
+        output_dir: Option<PathBuf>,
+
+        /// Run in dry-run mode, no files will be modified
+        #[arg(short, long)]
+        dry_run: bool,
+    },
+    /// Scans an ecosystem for crates and processes them
+    #[command(name = "ecosystem-scan")]
+    EcosystemScan {
+        /// Base path to scan for crates
+        #[arg(value_name = "PATH")]
+        base_path: PathBuf,
+
+        /// Run in dry-run mode, no files will be modified
+        #[arg(short, long)]
+        dry_run: bool,
+
+        /// Process crates recursively in the base path
+        #[arg(short, long)]
+        recursive: bool,
+    },
+}
+
+// Placeholder functions for modes
+fn run_wrapped_workspace_mode(
+    verbose: bool,
+    dry_run: bool,
+    output_dir_override: Option<&PathBuf>,
+    global_config: &SplitDeclsConfig,
+) -> Result<()> {
+    if verbose {
+        if dry_run {
+            println!("*** Running in DRY-RUN mode. No files will be modified. ***");
+        }
+        println!("Running wrapped-workspace mode.");
+    }
+
+    let wrapped_workspace_output_dir = output_dir_override
+        .map(|p| p.to_path_buf())
+        .unwrap_or_else(|| PathBuf::from("output2"));
+    
+    let patch_config_path_str = "patch.toml";
+    let workspace_root = PathBuf::from("./");
+
+    let root_cargo_toml_path = wrapped_workspace_output_dir.join("Cargo.toml");
+    
+    let mut global_config_mut = global_config.clone(); // Clone to allow mutation
+
+    // --- Load generated Cargo.toml and extract workspace dependencies ---
+    let root_cargo_toml_content = if root_cargo_toml_path.exists() {
+        fs::read_to_string(&root_cargo_toml_path)
+            .context(format!("Failed to read generated Cargo.toml from {}", root_cargo_toml_path.display()))?
+    } else {
+        if verbose {
+            println!("No {} found, using target directory Cargo.toml or default.", root_cargo_toml_path.display());
+        }
+        let target_dir = PathBuf::from("./"); // Default if not overridden
+        let target_cargo_path = target_dir.join("Cargo.toml"); // This should probably be the root Cargo.toml of the project
+        
+        // This logic seems a bit off. It should likely load the *main* Cargo.toml of the project
+        // if output2/Cargo.toml doesn't exist, to get workspace dependencies from it.
+        // For now, mirroring original logic:
+        if target_cargo_path.exists() {
+            fs::read_to_string(&target_cargo_path)
+                .context(format!("Failed to read target Cargo.toml from {}", target_cargo_path.display()))?
+        } else {
+            // Fallback: provide an empty Cargo.toml content to avoid crash if no Cargo.toml is found
+            if verbose {
+                println!("Warning: No root Cargo.toml found at {}, using empty content for dependency extraction.", target_cargo_path.display());
+            }
+            "[package]\nname = \"dummy\"\nversion = \"0.1.0\"\nedition = \"2021\"\n".to_string()
+        }
+    };
+
+    // Use the new CargoToml struct
+    let root_cargo_toml: CargoToml = toml::from_str(&root_cargo_toml_content)
+        .context(format!("Failed to parse generated Cargo.toml from {}", root_cargo_toml_path.display()))?
+    ;
+
+    // Populate workspace dependencies from the generated CargoToml
+    if let Some(workspace_section) = root_cargo_toml.workspace {
+        global_config_mut.workspace_dependencies.extend(dep_to_toml_value_iter(workspace_section.workspace_dependencies));
+    }
+    // Also extend with top-level dependencies, if any, for compatibility
+    global_config_mut.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.dependencies));
+    global_config_mut.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.dev_dependencies));
+    global_config_mut.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.build_dependencies)); // Include build-dependencies as well
+
+    // Add dependencies from [patch] sections to workspace_dependencies
+    if let Some(patch_section) = root_cargo_toml.patch {
+        global_config_mut.workspace_dependencies.extend(dep_to_toml_value_iter(patch_section.crates_io));
+    }
+    // --- END new logic ---
+
+    let patch_config_path = PathBuf::from(patch_config_path_str);
+    let patch_config = if patch_config_path.exists() {
+        if verbose {
+            println!("Loading patch config from {}", patch_config_path.display());
+        }
+        PatchConfig::load_from_file(&patch_config_path)
+            .context("Failed to load patch config")?
+    } else {
+        if verbose {
+            println!("No patch.toml found, using default patch configuration.");
+        }
+        PatchConfig::default()
+    };
+    if verbose {
+        println!("Patch config loaded: {:?}", patch_config);
+    }
+
+    let current_crate_name = "split-decls-rs"; // This tool's crate name
+
+    // Always generate a wrapped workspace in this mode
+    if verbose {
+        println!("Generating wrapped workspace in: {}", wrapped_workspace_output_dir.display());
+    }
+    generate_wrapped_workspace(
+        &wrapped_workspace_output_dir,
+        &patch_config,
+        &global_config_mut, // Use mutable clone here
+        current_crate_name,
+        dry_run,
+    )?;
+
+    // --- NEW: Generate a sample build.rs using the new composer ---
+    let target_build_rs_parts_dir = PathBuf::from("buildrs_parts_for_target_crate");
+    let generated_target_build_rs_path = wrapped_workspace_output_dir.join("generated_target_build.rs");
+    
+    // Ensure the output directory exists
+    fs::create_dir_all(&wrapped_workspace_output_dir)
+        .context(format!("Failed to create output directory for target build.rs: {}", wrapped_workspace_output_dir.display()))?;
+
+    if verbose {
+        println!("Attempting to compose target build.rs from parts in: {}", target_build_rs_parts_dir.display());
+    }
+    build_script_composer::compose_build_script_from_parts(
+        &target_build_rs_parts_dir,
+        &generated_target_build_rs_path,
+    )?;
+    // --- END NEW ---
+
+    // Process each crate for declaration splitting
+    if verbose {
+        println!("Processing crates for declaration splitting...");
+    }
+    
+    // Find all Cargo.toml files recursively
+    let mut crate_count = 0;
+    for entry in walkdir::WalkDir::new(&workspace_root)
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .filter(|e| e.file_name() == "Cargo.toml")
+    {
+        let cargo_toml_path = entry.path();
+        let crate_path = cargo_toml_path.parent().unwrap();
+        let lib_rs = crate_path.join("src/lib.rs");
+        
+        if lib_rs.exists() {
+            crate_count += 1;
+            let crate_name = crate_path.file_name()
+                .map(|n| n.to_string_lossy().to_string())
+                .unwrap_or_else(|| format!("unknown_crate_{}", crate_count));
+            if verbose {
+                println!("Processing crate {}: {}", crate_count, crate_name);
+            }
+            let paths = setup_crate_paths(&crate_path)?;
+            eager_splitter::eager_split_crate(&paths, &global_config_mut)?; // Use mutable clone here
+        }
+    }
+
+    // Process submodules with Rust crates
+    if verbose {
+        println!("Processing submodules for declaration splitting...");
+    }
+    let submodules_dir = workspace_root.join("submodules");
+    if submodules_dir.exists() {
+        let mut processed_count = 0;
+        for entry in fs::read_dir(&submodules_dir)? {
+            let entry = entry?;
+            if entry.file_type()?.is_dir() {
+                let crate_path = entry.path();
+                let lib_rs = crate_path.join("src/lib.rs");
+                let cargo_toml = crate_path.join("Cargo.toml");
+                
+                if lib_rs.exists() && cargo_toml.exists() {
+                    if verbose {
+                        println!("Processing submodule: {}", crate_path.file_name().unwrap().to_string_lossy());
+                    }
+                    let paths = setup_crate_paths(&crate_path)?;
+                    eager_splitter::eager_split_crate(&paths, &global_config_mut)?; // Use mutable clone here
+                    processed_count += 1;
+                    
+                    // Limit to prevent overwhelming output
+                    if processed_count >= 50 {
+                        if verbose {
+                            println!("Processed 50 submodules, stopping to prevent overflow...");
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if verbose {
+        println!("\nWrapped workspace generation finished.");
+    }
+    Ok(())
+}
+
+fn run_ecosystem_scan_mode(
+    verbose: bool,
+    dry_run: bool,
+    base_path: &Path,
+    recursive: bool,
+    global_config: &SplitDeclsConfig,
+) -> Result<()> {
+    println!("Running ecosystem-scan mode (implementation pending).");
+    Ok(())
+}
 
 /// Helper function to convert an iterator of (String, cargo_toml_generator_types::Dependency)
 /// to an iterator of (String, toml::Value).
@@ -35,181 +279,37 @@ fn dep_to_toml_value_iter<'a>(
 }
 
 fn main() -> Result<()> {
-    println!("Starting split-decls-rs tool...");
-    
-    // Parse command line arguments
-    let args: Vec<String> = std::env::args().collect();
-    println!("Parsed args: {:?}", args);
-    
-    let mut dry_run = false;
-    let mut verbose = false;
-    let mut target_dir_override: Option<String> = None;
-    let mut recursive_override: Option<bool> = None;
-    
-    // Simple argument parsing
-    let mut i = 1;
-    while i < args.len() {
-        match args[i].as_str() {
-            "--dry-run" => dry_run = true,
-            "--verbose" => verbose = true,
-            "--target-dir" => {
-                if i + 1 < args.len() {
-                    target_dir_override = Some(args[i + 1].clone());
-                    i += 1;
-                }
-            },
-            "--recursive" => recursive_override = Some(true),
-            _ => {}
-        }
-        i += 1;
-    }
-    
-    println!("dry_run flag: {}", dry_run);
-    println!("verbose flag: {}", verbose);
+    let cli = Cli::parse();
 
-    let wrapped_workspace_output_dir = PathBuf::from("output2");
-    let patch_config_path_str = "patch.toml";
-
-    if dry_run {
-        println!("*** Running in DRY-RUN mode. No files will be modified. ***");
+    if cli.verbose {
+        println!("Verbose mode enabled.");
+        println!("CLI args: {:?}", cli);
     }
 
+    // Load global config - this will be common to both modes
     let workspace_root = PathBuf::from("./");
     let global_config_path = workspace_root.join("split-decls-rs.toml");
-    let root_cargo_toml_path = workspace_root.join("output2/Cargo.toml");
-    
-    let mut global_config = if global_config_path.exists() {
+    let global_config = if global_config_path.exists() {
         SplitDeclsConfig::load_from_file(&global_config_path)
             .context("Failed to load global split-decls-rs config")?
     } else {
-        println!("No split-decls-rs.toml found at {}, using default configuration.", global_config_path.display());
+        if cli.verbose {
+            println!("No split-decls-rs.toml found at {}, using default configuration.", global_config_path.display());
+        }
         SplitDeclsConfig::default()
     };
-    
-    println!("Global config loaded: {:?}", global_config);
-
-    // --- Load generated Cargo.toml and extract workspace dependencies ---
-    let root_cargo_toml_content = if root_cargo_toml_path.exists() {
-        fs::read_to_string(&root_cargo_toml_path)
-            .context(format!("Failed to read generated Cargo.toml from {}", root_cargo_toml_path.display()))?
-    } else {
-        println!("No output2/Cargo.toml found, using target directory Cargo.toml");
-        let target_dir = target_dir_override.as_deref().unwrap_or("../../");
-        let target_cargo_path = PathBuf::from(target_dir).join("Cargo.toml");
-        fs::read_to_string(&target_cargo_path)
-            .context(format!("Failed to read target Cargo.toml from {}", target_cargo_path.display()))?
-    };
-
-    // Use the new CargoToml struct
-    let root_cargo_toml: CargoToml = toml::from_str(&root_cargo_toml_content)
-        .context(format!("Failed to parse generated Cargo.toml from {}", root_cargo_toml_path.display()))?;
-
-    // Populate workspace dependencies from the generated CargoToml
-    if let Some(workspace_section) = root_cargo_toml.workspace {
-        global_config.workspace_dependencies.extend(dep_to_toml_value_iter(workspace_section.workspace_dependencies));
+    if cli.verbose {
+        println!("Global config loaded: {:?}", global_config);
     }
-    // Also extend with top-level dependencies, if any, for compatibility
-    global_config.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.dependencies));
-    global_config.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.dev_dependencies));
-    global_config.workspace_dependencies.extend(dep_to_toml_value_iter(root_cargo_toml.build_dependencies)); // Include build-dependencies as well
 
-    // Add dependencies from [patch] sections to workspace_dependencies
-    if let Some(patch_section) = root_cargo_toml.patch {
-        global_config.workspace_dependencies.extend(dep_to_toml_value_iter(patch_section.crates_io));
-    }
-    // --- END new logic ---
-
-    let patch_config_path = PathBuf::from(patch_config_path_str);
-    let patch_config = if patch_config_path.exists() {
-        println!("No patch.toml found, using default patch configuration.");
-        PatchConfig::default()
-    } else {
-        println!("No patch.toml found, using default patch configuration.");
-        PatchConfig::default()
-    };
-    println!("Patch config loaded: {:?}", patch_config);
-
-    let current_crate_name = "split-decls-rs"; // This tool's crate name
-
-    // Always generate a wrapped workspace in this mode (hardcoded for now)
-    println!("Generating wrapped workspace in: {}", wrapped_workspace_output_dir.display());
-    generate_wrapped_workspace(
-        &wrapped_workspace_output_dir,
-        &patch_config,
-        &global_config,
-        current_crate_name,
-        dry_run,
-    )?;
-
-    // --- NEW: Generate a sample build.rs using the new composer ---
-    let target_build_rs_parts_dir = PathBuf::from("buildrs_parts_for_target_crate");
-    let generated_target_build_rs_path = wrapped_workspace_output_dir.join("generated_target_build.rs");
-    
-    // Ensure the output directory exists
-    fs::create_dir_all(&wrapped_workspace_output_dir)
-        .context(format!("Failed to create output directory for target build.rs: {}", wrapped_workspace_output_dir.display()))?;
-
-    println!("Attempting to compose target build.rs from parts in: {}", target_build_rs_parts_dir.display());
-    build_script_composer::compose_build_script_from_parts(
-        &target_build_rs_parts_dir,
-        &generated_target_build_rs_path,
-    )?;
-    // --- END NEW ---
-
-    // Process each crate for declaration splitting
-    println!("Processing crates for declaration splitting...");
-    
-    // Find all Cargo.toml files recursively
-    let mut crate_count = 0;
-    for entry in walkdir::WalkDir::new(&workspace_root)
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.file_name() == "Cargo.toml")
-    {
-        let cargo_toml_path = entry.path();
-        let crate_path = cargo_toml_path.parent().unwrap();
-        let lib_rs = crate_path.join("src/lib.rs");
-        
-        if lib_rs.exists() {
-            crate_count += 1;
-            let crate_name = crate_path.file_name()
-                .map(|n| n.to_string_lossy().to_string())
-                .unwrap_or_else(|| format!("unknown_crate_{}", crate_count));
-            println!("Processing crate {}: {}", crate_count, crate_name);
-            let paths = setup_crate_paths(&crate_path)?;
-            eager_splitter::eager_split_crate(&paths, &global_config)?;
+    match &cli.command {
+        Commands::WrappedWorkspace { output_dir, dry_run } => {
+            run_wrapped_workspace_mode(cli.verbose, *dry_run, output_dir.as_ref(), &global_config)?;
+        }
+        Commands::EcosystemScan { base_path, dry_run, recursive } => {
+            run_ecosystem_scan_mode(cli.verbose, *dry_run, base_path, *recursive, &global_config)?;
         }
     }
 
-    // Process submodules with Rust crates
-    println!("Processing submodules for declaration splitting...");
-    let submodules_dir = workspace_root.join("submodules");
-    if submodules_dir.exists() {
-        let mut processed_count = 0;
-        for entry in fs::read_dir(&submodules_dir)? {
-            let entry = entry?;
-            if entry.file_type()?.is_dir() {
-                let crate_path = entry.path();
-                let lib_rs = crate_path.join("src/lib.rs");
-                let cargo_toml = crate_path.join("Cargo.toml");
-                
-                if lib_rs.exists() && cargo_toml.exists() {
-                    println!("Processing submodule: {}", crate_path.file_name().unwrap().to_string_lossy());
-                    let paths = setup_crate_paths(&crate_path)?;
-                    eager_splitter::eager_split_crate(&paths, &global_config)?;
-                    processed_count += 1;
-                    
-                    // Limit to prevent overwhelming output
-                    if processed_count >= 50 {
-                        println!("Processed 50 submodules, stopping to prevent overflow...");
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    println!("\nWrapped workspace generation finished.");
-    println!("\nSplit-decls-rs tool finished.");
     Ok(())
 }
