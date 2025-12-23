@@ -1,0 +1,1 @@
+prelude ! { } # [decl_ my_test_project_decls_add] pub fn add (a : i32 , b : i32) -> i32 { a + b }

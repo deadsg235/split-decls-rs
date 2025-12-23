@@ -1,0 +1,9 @@
+default_branches_to_patch = []
+
+[[string_replacements]]
+old = "World"
+new = "Universe"
+
+[repo_fork_mapping]
+
+[workspace_dependencies]

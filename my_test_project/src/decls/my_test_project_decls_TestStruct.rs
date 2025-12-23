@@ -1,0 +1,1 @@
+prelude ! { } # [decl_ my_test_project_decls_TestStruct] pub struct TestStruct { pub name : String , }

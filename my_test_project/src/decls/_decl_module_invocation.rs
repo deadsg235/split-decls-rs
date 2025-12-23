@@ -1,0 +1,1 @@
+decl_module ! (my_test_project_decls_hello , my_test_project_decls_add , my_test_project_decls_TestStruct) ;

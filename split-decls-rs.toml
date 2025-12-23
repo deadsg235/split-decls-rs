@@ -1,14 +1,4 @@
-# Test configuration with string replacements and patches
+# Simple test configuration
 string_replacements = [
     { old = "World", new = "Universe" }
 ]
-
-[patches]
-my_test_project = [
-    { path = "patches/better_hello.rs" }
-]
-
-custom_prelude_overlay = '''
-// Added to every generated file
-use std::fmt::Display;
-'''

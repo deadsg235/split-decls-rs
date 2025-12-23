@@ -1,0 +1,1 @@
+prelude ! { } # [decl_ my_test_project_decls_hello] pub fn hello () -> String { "Hello, Universe!" . to_string () }
